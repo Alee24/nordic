@@ -49,7 +49,7 @@ const Navigation = () => {
                         <span className="text-nordic-dark-900 font-bold text-xl">N</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-xl font-serif font-bold text-theme-text tracking-[0.2em] leading-none drop-shadow-sm">NORDIC</span>
+                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none drop-shadow-sm transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDIC</span>
                         <span className="text-[10px] tracking-[0.4em] text-nordic-gold-500 font-bold uppercase drop-shadow-sm">Suites</span>
                     </div>
                 </Link>
@@ -60,7 +60,7 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent ${isActive('/') ? '!text-nordic-gold-500' : '!text-theme-text'
+                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/') ? '!text-nordic-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Home
@@ -70,7 +70,7 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/suites"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent ${isActive('/suites') ? '!text-nordic-gold-500' : '!text-theme-text'
+                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/suites') ? '!text-nordic-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Residences
@@ -80,7 +80,7 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/experiences"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent ${isActive('/experiences') ? '!text-nordic-gold-500' : '!text-theme-text'
+                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/experiences') ? '!text-nordic-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Coastal Experience
@@ -92,9 +92,9 @@ const Navigation = () => {
                             <Button
                                 variant="subtle"
                                 rightSection={<ChevronDown size={14} />}
-                                className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent ${isActive('/apartments') || isActive('/dining') || isActive('/wellness')
+                                className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/apartments') || isActive('/dining') || isActive('/wellness')
                                     ? '!text-nordic-gold-500'
-                                    : '!text-theme-text'
+                                    : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                                     }`}
                             >
                                 Your Stay
@@ -161,7 +161,7 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/contact"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent ${isActive('/contact') ? '!text-nordic-gold-500' : '!text-theme-text'
+                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/contact') ? '!text-nordic-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Contact
@@ -183,7 +183,7 @@ const Navigation = () => {
                     <ThemeToggle />
                     <ActionIcon
                         variant="transparent"
-                        color="theme-text"
+                        className={`${scrolled ? 'text-theme-text' : 'text-white'} transition-colors duration-500`}
                         onClick={() => setIsOpen(!isOpen)}
                         size="xl"
                     >

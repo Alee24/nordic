@@ -1,40 +1,48 @@
 import React from 'react';
-import { useMantineColorScheme, ActionIcon, useComputedColorScheme } from '@mantine/core';
-import { Sun, Moon } from 'lucide-react';
+import { ActionIcon, useMantineColorScheme } from '@mantine/core';
+import { IconSun, IconMoon } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ThemeToggle = () => {
-    const { setColorScheme } = useMantineColorScheme();
-    const computedColorScheme = useComputedColorScheme('dark', { getInitialValueInEffect: true });
-
-    const toggleTheme = () => {
-        setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light');
-    };
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+    const isDark = colorScheme === 'dark';
 
     return (
         <ActionIcon
-            onClick={toggleTheme}
+            onClick={toggleColorScheme}
             variant="transparent"
             size="lg"
-            className="text-nordic-gold-500 hover:text-nordic-gold-400 focus:outline-none flex items-center justify-center overflow-hidden"
-            aria-label="Toggle theme"
+            radius="xl"
+            aria-label="Toggle color scheme"
+            className="relative overflow-hidden group"
         >
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="wait">
                 <motion.div
-                    key={computedColorScheme}
-                    initial={{ y: -20, opacity: 0, rotate: -45 }}
+                    key={colorScheme}
+                    initial={{ y: 20, opacity: 0, rotate: -90 }}
                     animate={{ y: 0, opacity: 1, rotate: 0 }}
-                    exit={{ y: 20, opacity: 0, rotate: 45 }}
-                    transition={{ duration: 0.2, ease: "easeInOut" }}
-                    className="flex items-center justify-center"
+                    exit={{ y: -20, opacity: 0, rotate: 90 }}
+                    transition={{ duration: 0.3, ease: 'backOut' }}
+                    className="flex items-center justify-center w-full h-full"
                 >
-                    {computedColorScheme === 'dark' ? (
-                        <Sun size={20} strokeWidth={1.5} />
+                    {isDark ? (
+                        <IconSun
+                            size={20}
+                            stroke={1.5}
+                            className="text-nordic-gold-500 hover:text-white transition-colors"
+                        />
                     ) : (
-                        <Moon size={20} strokeWidth={1.5} />
+                        <IconMoon
+                            size={20}
+                            stroke={1.5}
+                            className="text-nordic-dark-700 hover:text-nordic-gold-600 transition-colors"
+                        />
                     )}
                 </motion.div>
             </AnimatePresence>
+
+            {/* Subtle glow effect */}
+            <div className={`absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-20 transition-opacity ${isDark ? 'bg-orange-400' : 'bg-blue-400'}`} />
         </ActionIcon>
     );
 };

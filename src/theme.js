@@ -46,10 +46,10 @@ export const nordicTheme = createTheme({
             styles: (theme) => ({
                 root: {
                     backgroundColor: 'var(--color-theme-surface)',
-                    backdropFilter: 'blur(12px)',
+                    backdropFilter: 'blur(15px)',
                     border: '1px solid var(--color-theme-border)',
                     color: 'var(--color-theme-text)',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    transition: 'all 0.5s ease',
                     '&:hover': {
                         transform: 'translateY(-5px)',
                         boxShadow: 'var(--mantine-shadow-lg)',

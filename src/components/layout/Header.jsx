@@ -4,6 +4,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { useWindowScroll } from '@mantine/hooks';
 import { cn } from '../../utils/cn';
 import useManagementStore from '../../store/useManagementStore';
+import ThemeToggle from '../ui/ThemeToggle';
 
 const Header = () => {
     const { toggleAdmin, isAdmin } = useManagementStore();
@@ -26,7 +27,7 @@ const Header = () => {
                                 NORDIC
                             </Title>
                             <Text className="text-nordic-frost/40 font-light uppercase text-[9px] tracking-[0.6em] -mt-1">
-                                Sweets
+                                Suites
                             </Text>
                         </Stack>
                     </Link>
@@ -38,7 +39,7 @@ const Header = () => {
                     </Group>
 
                     <Group gap="md">
-                        <button
+                        <Button // Changed from button to Mantine Button component
                             onClick={toggleAdmin}
                             className={cn(
                                 "px-5 py-2 rounded-full text-[10px] font-bold tracking-widest transition-all uppercase border",
@@ -48,7 +49,7 @@ const Header = () => {
                             )}
                         >
                             {isAdmin ? 'Admin Active' : 'Staff Access'}
-                        </button>
+                        </Button>
                     </Group>
                 </Group>
             </Container>

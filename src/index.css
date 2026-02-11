@@ -42,29 +42,39 @@
 
 @layer base {
   :root {
-    --color-bg: #09090b;
-    --color-text: #ffffff;
-    --color-surface: #18181b;
-    --color-border: rgba(255, 255, 255, 0.1);
-    --color-muted: #a1a1aa;
-    --color-accent: #d4af37;
-    --color-accent-hover: #e3cf7a;
+    --color-bg: #0C0D0E;
+    /* Midnight Lounge */
+    --color-text: #F8F9FA;
+    /* Frost White */
+    --color-surface: #1A1B1E;
+    /* Slate Gray */
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-muted: #909296;
+    --color-accent: #D4AF37;
+    /* Brushed Champagne */
+    --color-accent-hover: #E6AF17;
+
+    --glass-bg: rgba(0, 0, 0, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
   }
 
-  /* Mantine's light theme selector */
+  /* Mantine's light theme selector - Coastal Morning */
   [data-mantine-color-scheme="light"] {
-    --color-bg: #ffffff;
-    --color-text: #09090b;
-    /* Deep graphite for elegant high contrast */
-    --color-surface: #f8fafc;
-    /* Lighter, cleaner surface */
-    --color-border: rgba(0, 0, 0, 0.12);
-    /* Slightly more visible border */
-    --color-muted: #334155;
-    /* Darker slate for better readability */
-    --color-accent: #8c6e00;
-    /* Deeper, more visible gold for light backgrounds */
-    --color-accent-hover: #735a00;
+    --color-bg: #FBFBFB;
+    /* Soft Bone */
+    --color-text: #1A1B1E;
+    /* Midnight Slate */
+    --color-surface: #FFFFFF;
+    /* High-end Surface */
+    --color-border: #E1E8ED;
+    /* Nordic Frost border */
+    --color-muted: #5C5F66;
+    --color-accent: #C49B2D;
+    /* Optimized Gold for Light */
+    --color-accent-hover: #AA8C2C;
+
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(0, 0, 0, 0.05);
   }
 
   html {
@@ -96,16 +106,9 @@
   }
 
   .glass-panel {
-    @apply backdrop-blur-md border transition-all duration-300 ease-in-out;
-    border-color: var(--color-border);
-  }
-
-  [data-mantine-color-scheme="dark"] .glass-panel {
-    @apply bg-white/5 border-white/10;
-  }
-
-  [data-mantine-color-scheme="light"] .glass-panel {
-    @apply bg-black/[0.03] border-black/10;
+    @apply backdrop-blur-[15px] border transition-all duration-500 ease-in-out;
+    background-color: var(--glass-bg);
+    border-color: var(--glass-border);
   }
 
   .text-gradient-gold {

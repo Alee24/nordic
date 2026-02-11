@@ -1,5 +1,5 @@
 import React from 'react';
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider, localStorageColorSchemeManager } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { nordicTheme } from '../../theme';
 import Navigation from '../ui/Navigation';
@@ -13,12 +13,14 @@ import ScrollToTop from '../../utils/ScrollToTop';
 import Footer from './Footer';
 import useManagementStore from '../../store/useManagementStore';
 
+const colorSchemeManager = localStorageColorSchemeManager({ key: 'nordic-color-scheme' });
+
 const Layout = ({ children }) => {
     const { currentView } = useManagementStore();
     const isStaff = currentView === 'staff';
 
     return (
-        <MantineProvider theme={nordicTheme} defaultColorScheme="dark">
+        <MantineProvider theme={nordicTheme} defaultColorScheme="dark" colorSchemeManager={colorSchemeManager}>
             <Notifications position="top-right" zIndex={2000} />
             <ScrollToTop />
             <div className={`min-h-screen bg-theme-bg text-theme-text font-sans selection:bg-nordic-gold-500 selection:text-nordic-dark-900 flex flex-col transition-colors duration-300`}>

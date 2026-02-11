@@ -42,7 +42,7 @@ const Home = () => {
                 <div className="absolute inset-0">
                     <img
                         /* src="/images/culinary_hero.jpg" */
-                        src="https://baharibeach.net/wp-content/uploads/2024/12/BBH-121-scaled.jpg"
+                        src="/images/hero.jpg"
                         alt="Nordic Suites - Ocean View"
                         className="w-full h-full object-cover"
                     />

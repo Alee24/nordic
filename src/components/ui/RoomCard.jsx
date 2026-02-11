@@ -2,14 +2,22 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Button from './Button';
 import { ArrowRight, Wifi, Coffee, Tv } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const RoomCard = ({ room }) => {
+    const navigate = useNavigate();
+
+    const handleView = (e) => {
+        e.stopPropagation();
+        navigate(`/suites/${room.id}`);
+    };
     return (
         <motion.div
             whileHover={{ y: -15, scale: 1.02 }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            onClick={() => navigate(`/suites/${room.id}`)}
             className="group relative overflow-hidden rounded-xl shadow-2xl bg-theme-surface h-[500px] w-full md:w-[350px] flex-shrink-0 transition-all duration-500 ease-out cursor-pointer"
         >
             <div className="absolute inset-0 z-0">
@@ -35,7 +43,11 @@ const RoomCard = ({ room }) => {
 
                 <div className="flex justify-between items-center transitiion-all duration-300 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
                     <span className="text-xl font-bold text-white drop-shadow-md">${room.price} <span className="text-sm font-normal text-gray-300">/ night</span></span>
-                    <Button variant="outline" className="!px-4 !py-2 text-sm flex items-center gap-2 border-white/40 text-white hover:bg-white hover:text-nordic-dark-900">
+                    <Button
+                        variant="outline"
+                        onClick={handleView}
+                        className="!px-4 !py-2 text-sm flex items-center gap-2 border-white/40 text-white hover:bg-white hover:text-nordic-dark-900"
+                    >
                         View <ArrowRight size={14} />
                     </Button>
                 </div>

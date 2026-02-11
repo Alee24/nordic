@@ -15,6 +15,7 @@ import ContactPage from './pages/ContactPage';
 import ExperiencesPage from './pages/ExperiencesPage';
 import ConciergePage from './pages/ConciergePage';
 import BookingLookupPage from './pages/BookingLookupPage';
+import SuiteDetailsPage from './pages/SuiteDetailsPage';
 
 function App() {
   const { isAdmin, currentView, setView } = useManagementStore();
@@ -28,6 +29,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/suites" element={<SuitesPage />} />
+        <Route path="/suites/:id" element={<SuiteDetailsPage />} />
         <Route path="/rooms" element={<RoomsPage />} />
         <Route path="/dorms" element={<RoomsPage />} /> {/* Redirect old route or keep for compatibility temporarily */}
         <Route path="/apartments" element={<ApartmentsPage />} />
