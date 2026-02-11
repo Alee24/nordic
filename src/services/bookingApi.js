@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_BOOKING_API_URL || 'http://localhost/nordic/backend/api/booking.php';
+const API_BASE_URL = import.meta.env.VITE_BOOKING_API_URL || 'http://localhost:8569/nordic/backend/api/booking.php';
 
 const api = axios.create({
     baseURL: API_BASE_URL,

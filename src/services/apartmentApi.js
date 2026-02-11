@@ -3,7 +3,7 @@ import axios from 'axios';
 // Use strict relative path or environment variable
 const API_BASE_URL = import.meta.env.VITE_API_URL
     ? `${import.meta.env.VITE_API_URL}/apartments.php`
-    : 'http://localhost/nordic/backend/api/apartments.php';
+    : 'http://localhost:8569/nordic/backend/api/apartments.php';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
