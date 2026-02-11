@@ -1,0 +1,359 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import Button from '../components/ui/Button';
+import Section from '../components/ui/Section';
+import BookingWidget from '../components/ui/BookingWidget';
+import RoomCard from '../components/ui/RoomCard';
+import { Star, MapPin, ArrowRight, Utensils, Sparkles, Briefcase, Wifi, Coffee, Key, Headset, Clock, LogIn } from 'lucide-react';
+import { Group, Text } from '@mantine/core';
+import { Link } from 'react-router-dom';
+
+const Home = () => {
+    const rooms = [
+        {
+            id: 1,
+            name: 'Executive Residence',
+            description: 'Full 1-bedroom apartment with ergonomic workspace and kitchen.',
+            price: 250,
+            image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop'
+        },
+        {
+            id: 2,
+            name: 'Nordic Penthouse',
+            description: 'Duplex apartment with private terrace and meeting area.',
+            price: 450,
+            image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=2574&auto=format&fit=crop'
+        },
+        {
+            id: 3,
+            name: 'Studio Loft',
+            description: 'Efficient luxury for the solo business traveler.',
+            price: 180,
+            image: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=2670&auto=format&fit=crop'
+        },
+    ];
+
+    return (
+        <div className="bg-theme-bg min-h-screen transition-colors duration-300">
+
+            {/* Hero Section */}
+            <div className="relative h-screen w-full overflow-hidden">
+                {/* Background Image / Video */}
+                <div className="absolute inset-0">
+                    <img
+                        /* src="/images/culinary_hero.jpg" */
+                        src="https://baharibeach.net/wp-content/uploads/2024/12/BBH-121-scaled.jpg"
+                        alt="Nordic Suites - Ocean View"
+                        className="w-full h-full object-cover"
+                    />
+                    {/* Darker overall overlay to ensure text visibility regardless of theme */}
+                    <div className="absolute inset-0 bg-nordic-dark-900/40" />
+                    {/* Fixed dark gradient to protect white text in both themes - prevents washing out in light mode */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-nordic-dark-900/60 via-transparent to-nordic-dark-900/40" />
+                </div>
+
+                {/* Hero Content */}
+                <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <div className="flex items-center justify-center gap-4 mb-6">
+                            <span className="h-[1px] w-12 bg-nordic-gold-500" />
+                            <span className="text-nordic-gold-500 uppercase tracking-[0.4em] text-xs md:text-sm font-extrabold drop-shadow-sm">Prime Coastal Residences • Nyali Beach</span>
+                            <span className="h-[1px] w-12 bg-nordic-gold-500" />
+                        </div>
+
+                        <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif text-white mb-8 tracking-tight drop-shadow-2xl">
+                            Ocean Front <br /> <span className="italic text-nordic-gold-500">Excellence</span>
+                        </h1>
+
+                        <p className="max-w-2xl mx-auto text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md">
+                            NORDIC SUITES elevates coastal living in our iconic 10-floor tower at Nyali Beach.
+                            The privacy of a luxury residence meets the unparalleled service of a 5-star hotel.
+                        </p>
+
+                        <div className="flex flex-col md:flex-row gap-6 justify-center">
+                            <Button className="bg-nordic-gold-500 text-nordic-dark-900">View Apartments</Button>
+                            <Button variant="outline" className="text-white border-white/40 hover:bg-white hover:text-nordic-dark-900">
+                                Long Stay Rates
+                            </Button>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+
+            {/* Booking Widget Overlay */}
+            <div className="relative z-20 px-6">
+                <BookingWidget />
+            </div>
+
+            {/* About Section */}
+            <Section className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <motion.div
+                        initial={{ opacity: 0, x: -50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <div className="flex items-center gap-2 mb-4 text-nordic-gold-500">
+                            <Briefcase size={20} />
+                            <span className="uppercase tracking-widest text-sm font-bold">Work & Rest</span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-serif text-theme-text mb-6">
+                            Experience Freedom. <br /> <span className="text-gradient-gold italic">Hotel Soul.</span>
+                        </h2>
+                        <p className="text-theme-muted mb-6 leading-relaxed">
+                            We’ve combined the best of both worlds. Every NORDIC SUITES residence is a fully-equipped home,
+                            featuring a chef-grade kitchenette and a custom-designed ergonomic workspace,
+                            all supported by our signature 24/7 concierge and housekeeping.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-6 mb-8">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-nordic-gold-500/10 p-2 rounded-full">
+                                    <Wifi size={18} className="text-nordic-gold-500" />
+                                </div>
+                                <span className="text-sm">Gbps Fiber Internet</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="bg-nordic-gold-500/10 p-2 rounded-full">
+                                    <Utensils size={18} className="text-nordic-gold-500" />
+                                </div>
+                                <span className="text-sm">Private Chef Access</span>
+                            </div>
+                        </div>
+
+                        <Button variant="outline" icon={<ArrowRight size={18} />}>
+                            Explore Services
+                        </Button>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1 }}
+                        className="relative"
+                    >
+                        <div className="aspect-[4/5] overflow-hidden rounded-lg">
+                            <img
+                                src="https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2070&auto=format&fit=crop"
+                                /* src="/images/home.jpg" */
+                                alt="Coastal Apartment Interior"
+                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                            />
+                        </div>
+                    </motion.div>
+                </div>
+            </Section>
+
+            {/* Hybrid Advantages - Why Nordic Suites? */}
+            <Section className="relative overflow-hidden bg-theme-surface/30">
+                <div className="max-w-4xl mx-auto text-center mb-16">
+                    <h2 className="text-4xl md:text-6xl font-serif text-theme-text mb-6">Redefining the <br /><span className="italic text-nordic-gold-500">Extended Stay</span></h2>
+                    <p className="text-theme-muted text-lg">Experience the perfect synergy of residential privacy and five-star hospitality.</p>
+                </div>
+
+                <motion.div
+                    variants={{
+                        visible: { transition: { staggerChildren: 0.2 } }
+                    }}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="grid grid-cols-1 md:grid-cols-4 gap-8"
+                >
+                    {[
+                        { icon: <Utensils size={32} />, title: "Designer Kitchen", desc: "Full Bosch appliance suite with marble countertops." },
+                        { icon: <Briefcase size={32} />, title: "Executive Office", desc: "Herman Miller seating and 4K thunderbolt displays." },
+                        { icon: <Sparkles size={32} />, title: "Daily Housekeeping", desc: "Immaculate maintenance while you attend to business." },
+                        { icon: <Coffee size={32} />, title: "Resident Lounge", desc: "Private networking space with curated breakfast buffet." }
+                    ].map((feature, idx) => (
+                        <motion.div
+                            key={idx}
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0 }
+                            }}
+                            whileHover={{ y: -10 }}
+                            className="p-8 border border-theme-border hover:border-nordic-gold-500 transition-all group bg-theme-bg"
+                        >
+                            <div className="text-nordic-gold-500 mb-6 group-hover:scale-110 transition-transform duration-300">
+                                {feature.icon}
+                            </div>
+                            <h3 className="text-xl font-serif text-theme-text mb-3">{feature.title}</h3>
+                            <p className="text-theme-muted text-sm leading-relaxed">{feature.desc}</p>
+                        </motion.div>
+                    ))}
+                </motion.div>
+            </Section>
+
+            {/* How It Works - The Process */}
+            <Section>
+                <div className="text-center mb-20">
+                    <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Seamless Living</span>
+                    <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-4">The Nordic Suites Journey</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+                    <div className="hidden md:block absolute top-1/4 left-1/4 right-1/4 h-[1px] bg-theme-border z-0"></div>
+
+                    {[
+                        { icon: <Key size={32} />, title: "1. Keyless Arrival", desc: "Digital check-in and mobile keys ready before you land." },
+                        { icon: <Headset size={32} />, title: "2. Personal Concierge", desc: "Your dedicated point of contact for bookings and bespoke needs." },
+                        { icon: <Clock size={32} />, title: "3. 24/7 Security", desc: "Professional on-site security for total peace of mind." }
+                    ].map((item, idx) => (
+                        <div key={idx} className="relative z-10 flex flex-col items-center text-center">
+                            <div className="w-16 h-16 bg-nordic-gold-500 text-nordic-dark-900 flex items-center justify-center rounded-full mb-6 shadow-lg">
+                                {item.icon}
+                            </div>
+                            <h3 className="text-2xl font-serif text-theme-text mb-4">{item.title}</h3>
+                            <p className="text-theme-muted">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </Section>
+
+            {/* NEW: Arrival Portal Promotion */}
+            <Section className="bg-nordic-dark-900 overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+                    <div className="w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-nordic-gold-500/30 via-transparent to-transparent" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <div className="relative z-10">
+                        <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Smart Concierge</span>
+                        <h2 className="text-4xl md:text-6xl font-serif text-white mt-4 mb-8">
+                            Arrive on your <br /> <span className="italic text-nordic-gold-500">own terms.</span>
+                        </h2>
+                        <p className="text-gray-400 text-lg mb-10 leading-relaxed">
+                            Skip the front desk entirely. Use our interactive 3D arrival portal to select your residence,
+                            verify your stay, and activate your digital door key—all from your mobile device.
+                        </p>
+                        <Group gap="xl">
+                            <Link to="/apartments">
+                                <Button className="bg-nordic-gold-500 text-nordic-dark-900 font-bold px-10 py-4 h-auto text-lg rounded-full hover:bg-white transition-colors">
+                                    Open Arrival Portal
+                                </Button>
+                            </Link>
+                            <div className="flex -space-x-3">
+                                {[1, 2, 3, 4].map(i => (
+                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-nordic-dark-900 overflow-hidden">
+                                        <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Guest" />
+                                    </div>
+                                ))}
+                                <div className="w-10 h-10 rounded-full border-2 border-nordic-dark-900 bg-nordic-gold-500 flex items-center justify-center text-[10px] font-bold text-nordic-dark-900">
+                                    +500
+                                </div>
+                            </div>
+                        </Group>
+                    </div>
+
+                    <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        className="relative"
+                    >
+                        <div className="aspect-square bg-white/5 rounded-3xl backdrop-blur-3xl border border-white/10 p-8 flex flex-col items-center justify-center text-center">
+                            <div className="w-32 h-32 bg-nordic-gold-500 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(212,175,55,0.3)]">
+                                <LogIn size={64} className="text-nordic-dark-900" />
+                            </div>
+                            <Text size="xl" fw={700} c="white" className="font-serif mb-4">Interactive 3D Check-in</Text>
+                            <Text c="dimmed">Visual residence selection & digital key activation</Text>
+                        </div>
+                        {/* Decorative elements */}
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-nordic-gold-500/10 rounded-full blur-3xl" />
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl" />
+                    </motion.div>
+                </div>
+            </Section>
+
+            {/* Featured Suites */}
+            <Section className="bg-theme-surface/50">
+                <div className="flex justify-between items-end mb-16">
+                    <div>
+                        <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Residencies</span>
+                        <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-2">Executive Living</h2>
+                    </div>
+                    <Button variant="outline" className="hidden md:block">View All Apartments</Button>
+                </div>
+
+                <motion.div
+                    variants={{
+                        visible: { transition: { staggerChildren: 0.1 } }
+                    }}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="flex gap-8 overflow-x-auto pb-12 snap-x scrollbar-hide"
+                >
+                    {rooms.map((room) => (
+                        <motion.div
+                            key={room.id}
+                            variants={{
+                                hidden: { opacity: 0, x: 20 },
+                                visible: { opacity: 1, x: 0 }
+                            }}
+                        >
+                            <RoomCard room={room} />
+                        </motion.div>
+                    ))}
+                </motion.div>
+
+                <div className="flex justify-center md:hidden">
+                    <Button variant="outline">View All Apartments</Button>
+                </div>
+            </Section>
+
+            {/* Dining & Wellness Teaser */}
+            <Section>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Dining */}
+                    <div className="group relative h-[600px] overflow-hidden rounded-xl">
+                        <img
+                            src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2574&auto=format&fit=crop"
+                            alt="Dining"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-theme-bg/40 group-hover:bg-theme-bg/60 transition-colors duration-500" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+                            <Utensils size={48} className="text-nordic-gold-500 mb-6 opacity-0 -translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500" />
+                            <h3 className="text-4xl font-serif text-theme-text mb-4">In-Room Dining</h3>
+                            <p className="text-theme-muted mb-8 max-w-xs opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
+                                Michelin-quality meals delivered to your private residence, or visit our sky-bar 10 floors above the sea.
+                            </p>
+                            <Button variant="outline" className="text-theme-text border-theme-border hover:bg-theme-text hover:text-theme-bg">
+                                View Menu
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Wellness */}
+                    <div className="group relative h-[600px] overflow-hidden rounded-xl">
+                        <img
+                            src="https://images.unsplash.com/photo-1583416750470-965b2707b355?q=80&w=2070&auto=format&fit=crop"
+                            alt="Coastal Spa"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-theme-bg/40 group-hover:bg-theme-bg/60 transition-colors duration-500" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+                            <Sparkles size={48} className="text-nordic-gold-500 mb-6 opacity-0 -translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500" />
+                            <h2 className="text-4xl font-serif text-theme-text mb-4">Ocean View Wellness</h2>
+                            <p className="text-theme-muted mb-8 max-w-xs opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
+                                Full-service spa and infinity pool overlooking the horizon, exclusive to guests.
+                            </p>
+                            <Button variant="outline" className="text-theme-text border-theme-border hover:bg-theme-text hover:text-theme-bg">
+                                View Facilities
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </Section>
+        </div>
+    );
+};
+
+export default Home;

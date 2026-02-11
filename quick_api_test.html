@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick API Test</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid #007bff;
+        }
+
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔧 Quick Booking API Test</h1>
+
+    <div class="test">
+        <h3>Test Apartment Booking Endpoint</h3>
+        <button onclick="testBooking()">Test POST /apartments.php/book</button>
+        <div id="result" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        async function testBooking() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Testing...';
+
+            const testData = {
+                unit_id: '1001',
+                user_id: 'test-user-123',
+                user_name: 'Test User',
+                email: 'test@example.com',
+                phone: '+1234567890',
+                check_in: '2026-02-15',
+                check_out: '2026-02-18',
+                adults: 2,
+                children: 0,
+                total_price: 900,
+                flight_number: 'TEST123',
+                arrival_time: '14:00',
+                airport_pickup: false,
+                late_checkout: false,
+                special_requests: 'API test booking'
+            };
+
+            try {
+                const response = await fetch('http://localhost/NORDIC/backend/api/apartments.php/book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `<strong>✅ SUCCESS!</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ API Error</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error</strong><br>${error.message}<br><br>
+                    <strong>Troubleshooting:</strong><br>
+                    1. Is Apache running?<br>
+                    2. Is the path correct? (http://localhost/NORDIC/backend/api/apartments.php)<br>
+                    3. Check browser console for CORS errors`;
+            }
+        }
+    </script>
+</body>
+
+</html>

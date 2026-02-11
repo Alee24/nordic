@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nordic-dark-50: #f4f4f5;
+  --color-nordic-dark-100: #e4e4e7;
+  --color-nordic-dark-200: #d4d4d8;
+  --color-nordic-dark-300: #a1a1aa;
+  --color-nordic-dark-400: #71717a;
+  --color-nordic-dark-500: #52525b;
+  --color-nordic-dark-600: #3f3f46;
+  --color-nordic-dark-700: #27272a;
+  --color-nordic-dark-800: #18181b;
+  --color-nordic-dark-900: #09090b;
+
+  --color-nordic-gold-50: #fbf8eb;
+  --color-nordic-gold-100: #f6f0d3;
+  --color-nordic-gold-200: #ede0a6;
+  --color-nordic-gold-300: #e3cf7a;
+  --color-nordic-gold-500: var(--color-theme-accent);
+  --color-nordic-gold-400: var(--color-theme-accent-hover);
+  --color-nordic-gold-600: #aa8c2c;
+  --color-nordic-gold-700: #806921;
+  --color-nordic-gold-800: #554616;
+  --color-nordic-gold-900: #2b230b;
+
+  --color-nordic-frost: #E1E8ED;
+
+  /* Theme-aware variables */
+  --color-theme-bg: var(--color-bg);
+  --color-theme-text: var(--color-text);
+  --color-theme-muted: var(--color-muted);
+  --color-theme-surface: var(--color-surface);
+  --color-theme-border: var(--color-border);
+  --color-theme-accent: var(--color-accent);
+  --color-theme-accent-hover: var(--color-accent-hover);
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+
+  --backdrop-blur-xs: 2px;
+}
+
+@layer base {
+  :root {
+    --color-bg: #09090b;
+    --color-text: #ffffff;
+    --color-surface: #18181b;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-muted: #a1a1aa;
+    --color-accent: #d4af37;
+    --color-accent-hover: #e3cf7a;
+  }
+
+  /* Mantine's light theme selector */
+  [data-mantine-color-scheme="light"] {
+    --color-bg: #ffffff;
+    --color-text: #09090b;
+    /* Deep graphite for elegant high contrast */
+    --color-surface: #f8fafc;
+    /* Lighter, cleaner surface */
+    --color-border: rgba(0, 0, 0, 0.12);
+    /* Slightly more visible border */
+    --color-muted: #334155;
+    /* Darker slate for better readability */
+    --color-accent: #8c6e00;
+    /* Deeper, more visible gold for light backgrounds */
+    --color-accent-hover: #735a00;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+  }
+}
+
+@layer utilities {
+  .smooth-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .glass-panel {
+    @apply backdrop-blur-md border transition-all duration-300 ease-in-out;
+    border-color: var(--color-border);
+  }
+
+  [data-mantine-color-scheme="dark"] .glass-panel {
+    @apply bg-white/5 border-white/10;
+  }
+
+  [data-mantine-color-scheme="light"] .glass-panel {
+    @apply bg-black/[0.03] border-black/10;
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-nordic-gold-300 via-nordic-gold-500 to-nordic-gold-300;
+  }
+
+  .bg-theme-surface {
+    background-color: var(--color-surface);
+  }
+}
