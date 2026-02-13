@@ -53,10 +53,10 @@ export const suites = [
     },
     {
         id: 3,
-        slug: 'nordic-suites-penthouse',
-        name: 'Nordic Suites Penthouse',
+        slug: 'norden-suits-penthouse',
+        name: 'Norden Suits Penthouse',
         description: 'Double-height residence on the 30th floor with private infinity pool and panoramic ocean views.',
-        longDescription: 'The crown jewel of Nordic Suites. This double-height penthouse on the 30th floor offers an unparalleled living experience. With a private infinity pool that seems to merge with the Indian Ocean, and interiors designed by world-renowned architects, this residence is reserved for those who seek the extraordinary.',
+        longDescription: 'The crown jewel of Norden Suits. This double-height penthouse on the 30th floor offers an unparalleled living experience. With a private infinity pool that seems to merge with the Indian Ocean, and interiors designed by world-renowned architects, this residence is reserved for those who seek the extraordinary.',
         price: 650,
         image: '/images/home.jpg',
         images: [
@@ -108,7 +108,7 @@ export const suites = [
         slug: 'long-stay-loft',
         name: 'Long-Stay Loft',
         description: 'Designed for month-long stays with ample storage and home-office setup.',
-        longDescription: 'The Long-Stay Loft is tailor-made for those who wish to call Nordic Suites home for extended periods. Featuring ample storage space and a sophisticated home-office setup, it allows you to maintain your lifestyle and productivity while enjoying all the services of a luxury residence.',
+        longDescription: 'The Long-Stay Loft is tailor-made for those who wish to call Norden Suits home for extended periods. Featuring ample storage space and a sophisticated home-office setup, it allows you to maintain your lifestyle and productivity while enjoying all the services of a luxury residence.',
         price: 200,
         image: '/images/home.jpg',
         images: [

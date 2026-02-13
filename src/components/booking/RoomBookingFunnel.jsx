@@ -117,7 +117,7 @@ const RoomBookingFunnel = ({ opened, onClose, preselectedRoom = null }) => {
                 <Group justify="space-between">
                     <Box>
                         <Title order={2} className="font-serif italic text-3xl text-white">Book Your Stay</Title>
-                        <Text size="sm" className="text-nordic-gold-400/80">Experience luxury at Nordic Sweets.</Text>
+                        <Text size="sm" className="text-norden-gold-400/80">Experience luxury at Norden Suits.</Text>
                     </Box>
                     <Button variant="subtle" color="gray" onClick={handleClose} radius="xl">CLOSE</Button>
                 </Group>
@@ -175,7 +175,7 @@ const RoomBookingFunnel = ({ opened, onClose, preselectedRoom = null }) => {
                                                 <div
                                                     onClick={() => handleSelectRoom(room)}
                                                     className={`cursor-pointer transition-all ${activeBooking?.suite?.id === room.id
-                                                        ? 'ring-2 ring-nordic-gold-500 rounded-xl transform scale-[1.02]'
+                                                        ? 'ring-2 ring-norden-gold-500 rounded-xl transform scale-[1.02]'
                                                         : ''
                                                         }`}
                                                 >
@@ -270,7 +270,7 @@ const RoomBookingFunnel = ({ opened, onClose, preselectedRoom = null }) => {
                             onClick={nextStep}
                             loading={isLoading}
                             rightSection={<IconChevronRight size={16} />}
-                            className="bg-nordic-gold text-nordic-dark hover:bg-nordic-gold/90"
+                            className="bg-norden-gold text-norden-dark hover:bg-norden-gold/90"
                         >
                             {active === 2 ? 'CONFIRM BOOKING' : 'CONTINUE'}
                         </Button>

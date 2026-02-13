@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-nordic-dark-50: #f4f4f5;
-  --color-nordic-dark-100: #e4e4e7;
-  --color-nordic-dark-200: #d4d4d8;
-  --color-nordic-dark-300: #a1a1aa;
-  --color-nordic-dark-400: #71717a;
-  --color-nordic-dark-500: #52525b;
-  --color-nordic-dark-600: #3f3f46;
-  --color-nordic-dark-700: #27272a;
-  --color-nordic-dark-800: #18181b;
-  --color-nordic-dark-900: #09090b;
+  --color-norden-dark-50: #f4f4f5;
+  --color-norden-dark-100: #e4e4e7;
+  --color-norden-dark-200: #d4d4d8;
+  --color-norden-dark-300: #a1a1aa;
+  --color-norden-dark-400: #71717a;
+  --color-norden-dark-500: #52525b;
+  --color-norden-dark-600: #3f3f46;
+  --color-norden-dark-700: #27272a;
+  --color-norden-dark-800: #18181b;
+  --color-norden-dark-900: #09090b;
 
-  --color-nordic-gold-50: #fbf8eb;
-  --color-nordic-gold-100: #f6f0d3;
-  --color-nordic-gold-200: #ede0a6;
-  --color-nordic-gold-300: #e3cf7a;
-  --color-nordic-gold-500: var(--color-theme-accent);
-  --color-nordic-gold-400: var(--color-theme-accent-hover);
-  --color-nordic-gold-600: #aa8c2c;
-  --color-nordic-gold-700: #806921;
-  --color-nordic-gold-800: #554616;
-  --color-nordic-gold-900: #2b230b;
+  --color-norden-gold-50: #fbf8eb;
+  --color-norden-gold-100: #f6f0d3;
+  --color-norden-gold-200: #ede0a6;
+  --color-norden-gold-300: #e3cf7a;
+  --color-norden-gold-500: var(--color-theme-accent);
+  --color-norden-gold-400: var(--color-theme-accent-hover);
+  --color-norden-gold-600: #aa8c2c;
+  --color-norden-gold-700: #806921;
+  --color-norden-gold-800: #554616;
+  --color-norden-gold-900: #2b230b;
 
-  --color-nordic-frost: #E1E8ED;
+  --color-norden-frost: #E1E8ED;
 
   /* Theme-aware variables */
   --color-theme-bg: var(--color-bg);
@@ -67,7 +67,7 @@
     --color-surface: #FFFFFF;
     /* High-end Surface */
     --color-border: #E1E8ED;
-    /* Nordic Frost border */
+    /* Norden Frost border */
     --color-muted: #5C5F66;
     --color-accent: #C49B2D;
     /* Optimized Gold for Light */
@@ -112,7 +112,7 @@
   }
 
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-nordic-gold-300 via-nordic-gold-500 to-nordic-gold-300;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-norden-gold-300 via-norden-gold-500 to-norden-gold-300;
   }
 
   .bg-theme-surface {

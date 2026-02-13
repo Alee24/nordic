@@ -59,7 +59,7 @@ const InvoiceService = {
 
       <div style="font-size: 10px; color: #888; text-align: center; border-top: 1px solid #eee; pt: 20px;">
         <p>KRA PIN: P051XXXXX</p>
-        <p>Thank you for choosing Nordic Suites. Your luxury experience awaits.</p>
+        <p>Thank you for choosing Norden Suits. Your luxury experience awaits.</p>
       </div>
     `;
 
@@ -74,7 +74,7 @@ const InvoiceService = {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`NordicSuites_Invoice_${bookingData.id.slice(0, 8)}.pdf`);
+      pdf.save(`Norden_Suits_Invoice_${bookingData.id.slice(0, 8)}.pdf`);
     } finally {
       document.body.removeChild(element);
     }

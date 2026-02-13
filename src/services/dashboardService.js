@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8569/backend/a
 // Create axios instance with default config
 const api = axios.create({
     baseURL: API_URL,
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -221,6 +222,65 @@ export const dashboardService = {
                 success: false,
                 error: error.response?.data?.message || 'Failed to finalize check-in'
             };
+        }
+    },
+
+    /**
+     * Upload room image
+     * @param {File} file 
+     */
+    uploadImage: async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            const response = await api.post('/upload_image.php', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            console.error('Upload Image Error:', error);
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Failed to upload image'
+            };
+        }
+    },
+
+    /**
+     * Get system settings
+     */
+    getSettings: async (category = null) => {
+        try {
+            const response = await api.get(`/settings.php${category ? `?category=${category}` : ''}`);
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Failed to fetch settings' };
+        }
+    },
+
+    /**
+     * Update a system setting
+     */
+    updateSetting: async (key, value, category = 'general') => {
+        try {
+            const response = await api.post('/settings.php', { key, value, category });
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Failed to update setting' };
+        }
+    },
+
+    /**
+     * Get flights data via AviationStack proxy
+     */
+    getFlights: async (params = {}) => {
+        try {
+            const response = await api.get('/aviation.php', { params: { action: 'flights', ...params } });
+            return { success: true, data: response.data };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Failed to fetch flight data' };
         }
     }
 };

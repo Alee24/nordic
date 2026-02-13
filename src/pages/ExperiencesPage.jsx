@@ -46,12 +46,12 @@ const ExperiencesPage = () => {
                     className="text-center mb-16 max-w-4xl mx-auto"
                 >
                     <div className="flex items-center justify-center gap-4 mb-6">
-                        <div className="h-[1px] w-12 bg-nordic-gold-500"></div>
-                        <span className="text-nordic-gold-500 uppercase tracking-[0.2em] text-sm font-bold">Discover The Coast</span>
-                        <div className="h-[1px] w-12 bg-nordic-gold-500"></div>
+                        <div className="h-[1px] w-12 bg-norden-gold-500"></div>
+                        <span className="text-norden-gold-500 uppercase tracking-[0.2em] text-sm font-bold">Discover The Coast</span>
+                        <div className="h-[1px] w-12 bg-norden-gold-500"></div>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-serif text-theme-text mb-8">
-                        The Spirit of <span className="italic text-nordic-gold-500">Nyali</span>
+                        The Spirit of <span className="italic text-norden-gold-500">Nyali</span>
                     </h1>
                     <p className="text-theme-muted text-lg md:text-xl leading-relaxed">
                         Beyond the comfort of your residence lies the magic of the Swahili coast.
@@ -84,13 +84,13 @@ const ExperiencesPage = () => {
                                     {/* Floating Tag */}
                                     <div className="absolute bottom-6 left-6 z-20">
                                         <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full flex items-center gap-3 shadow-lg">
-                                            <span className="text-nordic-gold-600">{exp.icon}</span>
-                                            <span className="text-xs font-bold tracking-widest uppercase text-nordic-dark-900">{exp.tag}</span>
+                                            <span className="text-norden-gold-600">{exp.icon}</span>
+                                            <span className="text-xs font-bold tracking-widest uppercase text-norden-dark-900">{exp.tag}</span>
                                         </div>
                                     </div>
                                 </div>
                                 {/* Decorative elements */}
-                                <div className={`absolute -bottom-6 -right-6 w-24 h-24 border-2 border-nordic-gold-500/30 rounded-full -z-10 hidden lg:block ${index % 2 === 1 ? 'left-auto right-[-24px]' : 'right-auto left-[-24px]'}`} />
+                                <div className={`absolute -bottom-6 -right-6 w-24 h-24 border-2 border-norden-gold-500/30 rounded-full -z-10 hidden lg:block ${index % 2 === 1 ? 'left-auto right-[-24px]' : 'right-auto left-[-24px]'}`} />
                             </div>
 
                             {/* Content Side */}
@@ -102,7 +102,7 @@ const ExperiencesPage = () => {
                                 <div className="pt-4 flex justify-center lg:justify-start">
                                     <Button
                                         variant="outline"
-                                        className="group border-theme-border text-theme-text hover:bg-nordic-gold-500 hover:text-white hover:border-nordic-gold-500"
+                                        className="group border-theme-border text-theme-text hover:bg-norden-gold-500 hover:text-white hover:border-norden-gold-500"
                                         rightSection={<ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
                                     >
                                         Inquire Concierge
@@ -116,7 +116,7 @@ const ExperiencesPage = () => {
 
             {/* CTA Section */}
             <Section className="pb-32">
-                <div className="bg-nordic-dark-900 rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">
+                <div className="bg-norden-dark-900 rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">
                     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                     <div className="relative z-10 max-w-3xl mx-auto space-y-8">
                         <h2 className="text-4xl md:text-5xl font-serif text-white">Create Your Own Story</h2>
@@ -124,7 +124,7 @@ const ExperiencesPage = () => {
                             Our Experiences Team is on hand to design a custom itinerary for your stay.
                             From private chefs to helicopter tours, anything is possible.
                         </p>
-                        <Button className="bg-nordic-gold-500 text-nordic-dark-900 font-bold px-10 py-4 h-auto text-lg hover:bg-white hover:text-nordic-dark-900">
+                        <Button className="bg-norden-gold-500 text-norden-dark-900 font-bold px-10 py-4 h-auto text-lg hover:bg-white hover:text-norden-dark-900">
                             Contact Experiences Team
                         </Button>
                     </div>

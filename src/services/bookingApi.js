@@ -1,35 +1,56 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_BOOKING_API_URL || 'http://localhost:8569/nordic/backend/api/booking.php';
+// Use the Node.js API server
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8543/api';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
+    timeout: 10000, // 10 second timeout
 });
+
+// Add request interceptor for debugging
+api.interceptors.request.use(
+    (config) => {
+        console.log('API Request:', config.method.toUpperCase(), config.url);
+        return config;
+    },
+    (error) => {
+        console.error('Request Error:', error);
+        return Promise.reject(error);
+    }
+);
+
+// Add response interceptor for debugging
+api.interceptors.response.use(
+    (response) => {
+        console.log('API Response:', response.status, response.data);
+        return response;
+    },
+    (error) => {
+        console.error('Response Error:', error.response || error.message);
+        return Promise.reject(error);
+    }
+);
 
 // Error handler
 const handleError = (error) => {
     if (error.response) {
-        throw new Error(error.response.data.message || 'An error occurred');
+        // Server responded with error
+        const message = error.response.data?.message || error.response.data?.error || 'Server error occurred';
+        throw new Error(message);
     } else if (error.request) {
-        throw new Error('No response from server');
+        // No response received
+        throw new Error('No response from server. Please check if the API server is running.');
     } else {
-        throw new Error(error.message);
+        // Request setup error
+        throw new Error(error.message || 'An unexpected error occurred');
     }
 };
 
-// SEARCH & PROPERTIES
-export const searchProperties = async (filters) => {
-    try {
-        const response = await api.get('/search', { params: filters });
-        return response.data;
-    } catch (error) {
-        handleError(error);
-    }
-};
-
+// PROPERTIES
 export const getAllProperties = async (filters = {}) => {
     try {
         const response = await api.get('/properties', { params: filters });
@@ -48,6 +69,7 @@ export const getPropertyById = async (propertyId) => {
     }
 };
 
+// ROOMS
 export const getRoomsByProperty = async (propertyId, checkIn, checkOut) => {
     try {
         const params = {};
@@ -82,27 +104,8 @@ export const createBooking = async (bookingData) => {
 
 export const getMyBookings = async (userId) => {
     try {
-        const response = await api.get('/my-bookings', { params: { user_id: userId } });
-        return response.data;
-    } catch (error) {
-        handleError(error);
-    }
-};
-
-// REVIEWS
-export const submitReview = async (reviewData) => {
-    try {
-        const response = await api.post('/reviews', reviewData);
-        return response.data;
-    } catch (error) {
-        handleError(error);
-    }
-};
-
-export const getPropertyReviews = async (propertyId, limit = 10, offset = 0) => {
-    try {
-        const response = await api.get(`/properties/${propertyId}/reviews`, {
-            params: { limit, offset }
+        const response = await api.get('/my-bookings', {
+            params: { user_id: userId }
         });
         return response.data;
     } catch (error) {
@@ -110,37 +113,19 @@ export const getPropertyReviews = async (propertyId, limit = 10, offset = 0) => 
     }
 };
 
-export const getPropertyRatings = async (propertyId) => {
+export const getBookingById = async (bookingId) => {
     try {
-        const response = await api.get(`/properties/${propertyId}/ratings`);
+        const response = await api.get(`/bookings/${bookingId}`);
         return response.data;
     } catch (error) {
         handleError(error);
     }
 };
 
-// USER
-export const registerUser = async (userData) => {
+// SEARCH
+export const searchProperties = async (filters) => {
     try {
-        const response = await api.post('/users/register', userData);
-        return response.data;
-    } catch (error) {
-        handleError(error);
-    }
-};
-
-export const loginUser = async (email, password) => {
-    try {
-        const response = await api.post('/users/login', { email, password });
-        return response.data;
-    } catch (error) {
-        handleError(error);
-    }
-};
-
-export const getUserProfile = async (userId) => {
-    try {
-        const response = await api.get(`/users/${userId}`);
+        const response = await api.get('/search', { params: filters });
         return response.data;
     } catch (error) {
         handleError(error);
@@ -148,17 +133,12 @@ export const getUserProfile = async (userId) => {
 };
 
 export default {
-    searchProperties,
     getAllProperties,
     getPropertyById,
     getRoomsByProperty,
     getRoomDetails,
     createBooking,
     getMyBookings,
-    submitReview,
-    getPropertyReviews,
-    getPropertyRatings,
-    registerUser,
-    loginUser,
-    getUserProfile,
+    getBookingById,
+    searchProperties,
 };

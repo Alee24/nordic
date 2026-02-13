@@ -85,7 +85,7 @@ const MOCK_ROOMS = [
 const Rooms = () => {
     const [loading, setLoading] = useState(true);
     const [rooms, setRooms] = useState([]);
-    const [demoMode, setDemoMode] = useState(true);
+    const [demoMode, setDemoMode] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [opened, { open, close }] = useDisclosure(false);
     const [isEdit, setIsEdit] = useState(false);
@@ -260,16 +260,16 @@ const Rooms = () => {
                     <Text size="sm" c="dimmed">Manage building suites, pricing, and amenities.</Text>
                 </Box>
                 <Group gap="sm">
-                    <div className="flex bg-gray-100 p-1 rounded-lg opacity-80 cursor-not-allowed">
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all text-gray-400 bg-transparent"
+                            onClick={() => setDemoMode(false)}
+                            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${!demoMode ? 'bg-white shadow text-blue-600' : 'text-gray-400 bg-transparent hover:text-gray-600'}`}
                         >
                             LIVE
                         </button>
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all bg-white shadow text-blue-600"
+                            onClick={() => setDemoMode(true)}
+                            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${demoMode ? 'bg-white shadow text-blue-600' : 'text-gray-400 bg-transparent hover:text-gray-600'}`}
                         >
                             DEMO
                         </button>

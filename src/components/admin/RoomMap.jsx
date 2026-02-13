@@ -60,7 +60,7 @@ const RoomCard = ({ roomNumber, status, onStatusChange }) => {
                     </Group>
 
                     <Group justify="space-between" align="center">
-                        <IconBed size={16} className="text-nordic-frost/40" />
+                        <IconBed size={16} className="text-norden-frost/40" />
                         <Group gap={4} opacity={0.3}>
                             <Text size="10px">SWIPE</Text>
                             <IconChevronRight size={10} />
@@ -92,11 +92,11 @@ const RoomMap = () => {
         <Stack gap="xl">
             <Group justify="space-between">
                 <Box>
-                    <Text size="xs" tt="uppercase" lts={2} fw={700} className="text-nordic-gold mb-1">Interactive Map</Text>
+                    <Text size="xs" tt="uppercase" lts={2} fw={700} className="text-norden-gold mb-1">Interactive Map</Text>
                     <Title order={3} className="font-serif italic">Operational Grid</Title>
                 </Box>
                 <Group gap="xs">
-                    <IconSwipe size={16} className="text-nordic-gold/60" />
+                    <IconSwipe size={16} className="text-norden-gold/60" />
                     <Text size="xs" opacity={0.5}>Swipe Right for Ready | Left for Cleanup</Text>
                 </Group>
             </Group>

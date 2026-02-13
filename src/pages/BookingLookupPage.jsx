@@ -24,7 +24,7 @@ const BookingLookupPage = () => {
         setLoading(true);
         try {
             const response = await axios.get(
-                `http://localhost/NORDIC/backend/api/bookings.php/lookup`,
+                `${import.meta.env.VITE_BOOKING_API_URL || 'http://localhost:8569/backend/api/booking.php'}/lookup`,
                 {
                     params: { booking_id: bookingId, email: email }
                 }
@@ -83,7 +83,7 @@ const BookingLookupPage = () => {
                 <Stack gap="xl">
                     {/* Header */}
                     <div className="text-center">
-                        <Text size="xs" fw={900} tt="uppercase" c="nordic-gold-500" mb="xs">Guest Services</Text>
+                        <Text size="xs" fw={900} tt="uppercase" c="norden-gold-500" mb="xs">Guest Services</Text>
                         <h1 className="text-4xl md:text-5xl font-serif text-theme-text font-bold mb-4">
                             Retrieve Your Booking
                         </h1>
@@ -119,7 +119,7 @@ const BookingLookupPage = () => {
                                 fullWidth
                                 onClick={handleLookup}
                                 loading={loading}
-                                className="bg-nordic-gold-500 hover:bg-nordic-gold-600 text-nordic-dark-900 font-bold"
+                                className="bg-norden-gold-500 hover:bg-norden-gold-600 text-norden-dark-900 font-bold"
                             >
                                 Find My Booking
                             </Button>
@@ -150,7 +150,7 @@ const BookingLookupPage = () => {
                                 {/* Unit Details */}
                                 <div>
                                     <Group gap="xs" mb="xs">
-                                        <IconHome size={20} className="text-nordic-gold-500" />
+                                        <IconHome size={20} className="text-norden-gold-500" />
                                         <Text fw={700} size="lg">Accommodation Details</Text>
                                     </Group>
                                     <Stack gap="xs">
@@ -176,7 +176,7 @@ const BookingLookupPage = () => {
                                 {/* Stay Details */}
                                 <div>
                                     <Group gap="xs" mb="xs">
-                                        <IconCalendar size={20} className="text-nordic-gold-500" />
+                                        <IconCalendar size={20} className="text-norden-gold-500" />
                                         <Text fw={700} size="lg">Stay Details</Text>
                                     </Group>
                                     <Stack gap="xs">
@@ -212,12 +212,12 @@ const BookingLookupPage = () => {
                                 {/* Payment Details */}
                                 <div>
                                     <Group gap="xs" mb="xs">
-                                        <IconCurrencyDollar size={20} className="text-nordic-gold-500" />
+                                        <IconCurrencyDollar size={20} className="text-norden-gold-500" />
                                         <Text fw={700} size="lg">Payment Information</Text>
                                     </Group>
                                     <Group justify="apart" align="center">
                                         <Text c="dimmed">Total Amount</Text>
-                                        <Text size="2xl" fw={900} className="text-nordic-gold-500">
+                                        <Text size="2xl" fw={900} className="text-norden-gold-500">
                                             ${booking.total_price?.toLocaleString()}
                                         </Text>
                                     </Group>
@@ -242,8 +242,8 @@ const BookingLookupPage = () => {
                     <Paper p="md" className="bg-theme-surface/50 border border-theme-border">
                         <Text size="sm" c="dimmed" ta="center">
                             <strong>Need help?</strong> Contact our concierge team at{' '}
-                            <a href="mailto:concierge@nordicsuites.com" className="text-nordic-gold-500 hover:underline">
-                                concierge@nordicsuites.com
+                            <a href="mailto:concierge@nordensuits.com" className="text-norden-gold-500 hover:underline">
+                                concierge@nordensuits.com
                             </a>
                         </Text>
                     </Paper>

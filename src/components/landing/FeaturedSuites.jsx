@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 
 const featuredSuites = [
     {
-        id: 'nordic-sky',
-        title: 'Nordic Sky Penthouse',
+        id: 'norden-sky',
+        title: 'Norden Sky Penthouse',
         price: 450,
         description: 'Experience the pinnacle of Arctic living with a 360-degree view of the aurora.',
         images: ['https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?q=80&w=2071&auto=format&fit=crop'],
@@ -28,11 +28,11 @@ const featuredSuites = [
 
 const FeaturedSuites = () => {
     return (
-        <Box className="bg-nordic-dark py-32">
+        <Box className="bg-norden-dark py-32">
             <Container size="xl">
                 <Group justify="space-between" align="flex-end" mb={60}>
                     <Stack gap="xs">
-                        <Text className="text-nordic-gold font-bold tracking-[0.4em] text-xs">THE COLLECTION</Text>
+                        <Text className="text-norden-gold font-bold tracking-[0.4em] text-xs">THE COLLECTION</Text>
                         <Title order={2} className="font-serif italic text-5xl">Curated Sanctuaries</Title>
                     </Stack>
                     <Button

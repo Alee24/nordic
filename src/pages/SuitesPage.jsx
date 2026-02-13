@@ -14,7 +14,7 @@ const SuitesPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-16"
                 >
-                    <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Luxury Living</span>
+                    <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Luxury Living</span>
                     <h1 className="text-5xl md:text-7xl font-serif text-theme-text mt-4 mb-6">Luxury Residences</h1>
                     <p className="text-theme-text/80 max-w-2xl mx-auto text-lg">
                         More than a hotel room. Fully serviced luxury apartments designed for living, working, and breathtaking views of the Nyali coast.

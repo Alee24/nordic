@@ -23,7 +23,9 @@ import {
     IconBell,
     IconSearch,
     IconMenu2,
-    IconDoorEnter
+    IconDoorEnter,
+    IconCurrencyDollar,
+    IconPlaneDeparture
 } from '@tabler/icons-react';
 
 // Components (We will create these next)
@@ -33,11 +35,20 @@ import Rooms from './Rooms';
 import CheckInManagement from './CheckInManagement';
 import Guests from './Guests';
 import Settings from './Settings';
+import PaymentSettingsPage from './PaymentSettingsPage';
+import FlightTracker from './FlightTracker';
+import useManagementStore from '../../store/useManagementStore';
 
 const Dashboard = ({ onExit }) => {
+    const { user, logout } = useManagementStore();
     const [opened, { toggle }] = useDisclosure();
     const theme = useMantineTheme();
     const [active, setActive] = useState('Overview');
+
+    const handleLogout = async () => {
+        await logout();
+        onExit();
+    };
 
     const links = [
         { icon: IconLayoutDashboard, label: 'Overview' },
@@ -45,6 +56,8 @@ const Dashboard = ({ onExit }) => {
         { icon: IconCalendarEvent, label: 'Bookings' },
         { icon: IconBed, label: 'Rooms' },
         { icon: IconUser, label: 'Guests' },
+        { icon: IconPlaneDeparture, label: 'Flights' },
+        { icon: IconCurrencyDollar, label: 'Payments' },
         { icon: IconSettings, label: 'Settings' },
     ];
 
@@ -73,6 +86,10 @@ const Dashboard = ({ onExit }) => {
                 return <Rooms />;
             case 'Guests':
                 return <Guests />;
+            case 'Flights':
+                return <FlightTracker />;
+            case 'Payments':
+                return <PaymentSettingsPage />;
             case 'Settings':
                 return <Settings />;
             default:
@@ -114,13 +131,14 @@ const Dashboard = ({ onExit }) => {
                         <div className="h-8 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2"></div>
 
                         <UnstyledButton
-                            onClick={onExit}
                             className="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
-                            <Avatar radius="xl" size="md" src={null} color="blue">AD</Avatar>
+                            <Avatar radius="xl" size="md" src={null} color="blue">
+                                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                            </Avatar>
                             <div className="hidden sm:block text-left">
-                                <Text size="sm" fw={600} lh={1}>Admin User</Text>
-                                <Text size="xs" c="dimmed" lh={1} mt={2}>Manager</Text>
+                                <Text size="sm" fw={600} lh={1}>{user?.first_name} {user?.last_name}</Text>
+                                <Text size="xs" c="dimmed" lh={1} mt={2}>{user?.account_type}</Text>
                             </div>
                         </UnstyledButton>
                     </Group>
@@ -141,7 +159,7 @@ const Dashboard = ({ onExit }) => {
                     <NavLink
                         label="Log Out & Return"
                         leftSection={<IconLogout size="1.2rem" stroke={1.5} />}
-                        onClick={onExit}
+                        onClick={handleLogout}
                         variant="subtle"
                         color="red"
                         className="rounded-md font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10"

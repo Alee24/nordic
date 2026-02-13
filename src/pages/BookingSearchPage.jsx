@@ -86,7 +86,7 @@ const BookingSearchPage = () => {
                     <Group justify="space-between" mt="md">
                         <div>
                             <Text size="xs" c="dimmed">From</Text>
-                            <Text size="xl" fw={700} className="text-nordic-gold-500">
+                            <Text size="xl" fw={700} className="text-norden-gold-500">
                                 ${property.price_from}
                             </Text>
                             <Text size="xs" c="dimmed">per night</Text>
@@ -94,7 +94,7 @@ const BookingSearchPage = () => {
                         <Button
                             variant="filled"
                             color="gold"
-                            className="bg-nordic-gold-500 hover:bg-nordic-gold-400"
+                            className="bg-norden-gold-500 hover:bg-norden-gold-400"
                         >
                             View Details
                         </Button>
@@ -113,7 +113,7 @@ const BookingSearchPage = () => {
     return (
         <div className="bg-theme-bg min-h-screen pt-20">
             {/* Search Bar */}
-            <div className="bg-gradient-to-r from-nordic-dark-800 to-nordic-dark-900 py-12">
+            <div className="bg-gradient-to-r from-norden-dark-800 to-norden-dark-900 py-12">
                 <Container size="xl">
                     <Stack gap="lg">
                         <Text size="xl" fw={700} className="text-white text-center">
@@ -156,7 +156,7 @@ const BookingSearchPage = () => {
                                     <Button
                                         fullWidth
                                         leftSection={<IconSearch size={18} />}
-                                        className="bg-nordic-gold-500 hover:bg-nordic-gold-400"
+                                        className="bg-norden-gold-500 hover:bg-norden-gold-400"
                                         onClick={handleSearch}
                                         loading={isSearching}
                                     >

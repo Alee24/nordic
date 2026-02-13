@@ -1,6 +1,6 @@
 import { createTheme } from '@mantine/core';
 
-export const nordicTheme = createTheme({
+export const nordenTheme = createTheme({
     primaryColor: 'gold',
     colors: {
         // Custom colors matching the palette

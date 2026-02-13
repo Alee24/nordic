@@ -109,7 +109,7 @@ const ApartmentBookingModal = ({ opened, onClose, unit, onSuccess }) => {
                     <Grid.Col span={{ base: 12, md: 6 }}>
                         <Stack spacing="md">
                             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                <Text fw={700} size="lg" className="font-serif text-nordic-dark-900">Unit {unit?.id}</Text>
+                                <Text fw={700} size="lg" className="font-serif text-norden-dark-900">Unit {unit?.id}</Text>
                                 <Group justify="space-between">
                                     <Text size="sm" c="dimmed">Floor {Math.floor(unit?.id / 100)} • {unit?.view_type === 'ocean' ? 'Ocean View' : 'City View'}</Text>
                                     <Text fw={700} c="orange" size="lg">${unit?.base_price} <span className="text-xs text-gray-500 font-normal">/ night</span></Text>
@@ -222,7 +222,7 @@ const ApartmentBookingModal = ({ opened, onClose, unit, onSuccess }) => {
                 <Group justify="space-between" align="center">
                     <div>
                         <Text size="sm" c="dimmed">Total Estimated Cost</Text>
-                        <Text size="3xl" fw={700} className="font-serif text-nordic-gold-600">
+                        <Text size="3xl" fw={700} className="font-serif text-norden-gold-600">
                             ${totalPrice.toLocaleString()}
                         </Text>
                         {(form.values.airport_pickup || form.values.late_checkout) && (
@@ -234,7 +234,7 @@ const ApartmentBookingModal = ({ opened, onClose, unit, onSuccess }) => {
                         size="lg"
                         color="yellow"
                         loading={loading}
-                        className="bg-nordic-gold-500 text-nordic-dark-900 font-bold px-8 hover:bg-nordic-gold-400 transition-colors"
+                        className="bg-norden-gold-500 text-norden-dark-900 font-bold px-8 hover:bg-norden-gold-400 transition-colors"
                     >
                         Request Booking
                     </Button>

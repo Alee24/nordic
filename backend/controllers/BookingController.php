@@ -7,8 +7,7 @@ class BookingController {
     private $conn;
 
     public function __construct() {
-        $this->db = new Database();
-        $this->conn = $this->db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
     }
 
     /**
@@ -18,14 +17,19 @@ class BookingController {
         try {
             $query = "
                 SELECT 
-                    b.*,
-                    g.full_name as guest_name,
-                    g.email as guest_email,
-                    s.title as suite_name,
-                    s.price_per_night
+                    b.id,
+                    b.guest_name,
+                    b.guest_email,
+                    b.guest_phone,
+                    b.booking_reference,
+                    b.check_in,
+                    b.check_out,
+                    b.booking_status as status,
+                    b.payment_status,
+                    b.total_amount as total_price,
+                    r.name as suite_name
                 FROM bookings b
-                LEFT JOIN guests g ON b.guest_id = g.id
-                LEFT JOIN suites s ON b.suite_id = s.id
+                LEFT JOIN rooms r ON b.room_id = r.id
                 WHERE 1=1
             ";
 
@@ -33,7 +37,7 @@ class BookingController {
 
             // Apply filters
             if (!empty($filters['status'])) {
-                $query .= " AND b.status = :status";
+                $query .= " AND b.booking_status = :status";
                 $params[':status'] = $filters['status'];
             }
 
@@ -53,7 +57,7 @@ class BookingController {
             }
 
             if (!empty($filters['search'])) {
-                $query .= " AND (g.full_name LIKE :search OR g.email LIKE :search OR s.title LIKE :search)";
+                $query .= " AND (b.guest_name LIKE :search OR b.guest_email LIKE :search OR r.name LIKE :search)";
                 $params[':search'] = '%' . $filters['search'] . '%';
             }
 
@@ -66,7 +70,7 @@ class BookingController {
             }
 
             $stmt->execute();
-            $bookings = $stmt->fetchAll();
+            $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             sendSuccess($bookings, 'Bookings retrieved successfully');
 
@@ -84,21 +88,16 @@ class BookingController {
             $query = "
                 SELECT 
                     b.*,
-                    g.full_name as guest_name,
-                    g.email as guest_email,
-                    g.id_proof_url,
-                    g.signature_url,
-                    g.flight_number,
-                    g.preferred_vehicle,
-                    s.title as suite_name,
-                    s.description as suite_description,
-                    s.price_per_night,
-                    s.capacity,
-                    s.features,
-                    s.images
+                    b.booking_status as status,
+                    b.total_amount as total_price,
+                    r.name as suite_name,
+                    r.description as suite_description,
+                    r.base_price as price_per_night,
+                    r.max_occupancy as capacity,
+                    r.amenities as features,
+                    r.photos as images
                 FROM bookings b
-                LEFT JOIN guests g ON b.guest_id = g.id
-                LEFT JOIN suites s ON b.suite_id = s.id
+                LEFT JOIN rooms r ON b.room_id = r.id
                 WHERE b.id = :booking_id
             ";
 
@@ -106,10 +105,10 @@ class BookingController {
             $stmt->bindParam(':booking_id', $bookingId);
             $stmt->execute();
 
-            $booking = $stmt->fetch();
+            $booking = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$booking) {
-                sendError('Booking not found', 404);
+                sendError('Booking found', 404);
             }
 
             // Parse JSON fields
@@ -134,7 +133,7 @@ class BookingController {
     public function createBooking($data) {
         try {
             // Validate required fields
-            $requiredFields = ['guest_id', 'suite_id', 'check_in', 'check_out'];
+            $requiredFields = ['room_id', 'check_in', 'check_out', 'guest_name', 'guest_email'];
             $errors = validateRequired($data, $requiredFields);
 
             if (!empty($errors)) {
@@ -150,16 +149,16 @@ class BookingController {
                 sendError('Check-out date must be after check-in date', 400);
             }
 
-            // Get suite details
-            $suiteQuery = "SELECT * FROM suites WHERE id = :suite_id";
-            $suiteStmt = $this->conn->prepare($suiteQuery);
-            $suiteStmt->bindParam(':suite_id', $data['suite_id']);
-            $suiteStmt->execute();
+            // Get room details
+            $roomQuery = "SELECT * FROM rooms WHERE id = :room_id";
+            $roomStmt = $this->conn->prepare($roomQuery);
+            $roomStmt->bindParam(':room_id', $data['room_id']);
+            $roomStmt->execute();
 
-            $suite = $suiteStmt->fetch();
+            $room = $roomStmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$suite) {
-                sendError('Suite not found', 404);
+            if (!$room) {
+                sendError('Room not found', 404);
             }
 
             // Calculate total price
@@ -171,44 +170,42 @@ class BookingController {
                 sendError('Invalid date range', 400);
             }
 
-            $totalPrice = $nights * $suite['price_per_night'];
+            $totalPrice = $nights * $room['base_price'];
 
-            // Generate booking ID
-            $bookingId = $this->generateUUID();
-
-            // Generate Access Token (QR Key)
-            $accessToken = bin2hex(random_bytes(16));
-            $tokenExpiry = $data['check_out'] . ' 11:00:00'; // Default checkout time 11 AM
+            // Generate booking reference
+            $bookingRef = 'BR-' . strtoupper(bin2hex(random_bytes(4)));
 
             // Insert booking
             $insertQuery = "
                 INSERT INTO bookings 
-                (id, guest_id, suite_id, check_in, check_out, status, total_price, payment_status, created_at, access_token, access_token_expiry, is_token_active)
+                (booking_reference, property_id, room_id, guest_name, guest_email, guest_phone, check_in, check_out, total_amount, booking_status, payment_status, created_at)
                 VALUES 
-                (:id, :guest_id, :suite_id, :check_in, :check_out, 'pending', :total_price, 'unpaid', NOW(), :access_token, :token_expiry, TRUE)
+                (:ref, :property_id, :room_id, :guest_name, :guest_email, :guest_phone, :check_in, :check_out, :total_price, 'pending', 'unpaid', NOW())
             ";
 
             $stmt = $this->conn->prepare($insertQuery);
-            $stmt->bindParam(':id', $bookingId);
-            $stmt->bindParam(':guest_id', $data['guest_id']);
-            $stmt->bindParam(':suite_id', $data['suite_id']);
+            $stmt->bindParam(':ref', $bookingRef);
+            $stmt->bindParam(':property_id', $room['property_id']);
+            $stmt->bindParam(':room_id', $data['room_id']);
+            $stmt->bindParam(':guest_name', $data['guest_name']);
+            $stmt->bindParam(':guest_email', $data['guest_email']);
+            $stmt->bindParam(':guest_phone', $data['guest_phone']);
             $stmt->bindParam(':check_in', $data['check_in']);
             $stmt->bindParam(':check_out', $data['check_out']);
             $stmt->bindParam(':total_price', $totalPrice);
-            $stmt->bindParam(':access_token', $accessToken);
-            $stmt->bindParam(':token_expiry', $tokenExpiry);
 
             if ($stmt->execute()) {
+                $bookingId = $this->conn->lastInsertId();
                 sendSuccess([
                     'booking_id' => $bookingId,
-                    'suite_name' => $suite['title'],
+                    'booking_reference' => $bookingRef,
+                    'suite_name' => $room['name'],
                     'check_in' => $data['check_in'],
                     'check_out' => $data['check_out'],
                     'nights' => $nights,
                     'total_price' => (float)$totalPrice,
                     'status' => 'pending',
-                    'payment_status' => 'unpaid',
-                    'access_token' => $accessToken // Return for immediate display if needed
+                    'payment_status' => 'unpaid'
                 ], 'Booking created successfully', 201);
             } else {
                 sendError('Failed to create booking', 500);
@@ -225,13 +222,13 @@ class BookingController {
      */
     public function updateBookingStatus($bookingId, $status) {
         try {
-            $validStatuses = ['pending', 'confirmed', 'cancelled', 'checked_in'];
+            $validStatuses = ['pending', 'confirmed', 'cancelled', 'checked_in', 'checked_out'];
 
             if (!in_array($status, $validStatuses)) {
                 sendError('Invalid booking status', 400);
             }
 
-            $query = "UPDATE bookings SET status = :status WHERE id = :booking_id";
+            $query = "UPDATE bookings SET booking_status = :status WHERE id = :booking_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':status', $status);
             $stmt->bindParam(':booking_id', $bookingId);
@@ -260,7 +257,7 @@ class BookingController {
      */
     public function updatePaymentStatus($bookingId, $status) {
         try {
-            $validStatuses = ['unpaid', 'pending', 'paid'];
+            $validStatuses = ['unpaid', 'pending', 'paid', 'refunded'];
 
             if (!in_array($status, $validStatuses)) {
                 sendError('Invalid payment status', 400);
@@ -278,7 +275,7 @@ class BookingController {
 
                 // If payment is confirmed, update booking status to confirmed
                 if ($status === 'paid') {
-                    $updateBookingQuery = "UPDATE bookings SET status = 'confirmed' WHERE id = :booking_id AND status = 'pending'";
+                    $updateBookingQuery = "UPDATE bookings SET booking_status = 'confirmed' WHERE id = :booking_id AND booking_status = 'pending'";
                     $updateStmt = $this->conn->prepare($updateBookingQuery);
                     $updateStmt->bindParam(':booking_id', $bookingId);
                     $updateStmt->execute();
@@ -304,7 +301,7 @@ class BookingController {
     public function deleteBooking($bookingId) {
         try {
             // Instead of deleting, we'll mark as cancelled
-            $query = "UPDATE bookings SET status = 'cancelled' WHERE id = :booking_id";
+            $query = "UPDATE bookings SET booking_status = 'cancelled' WHERE id = :booking_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':booking_id', $bookingId);
 
@@ -327,41 +324,16 @@ class BookingController {
     }
 
     /**
-     * Update self check-in step
-     */
-    public function updateSelfCheckinStep($bookingId, $step) {
-        try {
-            $validSteps = ['not_started', 'docs_uploaded', 'signed', 'completed'];
-            if (!in_array($step, $validSteps)) {
-                sendError('Invalid check-in step', 400);
-            }
-
-            $query = "UPDATE bookings SET self_checkin_step = :step WHERE id = :booking_id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':step', $step);
-            $stmt->bindParam(':booking_id', $bookingId);
-
-            if ($stmt->execute()) {
-                sendSuccess(['booking_id' => $bookingId, 'step' => $step], 'Check-in step updated');
-            } else {
-                sendError('Failed to update step', 500);
-            }
-        } catch (Exception $e) {
-            sendError('Server error: ' . $e->getMessage(), 500);
-        }
-    }
-
-    /**
      * Finalize check-in
      */
     public function finalizeCheckin($bookingId) {
         try {
-            // Get booking to find suite
-            $bookingQuery = "SELECT suite_id FROM bookings WHERE id = :id";
+            // Get booking to find room
+            $bookingQuery = "SELECT room_id FROM bookings WHERE id = :id";
             $bStmt = $this->conn->prepare($bookingQuery);
             $bStmt->bindParam(':id', $bookingId);
             $bStmt->execute();
-            $booking = $bStmt->fetch();
+            $booking = $bStmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$booking) {
                 sendError('Booking not found', 404);
@@ -370,17 +342,14 @@ class BookingController {
             $this->conn->beginTransaction();
 
             // 1. Update booking status
-            $u1 = "UPDATE bookings SET status = 'checked_in', self_checkin_step = 'completed' WHERE id = :id";
+            $u1 = "UPDATE bookings SET booking_status = 'checked_in' WHERE id = :id";
             $s1 = $this->conn->prepare($u1);
             $s1->bindParam(':id', $bookingId);
             $s1->execute();
 
-            // 2. Update suite status
-            $u2 = "UPDATE suites SET status = 'occupied' WHERE id = :suite_id";
-            $s2 = $this->conn->prepare($u2);
-            $s2->bindParam(':suite_id', $booking['suite_id']);
-            $s2->execute();
-
+            // 2. Update room status (if room status column exists, but usually we just track via bookings)
+            // For now just update the booking status.
+            
             $this->conn->commit();
             sendSuccess(['booking_id' => $bookingId], 'Check-in finalized successfully');
 
@@ -388,18 +357,5 @@ class BookingController {
             if ($this->conn->inTransaction()) $this->conn->rollBack();
             sendError('Finalization failed: ' . $e->getMessage(), 500);
         }
-    }
-
-    /**
-     * Helper: Generate UUID v4
-     */
-    private function generateUUID() {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-        );
     }
 }

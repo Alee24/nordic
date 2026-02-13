@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Paper,
     Table,
@@ -14,7 +14,14 @@ import {
     Stack,
     Loader,
     Center,
-    Pagination
+    Pagination,
+    Card,
+    SimpleGrid,
+    Drawer,
+    ScrollArea,
+    Divider,
+    ThemeIcon,
+    Tooltip
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import {
@@ -24,7 +31,15 @@ import {
     IconFilter,
     IconDownload,
     IconCheck,
-    IconX
+    IconX,
+    IconCalendarEvent,
+    IconUser,
+    IconHome,
+    IconCreditCard,
+    IconClock,
+    IconMail,
+    IconPhone,
+    IconChevronRight
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { dashboardService } from '../../services/dashboardService';
@@ -49,63 +64,49 @@ const MOCK_BOOKINGS = [
         id: '1',
         guest_name: 'Sarah Johnson',
         guest_email: 'sarah.j@example.com',
+        guest_phone: '+1 234 567 8901',
         suite_name: 'Royal Ocean Suite',
         check_in: '2026-02-12',
         check_out: '2026-02-15',
         status: 'confirmed',
         payment_status: 'paid',
-        total_price: 1250.00
+        total_price: 1250.00,
+        booking_reference: 'BR-A1B2C3'
     },
     {
         id: '2',
         guest_name: 'Michael Chen',
         guest_email: 'm.chen@example.com',
+        guest_phone: '+1 987 654 3210',
         suite_name: 'Deluxe City View',
         check_in: '2026-02-10',
         check_out: '2026-02-14',
         status: 'checked_in',
         payment_status: 'paid',
-        total_price: 840.00
+        total_price: 840.00,
+        booking_reference: 'BR-D4E5F6'
     },
     {
         id: '3',
         guest_name: 'Emma Wilson',
         guest_email: 'emma.w@example.com',
+        guest_phone: '+1 555 012 3456',
         suite_name: 'Penthouse Apartment',
         check_in: '2026-02-18',
         check_out: '2026-02-25',
         status: 'pending',
         payment_status: 'unpaid',
-        total_price: 3500.00
-    },
-    {
-        id: '4',
-        guest_name: 'David Miller',
-        guest_email: 'd.miller@example.com',
-        suite_name: 'Standard Studios',
-        check_in: '2026-02-08',
-        check_out: '2026-02-11',
-        status: 'checked_out',
-        payment_status: 'paid',
-        total_price: 450.00
-    },
-    {
-        id: '5',
-        guest_name: 'Linda Garcia',
-        guest_email: 'linda.g@example.com',
-        suite_name: 'Luxury Villa',
-        check_in: '2026-02-20',
-        check_out: '2026-02-27',
-        status: 'confirmed',
-        payment_status: 'pending',
-        total_price: 2800.00
+        total_price: 3500.00,
+        booking_reference: 'BR-G7H8I9'
     }
 ];
 
 const Bookings = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
-    const [demoMode, setDemoMode] = useState(true);
+    const [demoMode, setDemoMode] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [drawerOpened, setDrawerOpened] = useState(false);
     const [filters, setFilters] = useState({
         status: '',
         search: '',
@@ -121,7 +122,6 @@ const Bookings = () => {
         setLoading(true);
         try {
             if (demoMode) {
-                // Apply simple local filtering for demo
                 let filtered = [...MOCK_BOOKINGS];
                 if (filters.search) {
                     const search = filters.search.toLowerCase();
@@ -141,26 +141,26 @@ const Bookings = () => {
                 return;
             }
 
-            // Format dates for API
             const apiFilters = {
                 ...filters,
                 date_from: filters.date_from ? filters.date_from.toISOString().split('T')[0] : '',
                 date_to: filters.date_to ? filters.date_to.toISOString().split('T')[0] : ''
             };
 
-            // Remove empty keys
             Object.keys(apiFilters).forEach(key => apiFilters[key] === '' && delete apiFilters[key]);
 
             const response = await dashboardService.getAllBookings(apiFilters);
             if (response.success) {
-                setData(response.data);
+                setData(Array.isArray(response.data) ? response.data : []);
             } else {
+                setData([]);
                 throw new Error(response.error);
             }
         } catch (error) {
+            setData([]);
             notifications.show({
                 title: 'Error',
-                message: error.message,
+                message: error.message || 'Failed to sync with live database',
                 color: 'red'
             });
         } finally {
@@ -170,238 +170,347 @@ const Bookings = () => {
 
     const handleStatusUpdate = async (id, newStatus) => {
         if (demoMode) {
-            setData(prev => prev.map(b => b.id === id ? { ...b, status: newStatus } : b));
-            notifications.show({
-                title: 'Demo Mode',
-                message: 'Status updated locally for demonstration',
-                color: 'blue'
-            });
+            setData(prev => (Array.isArray(prev) ? prev : []).map(b => b.id === id ? { ...b, status: newStatus } : b));
+            notifications.show({ title: 'Demo Mode', message: 'Status updated locally', color: 'blue' });
             return;
         }
         try {
             const response = await dashboardService.updateBookingStatus(id, newStatus);
             if (response.success) {
-                notifications.show({
-                    title: 'Success',
-                    message: 'Booking status updated successfully',
-                    color: 'green'
-                });
-                fetchBookings(); // Refresh list
+                notifications.show({ title: 'Success', message: 'Booking status updated', color: 'green' });
+                fetchBookings();
             } else {
                 throw new Error(response.error);
             }
         } catch (error) {
-            notifications.show({
-                title: 'Error',
-                message: error.message,
-                color: 'red'
-            });
+            notifications.show({ title: 'Error', message: error.message, color: 'red' });
         }
     };
 
-    const rows = data.map((booking) => (
-        <Table.Tr key={booking.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-            <Table.Td>
-                <Group gap="sm">
-                    <Avatar color="blue" radius="xl">
-                        {booking.guest_name ? booking.guest_name.charAt(0) : 'G'}
-                    </Avatar>
-                    <div>
-                        <Text fz="sm" fw={500}>
-                            {booking.guest_name || 'Guest'}
-                        </Text>
-                        <Text c="dimmed" fz="xs">
-                            {booking.guest_email || 'No email'}
-                        </Text>
-                    </div>
-                </Group>
-            </Table.Td>
+    const stats = useMemo(() => {
+        const bookingsList = Array.isArray(data) ? data : [];
+        return {
+            total: bookingsList.length,
+            confirmed: bookingsList.filter(b => b.status === 'confirmed').length,
+            pending: bookingsList.filter(b => b.status === 'pending').length,
+            revenue: bookingsList.reduce((acc, b) => acc + (Number(b.total_price) || 0), 0)
+        };
+    }, [data]);
 
-            <Table.Td>
-                <Text fz="sm">{booking.suite_name || 'Room'}</Text>
-            </Table.Td>
+    const openDetails = (booking) => {
+        setSelectedBooking(booking);
+        setDrawerOpened(true);
+    };
 
-            <Table.Td>
-                <Text fz="sm">{booking.check_in}</Text>
-                <Text c="dimmed" fz="xs">to {booking.check_out}</Text>
-            </Table.Td>
+    const rows = (Array.isArray(data) ? data : []).map((booking) => {
+        if (!booking) return null;
+        const price = booking.total_price ? Number(booking.total_price) : 0;
 
-            <Table.Td>
-                <Badge
-                    color={statusColors[booking.status] || 'gray'}
-                    variant="light"
-                >
-                    {booking.status}
-                </Badge>
-            </Table.Td>
+        return (
+            <Table.Tr
+                key={booking.id || Math.random()}
+                onClick={() => openDetails(booking)}
+                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all border-b border-slate-100 dark:border-slate-800"
+            >
+                <Table.Td>
+                    <Group gap="sm">
+                        <Avatar color="blue" radius="md" variant="light">
+                            {booking.guest_name ? booking.guest_name.charAt(0) : 'G'}
+                        </Avatar>
+                        <div>
+                            <Text fz="sm" fw={600} className="text-slate-900 dark:text-slate-100">
+                                {booking.guest_name || 'Guest'}
+                            </Text>
+                            <Text c="dimmed" fz="xs">
+                                {booking.guest_email || 'No email'}
+                            </Text>
+                        </div>
+                    </Group>
+                </Table.Td>
 
-            <Table.Td>
-                <Badge
-                    color={paymentColors[booking.payment_status] || 'gray'}
-                    variant="dot"
-                >
-                    {booking.payment_status}
-                </Badge>
-            </Table.Td>
+                <Table.Td>
+                    <Stack gap={0}>
+                        <Text fz="sm" fw={500}>{booking.suite_name || 'Standard Suite'}</Text>
+                        <Text c="dimmed" fz="xs">Ref: {booking.booking_reference || 'N/A'}</Text>
+                    </Stack>
+                </Table.Td>
 
-            <Table.Td>
-                <Text fw={700} fz="sm">
-                    ${Number(booking.total_price).toLocaleString()}
-                </Text>
-            </Table.Td>
+                <Table.Td>
+                    <Group gap="xs">
+                        <Stack gap={0}>
+                            <Text fz="xs" fw={700} c="dimmed">IN</Text>
+                            <Text fz="sm">{booking.check_in || 'N/A'}</Text>
+                        </Stack>
+                        <IconChevronRight size={14} className="text-slate-300" />
+                        <Stack gap={0}>
+                            <Text fz="xs" fw={700} c="dimmed">OUT</Text>
+                            <Text fz="sm">{booking.check_out || 'N/A'}</Text>
+                        </Stack>
+                    </Group>
+                </Table.Td>
 
-            <Table.Td>
-                <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom-end" withinPortal>
-                    <Menu.Target>
-                        <ActionIcon variant="subtle" color="gray">
-                            <IconDots style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                        </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                        <Menu.Label>Actions</Menu.Label>
-                        <Menu.Item leftSection={<IconEye style={{ width: 14, height: 14 }} />}>
-                            View Details
-                        </Menu.Item>
+                <Table.Td>
+                    <Badge
+                        color={statusColors[booking.status] || 'gray'}
+                        variant="dot"
+                        className="capitalize px-2 py-3"
+                    >
+                        {booking.status?.replace('_', ' ') || 'unknown'}
+                    </Badge>
+                </Table.Td>
 
-                        <Menu.Divider />
+                <Table.Td>
+                    <Badge
+                        color={paymentColors[booking.payment_status] || 'gray'}
+                        variant="light"
+                        className="capitalize"
+                    >
+                        {booking.payment_status || 'unknown'}
+                    </Badge>
+                </Table.Td>
 
-                        <Menu.Label>Update Status</Menu.Label>
-                        {booking.status !== 'confirmed' && (
-                            <Menu.Item
-                                leftSection={<IconCheck style={{ width: 14, height: 14 }} />}
-                                onClick={() => handleStatusUpdate(booking.id, 'confirmed')}
-                            >
-                                Confirm Booking
-                            </Menu.Item>
-                        )}
+                <Table.Td>
+                    <Text fw={800} fz="sm" className="text-slate-900 dark:text-white">
+                        ${price.toLocaleString()}
+                    </Text>
+                </Table.Td>
 
-                        {booking.status === 'confirmed' && (
-                            <Menu.Item
-                                leftSection={<IconCheck style={{ width: 14, height: 14 }} />}
-                                onClick={() => handleStatusUpdate(booking.id, 'checked_in')}
-                            >
-                                Check In Guest
-                            </Menu.Item>
-                        )}
-
-                        {booking.status !== 'cancelled' && (
-                            <Menu.Item
-                                leftSection={<IconX style={{ width: 14, height: 14 }} />}
-                                color="red"
-                                onClick={() => handleStatusUpdate(booking.id, 'cancelled')}
-                            >
-                                Cancel Booking
-                            </Menu.Item>
-                        )}
-                    </Menu.Dropdown>
-                </Menu>
-            </Table.Td>
-        </Table.Tr>
-    ));
+                <Table.Td onClick={(e) => e.stopPropagation()}>
+                    <Menu shadow="md" width={200} position="bottom-end">
+                        <Menu.Target>
+                            <ActionIcon variant="subtle" color="gray">
+                                <IconDots size={18} />
+                            </ActionIcon>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                            <Menu.Item leftSection={<IconEye size={14} />} onClick={() => openDetails(booking)}>View Details</Menu.Item>
+                            <Divider />
+                            {booking.status !== 'confirmed' && (
+                                <Menu.Item leftSection={<IconCheck size={14} color="green" />} onClick={() => handleStatusUpdate(booking.id, 'confirmed')}>Confirm</Menu.Item>
+                            )}
+                            {booking.status === 'confirmed' && (
+                                <Menu.Item leftSection={<IconCheck size={14} color="blue" />} onClick={() => handleStatusUpdate(booking.id, 'checked_in')}>Check In</Menu.Item>
+                            )}
+                            {booking.status !== 'cancelled' && (
+                                <Menu.Item leftSection={<IconX size={14} color="red" />} color="red" onClick={() => handleStatusUpdate(booking.id, 'cancelled')}>Cancel</Menu.Item>
+                            )}
+                        </Menu.Dropdown>
+                    </Menu>
+                </Table.Td>
+            </Table.Tr>
+        );
+    });
 
     return (
-        <Stack gap="lg">
-            <Group justify="space-between" align="center">
+        <Stack gap="xl" className="p-2">
+            <Group justify="space-between">
                 <div>
-                    <Text size="xl" fw={800} className="text-gray-900 dark:text-white">Bookings</Text>
-                    <Text size="sm" c="dimmed">Manage all room reservations.</Text>
+                    <Text fz={28} fw={900} className="tracking-tight text-slate-900 dark:text-white">Reservations</Text>
+                    <Text fz="sm" c="dimmed" fw={500}>Monitor and manage all apartment bookings across your property.</Text>
                 </div>
-                <Group gap="sm">
-                    <div className="flex bg-gray-100 p-1 rounded-lg opacity-80 cursor-not-allowed">
+                <Group gap="md">
+                    <Paper shadow="xs" p={4} radius="xl" className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex">
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all text-gray-400 bg-transparent"
+                            onClick={() => setDemoMode(false)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             LIVE
                         </button>
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all bg-white shadow text-blue-600"
+                            onClick={() => setDemoMode(true)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             DEMO
                         </button>
-                    </div>
-                    <Button leftSection={<IconDownload size={16} />} variant="light">
-                        Export CSV
+                    </Paper>
+                    <Button variant="gradient" gradient={{ from: 'blue', to: 'cyan' }} radius="md" leftSection={<IconDownload size={18} />}>
+                        Reports
                     </Button>
                 </Group>
             </Group>
 
-            {/* Filters */}
-            <Paper p="md" radius="md" withBorder>
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} gap="lg">
+                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-blue-500">
+                    <Group justify="space-between">
+                        <ThemeIcon color="blue" variant="light" size="xl" radius="md">
+                            <IconCalendarEvent size={24} />
+                        </ThemeIcon>
+                        <Badge variant="light" color="blue">Total</Badge>
+                    </Group>
+                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">All Bookings</Text>
+                    <Text fz="xl" fw={900}>{stats.total}</Text>
+                </Card>
+                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-yellow-500">
+                    <Group justify="space-between">
+                        <ThemeIcon color="yellow" variant="light" size="xl" radius="md">
+                            <IconClock size={24} />
+                        </ThemeIcon>
+                        <Badge variant="light" color="yellow">Pending</Badge>
+                    </Group>
+                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">Pending Approval</Text>
+                    <Text fz="xl" fw={900}>{stats.pending}</Text>
+                </Card>
+                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-green-500">
+                    <Group justify="space-between">
+                        <ThemeIcon color="green" variant="light" size="xl" radius="md">
+                            <IconCheck size={24} />
+                        </ThemeIcon>
+                        <Badge variant="light" color="green">Confirmed</Badge>
+                    </Group>
+                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">Confirmed Stays</Text>
+                    <Text fz="xl" fw={900}>{stats.confirmed}</Text>
+                </Card>
+                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-violet-500">
+                    <Group justify="space-between">
+                        <ThemeIcon color="violet" variant="light" size="xl" radius="md">
+                            <IconCreditCard size={24} />
+                        </ThemeIcon>
+                        <Badge variant="light" color="violet">Gross</Badge>
+                    </Group>
+                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">Total Revenue</Text>
+                    <Text fz="xl" fw={900}>${stats.revenue.toLocaleString()}</Text>
+                </Card>
+            </SimpleGrid>
+
+            <Paper shadow="sm" radius="md" p="md" withBorder className="bg-slate-50/50 dark:bg-slate-900/50">
                 <Group align="flex-end">
                     <TextInput
-                        label="Search"
-                        placeholder="Guest name, email, or room..."
+                        placeholder="Search by name, email, or suite..."
                         leftSection={<IconSearch size={16} />}
                         value={filters.search}
-                        onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                        onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                         className="flex-1"
+                        radius="md"
                     />
                     <Select
-                        label="Status"
-                        placeholder="All Statuses"
+                        placeholder="Status"
                         data={[
                             { value: '', label: 'All Statuses' },
                             { value: 'confirmed', label: 'Confirmed' },
                             { value: 'pending', label: 'Pending' },
                             { value: 'checked_in', label: 'Checked In' },
+                            { value: 'checked_out', label: 'Checked Out' },
                             { value: 'cancelled', label: 'Cancelled' }
                         ]}
                         value={filters.status}
-                        onChange={(val) => setFilters({ ...filters, status: val })}
-                        style={{ width: 200 }}
+                        onChange={(val) => setFilters(prev => ({ ...prev, status: val }))}
+                        radius="md"
+                        style={{ width: 180 }}
                     />
                     <DatePickerInput
-                        label="Check-in Date"
-                        placeholder="Pick date"
+                        placeholder="Arrival Date"
                         value={filters.date_from}
-                        onChange={(date) => setFilters({ ...filters, date_from: date })}
+                        onChange={(date) => setFilters(prev => ({ ...prev, date_from: date }))}
+                        radius="md"
                         clearable
-                        style={{ width: 200 }}
+                        style={{ width: 180 }}
                     />
                 </Group>
             </Paper>
 
-            {/* Table */}
-            <Paper withBorder p="md" radius="md">
-                {loading ? (
-                    <Center h={300}>
-                        <Loader size="lg" />
-                    </Center>
-                ) : data.length === 0 ? (
-                    <Center h={300}>
-                        <Stack align="center" gap="xs">
-                            <IconSearch size={40} className="text-gray-300" />
-                            <Text c="dimmed">No bookings found matching your filters.</Text>
-                        </Stack>
-                    </Center>
-                ) : (
-                    <>
-                        <Table verticalSpacing="sm" striped highlightOnHover>
-                            <Table.Thead>
+            <Card shadow="sm" radius="md" withBorder padding={0}>
+                <ScrollArea h={loading ? 300 : 'auto'}>
+                    {loading ? (
+                        <Center h={300}><Loader type="bars" /></Center>
+                    ) : rows.length === 0 ? (
+                        <Center h={300}>
+                            <Stack align="center" gap="xs">
+                                <IconSearch size={48} stroke={1.5} className="text-slate-300" />
+                                <Text fw={600} c="dimmed">No reservations found</Text>
+                                <Button variant="subtle" size="xs" onClick={() => setFilters({ status: '', search: '', date_from: null, date_to: null })}>Reset all filters</Button>
+                            </Stack>
+                        </Center>
+                    ) : (
+                        <Table verticalSpacing="md" horizontalSpacing="lg" highlightOnHover={false}>
+                            <Table.Thead className="bg-slate-50 dark:bg-slate-800">
                                 <Table.Tr>
-                                    <Table.Th>Guest</Table.Th>
-                                    <Table.Th>Suite</Table.Th>
-                                    <Table.Th>Stay Dates</Table.Th>
-                                    <Table.Th>Status</Table.Th>
-                                    <Table.Th>Payment</Table.Th>
-                                    <Table.Th>Total</Table.Th>
+                                    <Table.Th>GUEST INFORMATION</Table.Th>
+                                    <Table.Th>SUITE / REF</Table.Th>
+                                    <Table.Th>STAY DATES</Table.Th>
+                                    <Table.Th>STATUS</Table.Th>
+                                    <Table.Th>PAYMENT</Table.Th>
+                                    <Table.Th>TOTAL</Table.Th>
                                     <Table.Th></Table.Th>
                                 </Table.Tr>
                             </Table.Thead>
-                            <Table.Tbody>
-                                {rows}
-                            </Table.Tbody>
+                            <Table.Tbody>{rows}</Table.Tbody>
                         </Table>
+                    )}
+                </ScrollArea>
+                <Divider />
+                <Group justify="space-between" p="md">
+                    <Text fz="xs" c="dimmed" fw={500}>Showing {rows.length} results</Text>
+                    <Pagination total={1} radius="md" size="sm" />
+                </Group>
+            </Card>
 
-                        {/* Pagination Placeholder - Ideally implement backend pagination */}
-                        <Group justify="flex-end" mt="md">
-                            <Pagination total={1} />
+            <Drawer
+                opened={drawerOpened}
+                onClose={() => setDrawerOpened(false)}
+                position="right"
+                size="md"
+                title={<Text fw={900} fz="xl">Booking Details</Text>}
+                padding="xl"
+            >
+                {selectedBooking && (
+                    <Stack gap="xl">
+                        <Paper withBorder p="md" radius="md" className="bg-blue-50/50 border-blue-100">
+                            <Group justify="space-between">
+                                <Text fw={800} fz="sm" c="blue">#{selectedBooking.booking_reference || 'REF-TBD'}</Text>
+                                <Badge color={statusColors[selectedBooking.status]}>{selectedBooking.status}</Badge>
+                            </Group>
+                        </Paper>
+
+                        <div>
+                            <Text fw={700} fz="sm" mb="md" tt="uppercase" c="dimmed" className="tracking-wider">Guest Details</Text>
+                            <Group mb="sm">
+                                <ThemeIcon variant="light" radius="xl"><IconUser size={16} /></ThemeIcon>
+                                <Text fw={600}>{selectedBooking.guest_name}</Text>
+                            </Group>
+                            <Group mb="sm">
+                                <ThemeIcon variant="light" radius="xl"><IconMail size={16} /></ThemeIcon>
+                                <Text fz="sm">{selectedBooking.guest_email}</Text>
+                            </Group>
+                            <Group>
+                                <ThemeIcon variant="light" radius="xl"><IconPhone size={16} /></ThemeIcon>
+                                <Text fz="sm">{selectedBooking.guest_phone || 'Not provided'}</Text>
+                            </Group>
+                        </div>
+
+                        <Divider />
+
+                        <div>
+                            <Text fw={700} fz="sm" mb="md" tt="uppercase" c="dimmed" className="tracking-wider">Reservation</Text>
+                            <Group mb="sm">
+                                <ThemeIcon variant="light" radius="xl" color="violet"><IconHome size={16} /></ThemeIcon>
+                                <Text fw={600}>{selectedBooking.suite_name}</Text>
+                            </Group>
+                            <Group mb="sm">
+                                <ThemeIcon variant="light" radius="xl" color="cyan"><IconCalendarEvent size={16} /></ThemeIcon>
+                                <Text fz="sm">{selectedBooking.check_in} — {selectedBooking.check_out}</Text>
+                            </Group>
+                        </div>
+
+                        <Divider />
+
+                        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                            <Group justify="space-between" mb="xs">
+                                <Text fz="sm" c="dimmed">Payment Status</Text>
+                                <Badge variant="filled" color={paymentColors[selectedBooking.payment_status]}>{selectedBooking.payment_status}</Badge>
+                            </Group>
+                            <Group justify="space-between">
+                                <Text fw={700}>Total Amount Paid</Text>
+                                <Text fw={900} fz="xl" c="blue">${Number(selectedBooking.total_price).toLocaleString()}</Text>
+                            </Group>
+                        </div>
+
+                        <Group mt="xl" grow>
+                            <Button variant="light" color="red">Delete Record</Button>
+                            <Button variant="filled">Download Invoice</Button>
                         </Group>
-                    </>
+                    </Stack>
                 )}
-            </Paper>
+            </Drawer>
         </Stack>
     );
 };

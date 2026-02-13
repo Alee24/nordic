@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const variants = {
-    primary: 'bg-nordic-gold-500 text-nordic-dark-900 hover:bg-nordic-gold-400',
-    outline: 'border border-nordic-gold-500 text-nordic-gold-500 hover:bg-nordic-gold-500/10',
-    ghost: 'text-nordic-frost hover:text-nordic-gold-500',
+    primary: 'bg-norden-gold-500 text-norden-dark-900 hover:bg-norden-gold-400',
+    outline: 'border border-norden-gold-500 text-norden-gold-500 hover:bg-norden-gold-500/10',
+    ghost: 'text-norden-frost hover:text-norden-gold-500',
 };
 
 const Button = ({ children, variant = 'primary', className = '', ...props }) => {

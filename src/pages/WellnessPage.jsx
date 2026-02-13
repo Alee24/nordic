@@ -53,7 +53,7 @@ const WellnessPage = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5 }}
-                                className="text-nordic-gold-500 uppercase tracking-[0.4em] text-sm mb-4"
+                                className="text-norden-gold-500 uppercase tracking-[0.4em] text-sm mb-4"
                             >
                                 Serenity at Nyali
                             </motion.span>
@@ -83,7 +83,7 @@ const WellnessPage = () => {
                         <button
                             key={idx}
                             onClick={() => setCurrent(idx)}
-                            className={`h-1 transition-all duration-500 ${current === idx ? 'w-12 bg-nordic-gold-500' : 'w-6 bg-white/30'
+                            className={`h-1 transition-all duration-500 ${current === idx ? 'w-12 bg-norden-gold-500' : 'w-6 bg-white/30'
                                 }`}
                         />
                     ))}
@@ -101,9 +101,9 @@ const WellnessPage = () => {
                         <motion.div
                             key={idx}
                             whileHover={{ y: -5 }}
-                            className="bg-theme-surface p-8 rounded-xl text-center border border-theme-border hover:border-nordic-gold-500 transition-all"
+                            className="bg-theme-surface p-8 rounded-xl text-center border border-theme-border hover:border-norden-gold-500 transition-all"
                         >
-                            <div className="text-nordic-gold-500 mb-6 flex justify-center">
+                            <div className="text-norden-gold-500 mb-6 flex justify-center">
                                 {feature.icon}
                             </div>
                             <h3 className="text-xl font-serif text-theme-text mb-4">{feature.title}</h3>
@@ -113,7 +113,7 @@ const WellnessPage = () => {
                 </div>
 
                 <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto py-12">
-                    <div className="w-16 h-px bg-nordic-gold-500 mb-8" />
+                    <div className="w-16 h-px bg-norden-gold-500 mb-8" />
                     <h2 className="text-4xl md:text-5xl font-serif text-theme-text mb-6 italic">African Hospitality. <br /><span className="not-italic">Pure Serenity.</span></h2>
                     <p className="text-theme-muted mb-12 text-lg">
                         Our wellness philosophy integrates ancient African healing traditions with modern luxury techniques.

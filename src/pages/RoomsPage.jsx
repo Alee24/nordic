@@ -32,7 +32,7 @@ const RoomsPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-16"
                 >
-                    <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Luxury Stays</span>
+                    <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Luxury Stays</span>
                     <h1 className="text-5xl md:text-7xl font-serif text-theme-text mt-4 mb-6">Our Rooms & Suites</h1>
                     <p className="text-theme-muted max-w-2xl mx-auto text-lg">
                         Immerse yourself in comfort and elegance. Choose from our curated selection of rooms designed for your relaxation.

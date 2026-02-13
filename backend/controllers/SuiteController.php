@@ -7,8 +7,7 @@ class SuiteController {
     private $conn;
 
     public function __construct() {
-        $this->db = new Database();
-        $this->conn = $this->db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
     }
 
     /**
@@ -16,11 +15,23 @@ class SuiteController {
      */
     public function getAllSuites() {
         try {
-            $query = "SELECT * FROM suites ORDER BY price_per_night ASC";
+            // Map rooms to the "suites" structure the dashboard expects
+            $query = "SELECT 
+                id, 
+                name as title, 
+                base_price as price_per_night, 
+                max_occupancy as capacity, 
+                description, 
+                amenities as features, 
+                photos as images,
+                'available' as status 
+                FROM rooms 
+                ORDER BY base_price ASC";
+                
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
 
-            $suites = $stmt->fetchAll();
+            $suites = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Parse JSON fields
             foreach ($suites as &$suite) {
@@ -30,6 +41,8 @@ class SuiteController {
                 if ($suite['images']) {
                     $suite['images'] = json_decode($suite['images'], true);
                 }
+                $suite['price_per_night'] = (float)$suite['price_per_night'];
+                $suite['capacity'] = (int)$suite['capacity'];
             }
 
             sendSuccess($suites, 'Suites retrieved successfully');
@@ -45,12 +58,21 @@ class SuiteController {
      */
     public function getSuite($suiteId) {
         try {
-            $query = "SELECT * FROM suites WHERE id = :suite_id";
+            $query = "SELECT 
+                id, 
+                name as title, 
+                base_price as price_per_night, 
+                max_occupancy as capacity, 
+                description, 
+                amenities as features, 
+                photos as images,
+                'available' as status 
+                FROM rooms WHERE id = :suite_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':suite_id', $suiteId);
             $stmt->execute();
 
-            $suite = $stmt->fetch();
+            $suite = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$suite) {
                 sendError('Suite not found', 404);
@@ -63,6 +85,8 @@ class SuiteController {
             if ($suite['images']) {
                 $suite['images'] = json_decode($suite['images'], true);
             }
+            $suite['price_per_night'] = (float)$suite['price_per_night'];
+            $suite['capacity'] = (int)$suite['capacity'];
 
             sendSuccess($suite, 'Suite retrieved successfully');
 
@@ -87,7 +111,7 @@ class SuiteController {
             }
 
             // Get suite details
-            $suiteQuery = "SELECT * FROM suites WHERE id = :suite_id";
+            $suiteQuery = "SELECT id, name as title, base_price as price_per_night FROM rooms WHERE id = :suite_id";
             $suiteStmt = $this->conn->prepare($suiteQuery);
             $suiteStmt->bindParam(':suite_id', $suiteId);
             $suiteStmt->execute();
@@ -102,8 +126,8 @@ class SuiteController {
             $bookingQuery = "
                 SELECT COUNT(*) as booking_count 
                 FROM bookings 
-                WHERE suite_id = :suite_id 
-                AND status NOT IN ('cancelled')
+                WHERE room_id = :suite_id 
+                AND booking_status NOT IN ('cancelled')
                 AND (
                     (check_in <= :check_in AND check_out > :check_in)
                     OR (check_in < :check_out AND check_out >= :check_out)
@@ -141,7 +165,7 @@ class SuiteController {
     public function updateSuite($suiteId, $data) {
         try {
             // Check if suite exists
-            $checkQuery = "SELECT id FROM suites WHERE id = :suite_id";
+            $checkQuery = "SELECT id FROM rooms WHERE id = :suite_id";
             $checkStmt = $this->conn->prepare($checkQuery);
             $checkStmt->bindParam(':suite_id', $suiteId);
             $checkStmt->execute();
@@ -154,17 +178,25 @@ class SuiteController {
             $updateFields = [];
             $params = [':suite_id' => $suiteId];
 
-            $allowedFields = ['title', 'price_per_night', 'capacity', 'description', 'features', 'images'];
+            // Mapping: frontend -> database
+            $fieldMap = [
+                'title' => 'name',
+                'price_per_night' => 'base_price',
+                'capacity' => 'max_occupancy',
+                'description' => 'description',
+                'features' => 'amenities',
+                'images' => 'photos'
+            ];
 
-            foreach ($allowedFields as $field) {
-                if (isset($data[$field])) {
-                    $updateFields[] = "$field = :$field";
+            foreach ($fieldMap as $frontField => $dbField) {
+                if (isset($data[$frontField])) {
+                    $updateFields[] = "$dbField = :$frontField";
                     
                     // JSON encode arrays
-                    if (in_array($field, ['features', 'images']) && is_array($data[$field])) {
-                        $params[":$field"] = json_encode($data[$field]);
+                    if (in_array($frontField, ['features', 'images']) && is_array($data[$frontField])) {
+                        $params[":$frontField"] = json_encode($data[$frontField]);
                     } else {
-                        $params[":$field"] = $data[$field];
+                        $params[":$frontField"] = $data[$frontField];
                     }
                 }
             }
@@ -173,7 +205,7 @@ class SuiteController {
                 sendError('No fields to update', 400);
             }
 
-            $updateQuery = "UPDATE suites SET " . implode(', ', $updateFields) . " WHERE id = :suite_id";
+            $updateQuery = "UPDATE rooms SET " . implode(', ', $updateFields) . " WHERE id = :suite_id";
             $stmt = $this->conn->prepare($updateQuery);
 
             foreach ($params as $key => $value) {
@@ -192,6 +224,8 @@ class SuiteController {
             error_log("Update Suite Error: " . $e->getMessage());
             sendError('Failed to update suite: ' . $e->getMessage(), 500);
         }
+    }
+
     /**
      * Create new suite
      */
@@ -206,7 +240,7 @@ class SuiteController {
             }
 
             // Check if ID already exists
-            $checkQuery = "SELECT id FROM suites WHERE id = :id";
+            $checkQuery = "SELECT id FROM rooms WHERE id = :id";
             $checkStmt = $this->conn->prepare($checkQuery);
             $checkStmt->bindParam(':id', $data['id']);
             $checkStmt->execute();
@@ -216,8 +250,8 @@ class SuiteController {
             }
 
             $query = "
-                INSERT INTO suites (id, title, price_per_night, capacity, description, features, images)
-                VALUES (:id, :title, :price_per_night, :capacity, :description, :features, :images)
+                INSERT INTO rooms (id, property_id, name, base_price, max_occupancy, description, amenities, photos, is_available)
+                VALUES (:id, 'nordic-main', :title, :price_per_night, :capacity, :description, :features, :images, 1)
             ";
 
             $stmt = $this->conn->prepare($query);
@@ -251,7 +285,7 @@ class SuiteController {
     public function deleteSuite($suiteId) {
         try {
             // Check for bookings
-            $bookingQuery = "SELECT COUNT(*) as booking_count FROM bookings WHERE suite_id = :suite_id";
+            $bookingQuery = "SELECT COUNT(*) as booking_count FROM bookings WHERE room_id = :suite_id";
             $bookingStmt = $this->conn->prepare($bookingQuery);
             $bookingStmt->bindParam(':suite_id', $suiteId);
             $bookingStmt->execute();
@@ -261,7 +295,7 @@ class SuiteController {
                 sendError('Cannot delete room with existing bookings', 400);
             }
 
-            $query = "DELETE FROM suites WHERE id = :suite_id";
+            $query = "DELETE FROM rooms WHERE id = :suite_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':suite_id', $suiteId);
 
@@ -278,6 +312,8 @@ class SuiteController {
             error_log("Delete Suite Error: " . $e->getMessage());
             sendError('Failed to delete suite: ' . $e->getMessage(), 500);
         }
+    }
+
     /**
      * Update suite status
      */
@@ -288,11 +324,7 @@ class SuiteController {
                 sendError('Invalid suite status', 400);
             }
 
-            $query = "UPDATE suites SET status = :status";
-            if ($status === 'available') {
-                $query .= ", last_cleaned_at = NOW()";
-            }
-            $query .= " WHERE id = :suite_id";
+            $query = "UPDATE rooms SET status = :status WHERE id = :suite_id";
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':status', $status);

@@ -1,13 +1,20 @@
 <?php
-// REST API Router for Suites
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+require_once __DIR__ . '/../utils/response.php';
 
-// Handle preflight requests
+// Handle CORS properly
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Max-Age: 86400');
+}
+
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Content-Type: application/json');
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit;
+    exit();
 }
 
 require_once __DIR__ . '/../controllers/SuiteController.php';
@@ -18,18 +25,18 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 try {
     // GET /api/suites - Get all suites
-    if ($method === 'GET' && preg_match('/\/api\/suites$/', $path)) {
+    if ($method === 'GET' && preg_match('/\/api\/suites(\.php)?$/', $path)) {
         $controller->getAllSuites();
     }
     
     // GET /api/suites/:id - Get suite by ID
-    elseif ($method === 'GET' && preg_match('/\/api\/suites\/([a-zA-Z0-9-]+)$/', $path, $matches)) {
-        $suiteId = $matches[1];
+    elseif ($method === 'GET' && preg_match('/\/api\/suites(\.php)?\/([a-zA-Z0-9-]+)$/', $path, $matches)) {
+        $suiteId = $matches[2];
         $controller->getSuite($suiteId);
     }
     
     // GET /api/suites/availability - Check availability
-    elseif ($method === 'GET' && preg_match('/\/api\/suites\/availability/', $path)) {
+    elseif ($method === 'GET' && preg_match('/\/api\/suites(\.php)?\/availability/', $path)) {
         $suiteId = $_GET['suite_id'] ?? null;
         $checkIn = $_GET['check_in'] ?? null;
         $checkOut = $_GET['check_out'] ?? null;
@@ -42,8 +49,8 @@ try {
     }
     
     // PUT /api/suites/:id - Update suite
-    elseif ($method === 'PUT' && preg_match('/\/api\/suites\/([a-zA-Z0-9-]+)$/', $path, $matches)) {
-        $suiteId = $matches[1];
+    elseif ($method === 'PUT' && (preg_match('/\/api\/suites(\.php)?\/([a-zA-Z0-9-]+)$/', $path, $matches) || isset($_GET['id']))) {
+        $suiteId = $matches[2] ?? $_GET['id'];
         $data = json_decode(file_get_contents('php://input'), true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -54,7 +61,7 @@ try {
     }
     
     // POST /api/suites - Create suite
-    elseif ($method === 'POST' && preg_match('/\/api\/suites$/', $path)) {
+    elseif ($method === 'POST' && preg_match('/\/api\/suites(\.php)?$/', $path)) {
         $data = json_decode(file_get_contents('php://input'), true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -65,8 +72,8 @@ try {
     }
     
     // DELETE /api/suites/:id - Delete suite
-    elseif ($method === 'DELETE' && preg_match('/\/api\/suites\/([a-zA-Z0-9-]+)$/', $path, $matches)) {
-        $suiteId = $matches[1];
+    elseif ($method === 'DELETE' && (preg_match('/\/api\/suites(\.php)?\/([a-zA-Z0-9-]+)$/', $path, $matches) || isset($_GET['id']))) {
+        $suiteId = $matches[2] ?? $_GET['id'];
         $controller->deleteSuite($suiteId);
     }
     

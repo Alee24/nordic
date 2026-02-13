@@ -52,7 +52,7 @@ const FinancialSummary = () => {
                         sections={[{ value: 78, color: 'gold' }]}
                         label={
                             <Center>
-                                <IconTrendingUp size={16} className="text-nordic-gold" />
+                                <IconTrendingUp size={16} className="text-norden-gold" />
                             </Center>
                         }
                     />

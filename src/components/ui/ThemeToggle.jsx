@@ -29,13 +29,13 @@ const ThemeToggle = () => {
                         <IconSun
                             size={20}
                             stroke={1.5}
-                            className="text-nordic-gold-500 hover:text-white transition-colors"
+                            className="text-norden-gold-500 hover:text-white transition-colors"
                         />
                     ) : (
                         <IconMoon
                             size={20}
                             stroke={1.5}
-                            className="text-nordic-dark-700 hover:text-nordic-gold-600 transition-colors"
+                            className="text-norden-dark-700 hover:text-norden-gold-600 transition-colors"
                         />
                     )}
                 </motion.div>

@@ -16,20 +16,20 @@ const BookingBar = ({ onSearch }) => {
             <GlassCard className="p-0 overflow-visible border-white/10">
                 <Group grow gap={0} className="items-stretch">
                     <Box className="p-6 border-r border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
-                        <Text size="xs" tt="uppercase" fw={700} lts={1} className="text-nordic-gold mb-1">Check In</Text>
-                        <Text className="text-lg font-medium text-white group-hover:text-nordic-frost">Select Date</Text>
+                        <Text size="xs" tt="uppercase" fw={700} lts={1} className="text-norden-gold mb-1">Check In</Text>
+                        <Text className="text-lg font-medium text-white group-hover:text-norden-frost">Select Date</Text>
                     </Box>
 
                     <Box className="p-6 border-r border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
-                        <Text size="xs" tt="uppercase" fw={700} lts={1} className="text-nordic-gold mb-1">Check Out</Text>
-                        <Text className="text-lg font-medium text-white group-hover:text-nordic-frost">Select Date</Text>
+                        <Text size="xs" tt="uppercase" fw={700} lts={1} className="text-norden-gold mb-1">Check Out</Text>
+                        <Text className="text-lg font-medium text-white group-hover:text-norden-frost">Select Date</Text>
                     </Box>
 
                     <Box className="p-6 border-r border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
-                        <Text size="xs" tt="uppercase" fw={700} lts={1} className="text-nordic-gold mb-1">Guests</Text>
+                        <Text size="xs" tt="uppercase" fw={700} lts={1} className="text-norden-gold mb-1">Guests</Text>
                         <Group gap="xs">
-                            <IconUsers size={16} className="text-nordic-frost/60" />
-                            <Text className="text-lg font-medium text-white group-hover:text-nordic-frost">2 Adults</Text>
+                            <IconUsers size={16} className="text-norden-frost/60" />
+                            <Text className="text-lg font-medium text-white group-hover:text-norden-frost">2 Adults</Text>
                         </Group>
                     </Box>
 
@@ -38,7 +38,7 @@ const BookingBar = ({ onSearch }) => {
                         color="gold"
                         h="auto"
                         radius={0}
-                        className="text-lg font-bold tracking-widest hover:bg-nordic-gold/90 transition-all group"
+                        className="text-lg font-bold tracking-widest hover:bg-norden-gold/90 transition-all group"
                         onClick={onSearch}
                     >
                         <Stack align="center" gap={4}>

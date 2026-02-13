@@ -8,7 +8,7 @@ const PulseItem = ({ icon: Icon, title, status, time, color, description }) => (
     <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="border-l-2 pl-4 py-2 border-white/10 hover:border-nordic-gold transition-colors"
+        className="border-l-2 pl-4 py-2 border-white/10 hover:border-norden-gold transition-colors"
     >
         <Group justify="space-between" align="flex-start" wrap="nowrap">
             <Group gap="md">

@@ -75,7 +75,7 @@ const GuestConcierge = () => {
             >
                 <Stack mb={50}>
                     <Title order={1} className="font-serif italic text-5xl">Digital Concierge</Title>
-                    <Text className="text-nordic-frost/60">Experience the freedom of paperless luxury from the moment you land.</Text>
+                    <Text className="text-norden-frost/60">Experience the freedom of paperless luxury from the moment you land.</Text>
                 </Stack>
 
                 <Stepper active={active} onStepClick={setActive} color="gold" iconSize={38}>
@@ -113,13 +113,13 @@ const GuestConcierge = () => {
                                         exit={{ opacity: 0, height: 0 }}
                                     >
                                         <Title order={4} className="mb-6 flex items-center gap-2">
-                                            <IconCar className="text-nordic-gold" /> Select Your Vehicle
+                                            <IconCar className="text-norden-gold-500" /> Select Your Vehicle
                                         </Title>
                                         <Grid>
                                             {vehicles.map((v) => (
                                                 <Grid.Col span={{ base: 12, md: 6 }} key={v.id}>
                                                     <Card
-                                                        className={`cursor-pointer transition-all border ${selectedVehicle?.id === v.id ? 'border-nordic-gold bg-nordic-gold/10' : 'border-white/5 bg-white/5'}`}
+                                                        className={`cursor-pointer transition-all border ${selectedVehicle?.id === v.id ? 'border-norden-gold-500 bg-norden-gold-500/10' : 'border-white/5 bg-white/5'}`}
                                                         onClick={() => setSelectedVehicle(v)}
                                                         radius="md"
                                                         p="md"
@@ -156,12 +156,12 @@ const GuestConcierge = () => {
                                     <GlassCard className="h-full">
                                         <Title order={3} className="mb-6">Passport / ID Upload</Title>
                                         <Box
-                                            className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center hover:border-nordic-gold transition-colors cursor-pointer"
+                                            className="border-2 border-dashed border-white/20 rounded-xl p-10 text-center hover:border-norden-gold-500 transition-colors cursor-pointer"
                                             onClick={() => document.getElementById('id-upload').click()}
                                         >
                                             {idFile ? (
                                                 <Stack align="center">
-                                                    <IconCheck size={40} className="text-nordic-gold" />
+                                                    <IconCheck size={40} className="text-norden-gold-500" />
                                                     <Text>{idFile.name}</Text>
                                                 </Stack>
                                             ) : (
@@ -210,8 +210,8 @@ const GuestConcierge = () => {
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ type: 'spring' }}
                             >
-                                <Box className="bg-nordic-gold/20 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8">
-                                    <IconCheck size={48} className="text-nordic-gold" />
+                                <Box className="bg-norden-gold-500/20 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8">
+                                    <IconCheck size={48} className="text-norden-gold-500" />
                                 </Box>
                                 <Title order={1} className="italic mb-4">Registration Complete</Title>
                                 <Text size="lg" className="max-w-md mx-auto opacity-70 mb-10">
@@ -223,32 +223,34 @@ const GuestConcierge = () => {
                     </Stepper.Completed>
                 </Stepper>
 
-                {active < 2 && (
-                    <Group justify="center" mt={60} gap="xl">
-                        <Button
-                            variant="subtle"
-                            color="gray"
-                            onClick={prevStep}
-                            disabled={active === 0}
-                            size="lg"
-                            leftSection={<IconChevronLeft size={20} />}
-                        >
-                            PREVIOUS
-                        </Button>
-                        <Button
-                            color="gold"
-                            onClick={nextStep}
-                            size="lg"
-                            className="px-10 font-bold tracking-widest"
-                            rightSection={<IconChevronRight size={20} />}
-                            disabled={(active === 0 && !selectedVehicle) || (active === 1 && (!idFile || sigPad.current?.isEmpty()))}
-                        >
-                            CONTINUE
-                        </Button>
-                    </Group>
-                )}
-            </motion.div>
-        </Container>
+                {
+                    active < 2 && (
+                        <Group justify="center" mt={60} gap="xl">
+                            <Button
+                                variant="subtle"
+                                color="gray"
+                                onClick={prevStep}
+                                disabled={active === 0}
+                                size="lg"
+                                leftSection={<IconChevronLeft size={20} />}
+                            >
+                                PREVIOUS
+                            </Button>
+                            <Button
+                                color="gold"
+                                onClick={nextStep}
+                                size="lg"
+                                className="px-10 font-bold tracking-widest"
+                                rightSection={<IconChevronRight size={20} />}
+                                disabled={(active === 0 && !selectedVehicle) || (active === 1 && (!idFile || sigPad.current?.isEmpty()))}
+                            >
+                                CONTINUE
+                            </Button>
+                        </Group>
+                    )
+                }
+            </motion.div >
+        </Container >
     );
 };
 

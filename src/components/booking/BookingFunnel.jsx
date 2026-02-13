@@ -9,8 +9,8 @@ import useBookingStore from '../../store/useBookingStore';
 
 const suites = [
     {
-        id: 'nordic-sky',
-        title: 'Nordic Sky Penthouse',
+        id: 'norden-sky',
+        title: 'Norden Sky Penthouse',
         price: 450,
         description: 'A panoramic sanctuary with floor-to-ceiling glass walls overlooking the city lights.',
         images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop'],
@@ -67,7 +67,7 @@ const BookingFunnel = ({ opened, onClose }) => {
                 <Group justify="space-between">
                     <Box>
                         <Title order={2} className="font-serif italic text-3xl">Reserve Your Sanctuary</Title>
-                        <Text size="sm" className="text-nordic-frost/60">The journey to quiet luxury begins here.</Text>
+                        <Text size="sm" className="text-norden-frost/60">The journey to quiet luxury begins here.</Text>
                     </Box>
                     <Button variant="subtle" color="gray" onClick={onClose} radius="xl">CLOSE</Button>
                 </Group>
@@ -169,7 +169,7 @@ const BookingFunnel = ({ opened, onClose }) => {
                             loading={isSyncing}
                             disabled={(active === 1 && !activeBooking?.suite) || (active === 2 && (!guestData.name || !guestData.email))}
                             rightSection={<IconChevronRight size={16} />}
-                            className="bg-nordic-gold text-nordic-dark hover:bg-nordic-gold/90"
+                            className="bg-norden-gold text-norden-dark hover:bg-norden-gold/90"
                         >
                             CONTINUE
                         </Button>

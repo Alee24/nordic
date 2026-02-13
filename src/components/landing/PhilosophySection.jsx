@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const PhilosophySection = () => {
     return (
-        <Box className="bg-nordic-dark py-32 overflow-hidden">
+        <Box className="bg-norden-dark py-32 overflow-hidden">
             <Container size="xl">
                 <Grid gutter={80} align="center">
                     <Grid.Col span={{ base: 12, md: 6 }}>
@@ -16,19 +16,19 @@ const PhilosophySection = () => {
                         >
                             <Stack gap="xl">
                                 <Box>
-                                    <Text className="text-nordic-gold font-bold tracking-[0.4em] text-xs mb-4">OUR PHILOSOPHY</Text>
+                                    <Text className="text-norden-gold font-bold tracking-[0.4em] text-xs mb-4">OUR PHILOSOPHY</Text>
                                     <Title order={2} className="font-serif italic text-5xl md:text-7xl leading-tight">
                                         The Art of <br /> Quiet Luxury
                                     </Title>
                                 </Box>
-                                <Text className="text-nordic-frost/70 text-lg leading-relaxed max-w-lg">
-                                    At Nordic Sweets, we believe that true luxury isn't shouted; it's felt.
+                                <Text className="text-norden-frost/70 text-lg leading-relaxed max-w-lg">
+                                    At Norden Suits, we believe that true luxury isn't shouted; it's felt.
                                     Inspired by the raw elegance of the Arctic landscape, our spaces are
                                     designed to provide a sanctuary for the soul—where minimalism
                                     meets uncompromising warmth.
                                 </Text>
                                 <Box className="pt-4">
-                                    <Text className="font-serif italic text-2xl border-l-2 border-nordic-gold pl-6 py-2">
+                                    <Text className="font-serif italic text-2xl border-l-2 border-norden-gold pl-6 py-2">
                                         "A sanctuary where time slows down, and the senses awaken."
                                     </Text>
                                 </Box>
@@ -58,7 +58,7 @@ const PhilosophySection = () => {
                                 whileInView={{ opacity: 0.2, x: 40, y: 40 }}
                                 transition={{ duration: 2 }}
                                 viewport={{ once: true }}
-                                className="absolute inset-0 border-2 border-nordic-gold rounded-2xl -z-0"
+                                className="absolute inset-0 border-2 border-norden-gold rounded-2xl -z-0"
                             />
                         </Box>
                     </Grid.Col>

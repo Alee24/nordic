@@ -25,29 +25,65 @@ const DashboardOverview = () => {
 
     const fetchDashboardData = async () => {
         setLoading(true);
+        setError(null);
         try {
-            const [statsRes, bookingsRes, revenueRes, occupancyRes] = await Promise.all([
+            const [statsRes, bookingsRes, revenueRes, occupancyRes] = await Promise.allSettled([
                 dashboardService.getStatistics(demoMode),
                 dashboardService.getRecentBookings(),
                 dashboardService.getMonthlyRevenue(),
                 dashboardService.getOccupancyTrends()
             ]);
 
-            if (!statsRes.success) throw new Error(statsRes.error);
+            const stats = statsRes.status === 'fulfilled' && statsRes.value.success ? statsRes.value.data : null;
 
-            setData({
-                stats: statsRes.data,
-                recentBookings: bookingsRes.data || [],
-                revenue: revenueRes.data || [],
-                occupancy: occupancyRes.data || []
-            });
+            // If stats fail and we are in demo mode, or if everything fails, we use mock data
+            if (!stats && demoMode) {
+                console.warn('API Unreachable, falling back to Hardcoded Mock Data');
+                setData({
+                    stats: {
+                        monthly_revenue: 124500,
+                        occupancy_rate: 85,
+                        revenue_per_room: 450,
+                        total_guests: 1240,
+                        today_checkins: 12,
+                        today_checkouts: 8,
+                        maintenance_alerts: 2
+                    },
+                    recentBookings: [
+                        { id: '1', guest_name: 'John Doe', suite_name: 'Presidential Suite', check_in: '2024-02-11', status: 'Confirmed', total_price: 1200 },
+                        { id: '2', guest_name: 'Jane Smith', suite_name: 'Ocean View Deluxe', check_in: '2024-02-12', status: 'Pending', total_price: 850 }
+                    ],
+                    revenue: [
+                        { month: 'Jan', revenue: 45000 },
+                        { month: 'Feb', revenue: 52000 },
+                        { month: 'Mar', revenue: 48000 }
+                    ],
+                    occupancy: []
+                });
+
+                notifications.show({
+                    title: 'Offline Mode',
+                    message: 'Showing demo data as the server is currently unreachable.',
+                    color: 'orange',
+                    icon: <IconInfoCircle />,
+                });
+            } else if (!stats) {
+                throw new Error('Could not connect to the server.');
+            } else {
+                setData({
+                    stats: stats,
+                    recentBookings: (bookingsRes.status === 'fulfilled' && bookingsRes.value.success ? bookingsRes.value.data : []) || [],
+                    revenue: (revenueRes.status === 'fulfilled' && revenueRes.value.success ? revenueRes.value.data : []) || [],
+                    occupancy: (occupancyRes.status === 'fulfilled' && occupancyRes.value.success ? occupancyRes.value.data : []) || []
+                });
+            }
 
         } catch (err) {
             console.error('Dashboard Load Error:', err);
             setError(err.message);
             notifications.show({
-                title: 'Error Loading Dashboard',
-                message: err.message,
+                title: 'Connection Error',
+                message: 'Failed to reach the server. Please check your API/Apache configuration.',
                 color: 'red',
                 icon: <IconInfoCircle />,
             });
@@ -64,22 +100,14 @@ const DashboardOverview = () => {
         );
     }
 
-    if (error) {
-        return (
-            <Center h={400}>
-                <Blockquote color="red" cite="System Error" icon={<IconInfoCircle />}>
-                    {error}. Please try refreshing the page.
-                </Blockquote>
-            </Center>
-        );
-    }
+    // Removed full-screen error block to allow Demo mode fallback to persist the UI
 
     return (
         <Stack gap="lg">
             <Group justify="space-between" align="end" className="mb-2">
                 <Box>
                     <Text size="xl" fw={800} className="text-gray-900 dark:text-white">Overview</Text>
-                    <Text size="sm" c="dimmed">Welcome back, here's what's happening at Nordic today.</Text>
+                    <Text size="sm" c="dimmed">Welcome back, here's what's happening at Norden today.</Text>
                 </Box>
                 <div className="flex bg-gray-100 p-1 rounded-lg opacity-80 cursor-not-allowed">
                     <button

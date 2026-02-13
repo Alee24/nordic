@@ -26,41 +26,63 @@ import {
     IconDeviceFloppy
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import { dashboardService } from '../../services/dashboardService';
 
 const Settings = () => {
-    const [demoMode, setDemoMode] = React.useState(true);
-    const handleSave = () => {
-        notifications.show({
-            title: 'Settings Saved',
-            message: 'Your property configurations have been updated successfully.',
-            color: 'green',
-            icon: <IconDeviceFloppy size={16} />
-        });
+    const [loading, setLoading] = React.useState(false);
+    const [settings, setSettings] = React.useState([]);
+    const [aviationKey, setAviationKey] = React.useState('');
+
+    React.useEffect(() => {
+        fetchSettings();
+    }, []);
+
+    const fetchSettings = async () => {
+        setLoading(true);
+        const result = await dashboardService.getSettings();
+        if (result.success) {
+            setSettings(result.data);
+            const keySetting = result.data.find(s => s.setting_key === 'aviationstack_api_key');
+            if (keySetting) setAviationKey(keySetting.setting_value);
+        }
+        setLoading(false);
+    };
+
+    const handleSave = async () => {
+        setLoading(true);
+        const result = await dashboardService.updateSetting('aviationstack_api_key', aviationKey, 'integrations');
+        if (result.success) {
+            notifications.show({
+                title: 'Settings Saved',
+                message: 'AviationStack configuration updated successfully.',
+                color: 'green',
+                icon: <IconDeviceFloppy size={16} />
+            });
+        } else {
+            notifications.show({
+                title: 'Error',
+                message: result.error,
+                color: 'red'
+            });
+        }
+        setLoading(false);
     };
 
     return (
         <Stack gap="xl">
             <Group justify="space-between">
                 <Box>
-                    <Text size="xl" fw={800}>System Settings</Text>
+                    <Title order={2} fw={800}>System Settings</Title>
                     <Text size="sm" c="dimmed">Configure property details, notifications, and application preferences.</Text>
                 </Box>
                 <Group gap="sm">
-                    <div className="flex bg-gray-100 p-1 rounded-lg opacity-80 cursor-not-allowed">
-                        <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all text-gray-400 bg-transparent"
-                        >
-                            LIVE
-                        </button>
-                        <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all bg-white shadow text-blue-600"
-                        >
-                            DEMO
-                        </button>
-                    </div>
-                    <Button size="md" radius="md" leftSection={<IconDeviceFloppy size={18} />} onClick={handleSave}>
+                    <Button
+                        size="md"
+                        radius="md"
+                        loading={loading}
+                        leftSection={<IconDeviceFloppy size={18} />}
+                        onClick={handleSave}
+                    >
                         Save Changes
                     </Button>
                 </Group>
@@ -74,14 +96,34 @@ const Settings = () => {
                             <Title order={4}>General Info</Title>
                         </Group>
                         <Stack>
-                            <TextInput label="Property Name" defaultValue="Nordic Suites & Residences" />
-                            <TextInput label="Contact Email" defaultValue="admin@nordic.com" />
+                            <TextInput label="Property Name" defaultValue="Norden Suits & Residences" />
+                            <TextInput label="Contact Email" defaultValue="admin@nordensuits.com" />
                             <Select
                                 label="Primary Currency"
                                 defaultValue="USD"
                                 data={['USD', 'EUR', 'GBP', 'KES']}
                             />
                             <TextInput label="Address" defaultValue="Nyali, Mombasa, Kenya" />
+                        </Stack>
+                    </Paper>
+
+                    <Paper withBorder p="xl" radius="md">
+                        <Group mb="lg">
+                            <IconWorld size={24} className="text-blue-500" />
+                            <Title order={4}>External Integrations</Title>
+                        </Group>
+                        <Stack>
+                            <TextInput
+                                label="AviationStack API Key"
+                                description="Required for guest flight status features"
+                                placeholder="Enter your API access key"
+                                value={aviationKey}
+                                onChange={(e) => setAviationKey(e.target.value)}
+                                type="password"
+                            />
+                            <Text size="xs" c="dimmed">
+                                Get your key at <a href="https://aviationstack.com" target="_blank" rel="noreferrer" className="text-blue-600 underline">aviationstack.com</a>
+                            </Text>
                         </Stack>
                     </Paper>
 

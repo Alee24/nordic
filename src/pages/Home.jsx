@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../components/ui/Button';
 import Section from '../components/ui/Section';
 import BookingWidget from '../components/ui/BookingWidget';
 import RoomCard from '../components/ui/RoomCard';
-import { Star, MapPin, ArrowRight, Utensils, Sparkles, Briefcase, Wifi, Coffee, Key, Headset, Clock, LogIn } from 'lucide-react';
+import { Star, MapPin, ArrowRight, Utensils, Sparkles, Briefcase, Wifi, Coffee, Key, Headset, Clock, LogIn, Home as HomeIcon } from 'lucide-react';
 import { Group, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
+import BookingFlowModal from '../components/booking/BookingFlowModal';
 
 const Home = () => {
+    const [inquiryOpened, setInquiryOpened] = useState(false);
     const rooms = [
         {
             id: 1,
@@ -19,7 +21,7 @@ const Home = () => {
         },
         {
             id: 2,
-            name: 'Nordic Penthouse',
+            name: 'Norden Penthouse',
             description: 'Duplex apartment with private terrace and meeting area.',
             price: 450,
             image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=2574&auto=format&fit=crop'
@@ -43,13 +45,13 @@ const Home = () => {
                     <img
                         /* src="/images/culinary_hero.jpg" */
                         src="https://baharibeach.net/wp-content/uploads/2024/12/BBH-121-scaled.jpg"
-                        alt="Nordic Suites - Ocean View"
+                        alt="Norden Suits - Ocean View"
                         className="w-full h-full object-cover"
                     />
                     {/* Darker overall overlay to ensure text visibility regardless of theme */}
-                    <div className="absolute inset-0 bg-nordic-dark-900/40" />
+                    <div className="absolute inset-0 bg-norden-dark-900/40" />
                     {/* Fixed dark gradient to protect white text in both themes - prevents washing out in light mode */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-nordic-dark-900/60 via-transparent to-nordic-dark-900/40" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-norden-dark-900/60 via-transparent to-norden-dark-900/40" />
                 </div>
 
                 {/* Hero Content */}
@@ -60,23 +62,29 @@ const Home = () => {
                         transition={{ duration: 0.8 }}
                     >
                         <div className="flex items-center justify-center gap-4 mb-6">
-                            <span className="h-[1px] w-12 bg-nordic-gold-500" />
-                            <span className="text-nordic-gold-500 uppercase tracking-[0.4em] text-xs md:text-sm font-extrabold drop-shadow-sm">Prime Coastal Residences • Nyali Beach</span>
-                            <span className="h-[1px] w-12 bg-nordic-gold-500" />
+                            <span className="h-[1px] w-12 bg-norden-gold-500" />
+                            <span className="text-norden-gold-500 uppercase tracking-[0.4em] text-xs md:text-sm font-extrabold drop-shadow-sm">Prime Coastal Residences • Nyali Beach</span>
+                            <span className="h-[1px] w-12 bg-norden-gold-500" />
                         </div>
 
                         <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif text-white mb-8 tracking-tight drop-shadow-2xl">
-                            Ocean Front <br /> <span className="italic text-nordic-gold-500">Excellence</span>
+                            Ocean Front <br /> <span className="italic text-norden-gold-500">Excellence</span>
                         </h1>
 
                         <p className="max-w-2xl mx-auto text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md">
-                            NORDIC SUITES elevates coastal living in our iconic 10-floor tower at Nyali Beach.
-                            The privacy of a luxury residence meets the unparalleled service of a 5-star hotel.
+                            NORDEN SUITS offers the freedom of a private high-end apartment with the
+                            security and convenience of a professional concierge. Your home away from home.
                         </p>
 
                         <div className="flex flex-col md:flex-row gap-6 justify-center">
-                            <Button className="bg-nordic-gold-500 text-nordic-dark-900">View Apartments</Button>
-                            <Button variant="outline" className="text-white border-white/40 hover:bg-white hover:text-nordic-dark-900">
+                            <Link to="/suites">
+                                <Button className="bg-norden-gold-500 text-norden-dark-900">View Apartments</Button>
+                            </Link>
+                            <Button
+                                variant="outline"
+                                className="text-white border-white/40 hover:bg-white hover:text-norden-dark-900"
+                                onClick={() => setInquiryOpened(true)}
+                            >
                                 Long Stay Rates
                             </Button>
                         </div>
@@ -98,7 +106,7 @@ const Home = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
                     >
-                        <div className="flex items-center gap-2 mb-4 text-nordic-gold-500">
+                        <div className="flex items-center gap-2 mb-4 text-norden-gold-500">
                             <Briefcase size={20} />
                             <span className="uppercase tracking-widest text-sm font-bold">Work & Rest</span>
                         </div>
@@ -106,23 +114,23 @@ const Home = () => {
                             Experience Freedom. <br /> <span className="text-gradient-gold italic">Hotel Soul.</span>
                         </h2>
                         <p className="text-theme-muted mb-6 leading-relaxed">
-                            We’ve combined the best of both worlds. Every NORDIC SUITES residence is a fully-equipped home,
+                            We’ve combined the best of both worlds. Every NORDEN SUITS residence is a fully-equipped home,
                             featuring a chef-grade kitchenette and a custom-designed ergonomic workspace,
                             all supported by our signature 24/7 concierge and housekeeping.
                         </p>
 
                         <div className="grid grid-cols-2 gap-6 mb-8">
                             <div className="flex items-center gap-3">
-                                <div className="bg-nordic-gold-500/10 p-2 rounded-full">
-                                    <Wifi size={18} className="text-nordic-gold-500" />
+                                <div className="bg-norden-gold-500/10 p-2 rounded-full">
+                                    <Wifi size={18} className="text-norden-gold-500" />
                                 </div>
                                 <span className="text-sm">Gbps Fiber Internet</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="bg-nordic-gold-500/10 p-2 rounded-full">
-                                    <Utensils size={18} className="text-nordic-gold-500" />
+                                <div className="bg-norden-gold-500/10 p-2 rounded-full">
+                                    <Sparkles size={18} className="text-norden-gold-500" />
                                 </div>
-                                <span className="text-sm">Private Chef Access</span>
+                                <span className="text-sm">On-site Laundry Service</span>
                             </div>
                         </div>
 
@@ -153,7 +161,7 @@ const Home = () => {
             {/* Hybrid Advantages - Why Nordic Suites? */}
             <Section className="relative overflow-hidden bg-theme-surface/30">
                 <div className="max-w-4xl mx-auto text-center mb-16">
-                    <h2 className="text-4xl md:text-6xl font-serif text-theme-text mb-6">Redefining the <br /><span className="italic text-nordic-gold-500">Extended Stay</span></h2>
+                    <h2 className="text-4xl md:text-6xl font-serif text-theme-text mb-6">Redefining the <br /><span className="italic text-norden-gold-500">Extended Stay</span></h2>
                     <p className="text-theme-muted text-lg">Experience the perfect synergy of residential privacy and five-star hospitality.</p>
                 </div>
 
@@ -179,9 +187,9 @@ const Home = () => {
                                 visible: { opacity: 1, y: 0 }
                             }}
                             whileHover={{ y: -10 }}
-                            className="p-8 border border-theme-border hover:border-nordic-gold-500 transition-all group bg-theme-bg"
+                            className="p-8 border border-theme-border hover:border-norden-gold-500 transition-all group bg-theme-bg"
                         >
-                            <div className="text-nordic-gold-500 mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <div className="text-norden-gold-500 mb-6 group-hover:scale-110 transition-transform duration-300">
                                 {feature.icon}
                             </div>
                             <h3 className="text-xl font-serif text-theme-text mb-3">{feature.title}</h3>
@@ -194,8 +202,8 @@ const Home = () => {
             {/* How It Works - The Process */}
             <Section>
                 <div className="text-center mb-20">
-                    <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Seamless Living</span>
-                    <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-4">The Nordic Suites Journey</h2>
+                    <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Seamless Living</span>
+                    <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-4">The Norden Suits Journey</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
@@ -207,7 +215,7 @@ const Home = () => {
                         { icon: <Clock size={32} />, title: "3. 24/7 Security", desc: "Professional on-site security for total peace of mind." }
                     ].map((item, idx) => (
                         <div key={idx} className="relative z-10 flex flex-col items-center text-center">
-                            <div className="w-16 h-16 bg-nordic-gold-500 text-nordic-dark-900 flex items-center justify-center rounded-full mb-6 shadow-lg">
+                            <div className="w-16 h-16 bg-norden-gold-500 text-norden-dark-900 flex items-center justify-center rounded-full mb-6 shadow-lg">
                                 {item.icon}
                             </div>
                             <h3 className="text-2xl font-serif text-theme-text mb-4">{item.title}</h3>
@@ -218,16 +226,16 @@ const Home = () => {
             </Section>
 
             {/* NEW: Arrival Portal Promotion */}
-            <Section className="bg-nordic-dark-900 overflow-hidden relative">
+            <Section className="bg-norden-dark-900 overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-                    <div className="w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-nordic-gold-500/30 via-transparent to-transparent" />
+                    <div className="w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-norden-gold-500/30 via-transparent to-transparent" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
                     <div className="relative z-10">
-                        <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Smart Concierge</span>
+                        <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Smart Concierge</span>
                         <h2 className="text-4xl md:text-6xl font-serif text-white mt-4 mb-8">
-                            Arrive on your <br /> <span className="italic text-nordic-gold-500">own terms.</span>
+                            Arrive on your <br /> <span className="italic text-norden-gold-500">own terms.</span>
                         </h2>
                         <p className="text-gray-400 text-lg mb-10 leading-relaxed">
                             Skip the front desk entirely. Use our interactive 3D arrival portal to select your residence,
@@ -235,17 +243,17 @@ const Home = () => {
                         </p>
                         <Group gap="xl">
                             <Link to="/apartments">
-                                <Button className="bg-nordic-gold-500 text-nordic-dark-900 font-bold px-10 py-4 h-auto text-lg rounded-full hover:bg-white transition-colors">
+                                <Button className="bg-norden-gold-500 text-norden-dark-900 font-bold px-10 py-4 h-auto text-lg rounded-full hover:bg-white transition-colors">
                                     Open Arrival Portal
                                 </Button>
                             </Link>
                             <div className="flex -space-x-3">
                                 {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-nordic-dark-900 overflow-hidden">
+                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-norden-dark-900 overflow-hidden">
                                         <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Guest" />
                                     </div>
                                 ))}
-                                <div className="w-10 h-10 rounded-full border-2 border-nordic-dark-900 bg-nordic-gold-500 flex items-center justify-center text-[10px] font-bold text-nordic-dark-900">
+                                <div className="w-10 h-10 rounded-full border-2 border-norden-dark-900 bg-norden-gold-500 flex items-center justify-center text-[10px] font-bold text-norden-dark-900">
                                     +500
                                 </div>
                             </div>
@@ -258,14 +266,14 @@ const Home = () => {
                         className="relative"
                     >
                         <div className="aspect-square bg-white/5 rounded-3xl backdrop-blur-3xl border border-white/10 p-8 flex flex-col items-center justify-center text-center">
-                            <div className="w-32 h-32 bg-nordic-gold-500 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(212,175,55,0.3)]">
-                                <LogIn size={64} className="text-nordic-dark-900" />
+                            <div className="w-32 h-32 bg-norden-gold-500 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(212,175,55,0.3)]">
+                                <LogIn size={64} className="text-norden-dark-900" />
                             </div>
                             <Text size="xl" fw={700} c="white" className="font-serif mb-4">Interactive 3D Check-in</Text>
                             <Text c="dimmed">Visual residence selection & digital key activation</Text>
                         </div>
                         {/* Decorative elements */}
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-nordic-gold-500/10 rounded-full blur-3xl" />
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-norden-gold-500/10 rounded-full blur-3xl" />
                         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl" />
                     </motion.div>
                 </div>
@@ -275,7 +283,7 @@ const Home = () => {
             <Section className="bg-theme-surface/50">
                 <div className="flex justify-between items-end mb-16">
                     <div>
-                        <span className="text-nordic-gold-500 uppercase tracking-widest text-sm font-bold">Residencies</span>
+                        <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Residencies</span>
                         <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-2">Executive Living</h2>
                     </div>
                     <Button variant="outline" className="hidden md:block">View All Apartments</Button>
@@ -308,50 +316,52 @@ const Home = () => {
                 </div>
             </Section>
 
-            {/* Dining & Wellness Teaser */}
+            {/* Essential Services Teaser */}
             <Section>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Dining */}
-                    <div className="group relative h-[600px] overflow-hidden rounded-xl">
+                    {/* Laundry */}
+                    <Link to="/laundry" className="group relative h-[600px] overflow-hidden rounded-xl block">
                         <img
-                            src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2574&auto=format&fit=crop"
-                            alt="Dining"
+                            src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?q=80&w=2671&auto=format&fit=crop"
+                            alt="Laundry Services"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-theme-bg/40 group-hover:bg-theme-bg/60 transition-colors duration-500" />
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                            <Utensils size={48} className="text-nordic-gold-500 mb-6 opacity-0 -translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500" />
-                            <h3 className="text-4xl font-serif text-theme-text mb-4">In-Room Dining</h3>
-                            <p className="text-theme-muted mb-8 max-w-xs opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
-                                Michelin-quality meals delivered to your private residence, or visit our sky-bar 10 floors above the sea.
+                            <Sparkles size={48} className="text-norden-gold-500 mb-6" />
+                            <h3 className="text-4xl font-serif text-theme-text mb-4">Professional Laundry</h3>
+                            <p className="text-theme-muted mb-8 max-w-xs">
+                                Valet wet-cleaning and self-service facilities available 24/7 for all residents.
                             </p>
                             <Button variant="outline" className="text-theme-text border-theme-border hover:bg-theme-text hover:text-theme-bg">
-                                View Menu
+                                View Services
                             </Button>
                         </div>
-                    </div>
+                    </Link>
 
-                    {/* Wellness */}
-                    <div className="group relative h-[600px] overflow-hidden rounded-xl">
+                    {/* Residences */}
+                    <Link to="/suites" className="group relative h-[600px] overflow-hidden rounded-xl block">
                         <img
-                            src="https://images.unsplash.com/photo-1583416750470-965b2707b355?q=80&w=2070&auto=format&fit=crop"
-                            alt="Coastal Spa"
+                            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop"
+                            alt="Residences"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-theme-bg/40 group-hover:bg-theme-bg/60 transition-colors duration-500" />
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                            <Sparkles size={48} className="text-nordic-gold-500 mb-6 opacity-0 -translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500" />
-                            <h2 className="text-4xl font-serif text-theme-text mb-4">Ocean View Wellness</h2>
-                            <p className="text-theme-muted mb-8 max-w-xs opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
-                                Full-service spa and infinity pool overlooking the horizon, exclusive to guests.
+                            <HomeIcon size={48} className="text-norden-gold-500 mb-6" />
+                            <h2 className="text-4xl font-serif text-theme-text mb-4">Premium Apartments</h2>
+                            <p className="text-theme-muted mb-8 max-w-xs">
+                                Discover our collection of fully-furnished luxury apartments for your next stay.
                             </p>
                             <Button variant="outline" className="text-theme-text border-theme-border hover:bg-theme-text hover:text-theme-bg">
-                                View Facilities
+                                Explore Suites
                             </Button>
                         </div>
-                    </div>
+                    </Link>
                 </div>
             </Section>
+
+            <BookingFlowModal opened={inquiryOpened} onClose={() => setInquiryOpened(false)} />
         </div>
     );
 };

@@ -42,7 +42,7 @@ const ApartmentsPage = () => {
 
             {/* Portal Header */}
             <div className="relative pt-32 pb-4 text-center z-10">
-                <Text size="xs" fw={900} tt="uppercase" c="nordic-gold-500" tracking={4} mb="xs">Guest Experience</Text>
+                <Text size="xs" fw={900} tt="uppercase" c="norden-gold-500" tracking={4} mb="xs">Guest Experience</Text>
                 <h1 className="text-4xl md:text-6xl font-serif text-theme-text font-bold">Digital Arrival Portal</h1>
                 <Text c="dimmed" mt="md" className="max-w-xl mx-auto">Select your reserved residence on the interactive model below to begin your self check-in process.</Text>
             </div>

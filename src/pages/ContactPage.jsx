@@ -42,10 +42,10 @@ const ContactPage = () => {
                 <div className="absolute inset-0 z-0">
                     <img
                         src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=2680&auto=format&fit=crop"
-                        alt="Nordic Suites Concierge"
+                        alt="Norden Suits Concierge"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-nordic-dark-900/60 backdrop-blur-[2px]" />
+                    <div className="absolute inset-0 bg-norden-dark-900/60 backdrop-blur-[2px]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-theme-bg via-transparent to-transparent" />
                 </div>
 
@@ -56,16 +56,16 @@ const ContactPage = () => {
                         transition={{ duration: 0.8 }}
                     >
                         <Group justify="center" gap="sm" mb="md">
-                            <span className="h-[1px] w-12 bg-nordic-gold-500" />
+                            <span className="h-[1px] w-12 bg-norden-gold-500" />
                             <Text c="gold.4" tt="uppercase" fw={800} lts={3} size="sm">Concierge & Inquiries</Text>
-                            <span className="h-[1px] w-12 bg-nordic-gold-500" />
+                            <span className="h-[1px] w-12 bg-norden-gold-500" />
                         </Group>
                         <Title order={1} className="text-5xl md:text-7xl font-serif text-white mb-6">
-                            Welcome <span className="italic text-nordic-gold-500">Home</span>
+                            Welcome <span className="italic text-norden-gold-500">Home</span>
                         </Title>
                         <Text c="gray.3" size="xl" className="max-w-2xl mx-auto font-light leading-relaxed">
                             Experience the pinnacle of coastal hospitality. Our dedicated concierge team is available 24/7
-                            to ensure your stay at Nordic Suites is nothing short of extraordinary.
+                            to ensure your stay at Norden Suits is nothing short of extraordinary.
                         </Text>
                     </motion.div>
                 </Container>
@@ -117,7 +117,7 @@ const ContactPage = () => {
                                         </ThemeIcon>
                                         <Box>
                                             <Text fw={700} className="text-theme-text">Email Inquiries</Text>
-                                            <Text size="sm" c="dimmed">concierge@nordicsuites.com</Text>
+                                            <Text size="sm" c="dimmed">concierge@nordensuits.com</Text>
                                         </Box>
                                     </Group>
                                 </Stack>
@@ -152,7 +152,7 @@ const ContactPage = () => {
                         >
                             <Paper shadow="xl" radius="xl" p={40} withBorder className="bg-theme-bg overflow-hidden relative">
                                 {submitted && (
-                                    <div className="absolute inset-0 z-20 bg-nordic-gold-500 flex flex-col items-center justify-center text-nordic-dark-900 animate-in fade-in zoom-in duration-500">
+                                    <div className="absolute inset-0 z-20 bg-norden-gold-500 flex flex-col items-center justify-center text-norden-dark-900 animate-in fade-in zoom-in duration-500">
                                         <ThemeIcon size={80} radius="xl" color="white" c="gold.6" mb="xl">
                                             <Send size={40} />
                                         </ThemeIcon>

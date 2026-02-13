@@ -83,16 +83,33 @@ const useBookingSystemStore = create((set, get) => ({
     fetchPropertyRooms: async (propertyId, checkIn, checkOut) => {
         set({ isLoading: true, error: null });
         try {
+            console.log('Fetching rooms for:', propertyId, checkIn, checkOut);
             const response = await bookingApi.getRoomsByProperty(propertyId, checkIn, checkOut);
+            console.log('Rooms response:', response);
+
+            // Extract rooms from response.data.data.rooms (Node.js API structure)
+            const rooms = response?.data?.data?.rooms || response?.data?.rooms || [];
+
+            console.log('Extracted rooms:', rooms);
+
             set({
-                propertyRooms: response.data,
+                propertyRooms: rooms,
                 isLoading: false
             });
+
+            if (rooms.length === 0) {
+                notifications.show({
+                    title: 'No Rooms Available',
+                    message: 'No rooms found for the selected dates. Please try different dates.',
+                    color: 'yellow',
+                });
+            }
         } catch (error) {
-            set({ error: error.message, isLoading: false });
+            console.error('Error fetching rooms:', error);
+            set({ error: error.message, isLoading: false, propertyRooms: [] });
             notifications.show({
-                title: 'Error',
-                message: error.message,
+                title: 'Error Loading Rooms',
+                message: error.message || 'Failed to load rooms. Please try again.',
                 color: 'red',
             });
         }
@@ -106,22 +123,32 @@ const useBookingSystemStore = create((set, get) => ({
     createBooking: async (bookingData) => {
         set({ isLoading: true, error: null });
         try {
+            console.log('Creating booking with data:', bookingData);
             const response = await bookingApi.createBooking(bookingData);
+            console.log('Booking response:', response);
+
+            // Extract booking data from response.data.data (Node.js API structure)
+            const booking = response?.data?.data || response?.data || {};
+
             set({
-                currentBooking: response.data,
+                currentBooking: booking,
                 isLoading: false
             });
+
             notifications.show({
-                title: 'Success!',
-                message: 'Booking created successfully',
+                title: 'Booking Confirmed!',
+                message: `Your booking reference is: ${booking.booking_reference}`,
                 color: 'green',
+                autoClose: 5000,
             });
-            return response.data;
+
+            return booking;
         } catch (error) {
+            console.error('Booking error:', error);
             set({ error: error.message, isLoading: false });
             notifications.show({
                 title: 'Booking Failed',
-                message: error.message,
+                message: error.message || 'Failed to create booking. Please try again.',
                 color: 'red',
             });
             throw error;
