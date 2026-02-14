@@ -1,0 +1,11 @@
+<VirtualHost *:80>
+    ServerName your-domain.com
+    ServerAdmin webmaster@your-domain.com
+
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+
+    ErrorLog ${APACHE_LOG_DIR}/nordic-error.log
+    CustomLog ${APACHE_LOG_DIR}/nordic-access.log combined
+</VirtualHost>
