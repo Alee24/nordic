@@ -63,12 +63,12 @@ const Home = () => {
                     >
                         <div className="flex items-center justify-center gap-4 mb-6">
                             <span className="h-[1px] w-12 bg-norden-gold-500" />
-                            <span className="text-norden-gold-500 uppercase tracking-[0.4em] text-xs md:text-sm font-extrabold drop-shadow-sm">Prime Coastal Residences • Nyali Beach</span>
+                            <span className="text-norden-gold-500 uppercase tracking-[0.4em] text-xs md:text-sm font-extrabold drop-shadow-sm">Luxury Residences • Nyali Beach</span>
                             <span className="h-[1px] w-12 bg-norden-gold-500" />
                         </div>
 
                         <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif text-white mb-8 tracking-tight drop-shadow-2xl">
-                            Ocean Front <br /> <span className="italic text-norden-gold-500">Excellence</span>
+                            Coastal <br /> <span className="italic text-norden-gold-500">Excellence</span>
                         </h1>
 
                         <p className="max-w-2xl mx-auto text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md">
