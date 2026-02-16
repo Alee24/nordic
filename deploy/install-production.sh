@@ -101,10 +101,12 @@ a2enmod proxy_http
 #########################
 log_info "Setting up MySQL database..."
 
-mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-mysql -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
-mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
-mysql -e "FLUSH PRIVILEGES;"
+mysql <<MYSQL_SCRIPT
+CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DB_PASS';
+GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
+FLUSH PRIVILEGES;
+MYSQL_SCRIPT
 
 log_info "Database created: $DB_NAME"
 log_info "Database user: $DB_USER"
@@ -153,10 +155,10 @@ chmod -R 775 "$APP_DIR/backend/uploads"
 #########################
 log_info "Initializing database schema..."
 
-# Import the SQL schema directly
+# Import the SQL schema directly using root
 if [ -f "$APP_DIR/backend/migrations/setup_nordic_db.sql" ]; then
     log_info "Importing database schema..."
-    mysql -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$APP_DIR/backend/migrations/setup_nordic_db.sql"
+    mysql "$DB_NAME" < "$APP_DIR/backend/migrations/setup_nordic_db.sql"
     log_info "Database schema imported successfully"
 else
     log_error "Migration file not found: $APP_DIR/backend/migrations/setup_nordic_db.sql"
