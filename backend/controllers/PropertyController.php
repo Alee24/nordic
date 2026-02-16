@@ -165,7 +165,7 @@ class PropertyController {
             SELECT COUNT(*) as booking_count
             FROM bookings
             WHERE room_id = :room_id
-            AND booking_status NOT IN ('cancelled')
+            AND status NOT IN ('cancelled')
             AND (
                 (check_in <= :check_in AND check_out > :check_in)
                 OR (check_in < :check_out AND check_out >= :check_out)

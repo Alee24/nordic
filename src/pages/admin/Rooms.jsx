@@ -109,7 +109,7 @@ const Rooms = () => {
                 return;
             }
 
-            const response = await dashboardService.getRoomStatus();
+            const response = await dashboardService.getRoomStatus(demoMode);
             if (response.success) {
                 setRooms(response.data);
             } else {
@@ -181,7 +181,7 @@ const Rooms = () => {
                 />
                 <Box className="absolute top-3 right-3">
                     <Badge size="lg" variant="filled" color="dark.4" className="backdrop-blur-md bg-opacity-70">
-                        ${Number(room.price_per_night).toLocaleString()}
+                        KES {Number(room.price_per_night).toLocaleString()}
                     </Badge>
                 </Box>
             </Card.Section>
@@ -260,20 +260,20 @@ const Rooms = () => {
                     <Text size="sm" c="dimmed">Manage building suites, pricing, and amenities.</Text>
                 </Box>
                 <Group gap="sm">
-                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                    <Paper shadow="xs" p={4} radius="xl" className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex">
                         <button
                             onClick={() => setDemoMode(false)}
-                            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${!demoMode ? 'bg-white shadow text-blue-600' : 'text-gray-400 bg-transparent hover:text-gray-600'}`}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             LIVE
                         </button>
                         <button
                             onClick={() => setDemoMode(true)}
-                            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${demoMode ? 'bg-white shadow text-blue-600' : 'text-gray-400 bg-transparent hover:text-gray-600'}`}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             DEMO
                         </button>
-                    </div>
+                    </Paper>
                     <Button
                         size="md"
                         radius="md"

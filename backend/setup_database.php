@@ -122,17 +122,25 @@
         <p class="subtitle">Initializing Booking System Database</p>
 
         <?php
-        $host = 'localhost';
-        $username = 'root';
-        $password = '';
-        $port = '3306';
+        // Use environment variables or defaults
+        $host = getenv('DB_HOST') ?: 'localhost';
+        $username = getenv('DB_USER') ?: 'root';
+        $password = getenv('DB_PASS') ?: '';
+        $port = getenv('DB_PORT') ?: '3306';
+        $dbname = getenv('DB_NAME') ?: 'nordic';
 
         try {
-            // Connect to MySQL
-            $conn = new PDO("mysql:host=$host;port=$port", $username, $password);
+            // Connect to MySQL (without specific database first)
+            $dsn = "mysql:host=$host;port=$port;charset=utf8mb4";
+            $conn = new PDO($dsn, $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
-            echo '<div class="status success"><span class="icon">✓</span> Connected to MySQL successfully</div>';
+            echo '<div class="status success"><span class="icon">✓</span> Connected to MySQL at ' . htmlspecialchars($host) . ' successfully</div>';
+
+            // Create database if not exists
+            $conn->exec("CREATE DATABASE IF NOT EXISTS `$dbname` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $conn->exec("USE `$dbname` ");
+            echo '<div class="status success"><span class="icon">✓</span> Using database: ' . htmlspecialchars($dbname) . '</div>';
             
             // Read and execute SQL file
             $sqlFile = __DIR__ . '/migrations/setup_nordic_db.sql';
@@ -172,7 +180,7 @@
             }
             
             // Verify data
-            $conn->exec("USE nordic");
+            $conn->exec("USE `$dbname` ");
             
             $propCount = $conn->query("SELECT COUNT(*) FROM properties")->fetchColumn();
             $roomCount = $conn->query("SELECT COUNT(*) FROM rooms")->fetchColumn();

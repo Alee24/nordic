@@ -23,10 +23,7 @@ const LoginPage = () => {
         setLoading(true);
 
         const result = await login(email, password);
-
-        if (result.success) {
-            navigate('/');
-        } else {
+        if (!result.success) {
             setError(result.message);
         }
         setLoading(false);
@@ -50,7 +47,7 @@ const LoginPage = () => {
                             <IconLock size={32} className="text-norden-dark-900" />
                         </Box>
                         <Title order={2} className="font-serif text-theme-text text-center">
-                            Norden Suits <br />
+                            Norden Suites <br />
                             <Text component="span" size="sm" tt="uppercase" tracking="widest" fw={700} c="gold">Administration</Text>
                         </Title>
                     </Stack>

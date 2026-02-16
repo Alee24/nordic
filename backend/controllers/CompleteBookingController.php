@@ -62,7 +62,7 @@ class CompleteBookingController {
                 (booking_reference, property_id, room_id, user_id, 
                  guest_name, guest_email, guest_phone,
                  check_in, check_out, num_adults, num_children, 
-                 special_requests, total_amount, booking_status, payment_status)
+                 special_requests, total_price, status, payment_status)
                 VALUES 
                 (:reference, :property_id, :room_id, :user_id,
                  :guest_name, :guest_email, :guest_phone,
@@ -143,7 +143,7 @@ class CompleteBookingController {
             foreach ($bookings as $booking) {
                 $booking['total_amount'] = (float)$booking['total_amount'];
 
-                if ($booking['booking_status'] === 'cancelled') {
+                if ($booking['status'] === 'cancelled') {
                     $cancelled[] = $booking;
                 } elseif ($booking['check_in'] > $today) {
                     $upcoming[] = $booking;

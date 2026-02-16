@@ -7,8 +7,7 @@ class ReviewController {
     private $conn;
 
     public function __construct() {
-        $this->db = new Database();
-        $this->conn = $this->db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
     }
 
     /**
@@ -33,7 +32,7 @@ class ReviewController {
                 SELECT * FROM bookings 
                 WHERE id = :booking_id 
                 AND user_id = :user_id 
-                AND booking_status = 'checked_out'
+                AND status = 'checked_out'
             ";
             $stmt = $this->conn->prepare($bookingQuery);
             $stmt->bindParam(':booking_id', $data['booking_id']);

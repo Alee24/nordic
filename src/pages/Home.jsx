@@ -45,7 +45,7 @@ const Home = () => {
                     <img
                         /* src="/images/culinary_hero.jpg" */
                         src="https://baharibeach.net/wp-content/uploads/2024/12/BBH-121-scaled.jpg"
-                        alt="Norden Suits - Ocean View"
+                        alt="Norden Suites - Ocean View"
                         className="w-full h-full object-cover"
                     />
                     {/* Darker overall overlay to ensure text visibility regardless of theme */}
@@ -72,7 +72,7 @@ const Home = () => {
                         </h1>
 
                         <p className="max-w-2xl mx-auto text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md">
-                            NORDEN SUITS offers the freedom of a private high-end apartment with the
+                            NORDEN SUITES offers the freedom of a private high-end apartment with the
                             security and convenience of a professional concierge. Your home away from home.
                         </p>
 
@@ -114,7 +114,7 @@ const Home = () => {
                             Experience Freedom. <br /> <span className="text-gradient-gold italic">Hotel Soul.</span>
                         </h2>
                         <p className="text-theme-muted mb-6 leading-relaxed">
-                            We’ve combined the best of both worlds. Every NORDEN SUITS residence is a fully-equipped home,
+                            We’ve combined the best of both worlds. Every NORDEN SUITES residence is a fully-equipped home,
                             featuring a chef-grade kitchenette and a custom-designed ergonomic workspace,
                             all supported by our signature 24/7 concierge and housekeeping.
                         </p>
@@ -203,7 +203,7 @@ const Home = () => {
             <Section>
                 <div className="text-center mb-20">
                     <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Seamless Living</span>
-                    <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-4">The Norden Suits Journey</h2>
+                    <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-4">The Norden Suites Journey</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">

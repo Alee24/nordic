@@ -96,8 +96,8 @@ const Settings = () => {
                             <Title order={4}>General Info</Title>
                         </Group>
                         <Stack>
-                            <TextInput label="Property Name" defaultValue="Norden Suits & Residences" />
-                            <TextInput label="Contact Email" defaultValue="admin@nordensuits.com" />
+                            <TextInput label="Property Name" defaultValue="Norden Suites & Residences" />
+                            <TextInput label="Contact Email" defaultValue="admin@nordensuites.com" />
                             <Select
                                 label="Primary Currency"
                                 defaultValue="USD"

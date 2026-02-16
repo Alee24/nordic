@@ -15,7 +15,7 @@ const statsConfig = [
         value: 'monthly_revenue',
         diff: 18,
         color: 'green',
-        prefix: '$'
+        prefix: 'KES '
     },
     {
         title: 'Occupancy Rate',
@@ -31,7 +31,7 @@ const statsConfig = [
         value: 'revenue_per_room',
         diff: 8,
         color: 'indigo',
-        prefix: '$'
+        prefix: 'KES '
     },
     {
         title: 'Total Guests',

@@ -65,7 +65,7 @@ const CheckInManagement = () => {
     const [loading, setLoading] = useState(true);
     const [rooms, setRooms] = useState([]);
     const [bookings, setBookings] = useState([]);
-    const [demoMode, setDemoMode] = useState(true);
+    const [demoMode, setDemoMode] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -84,8 +84,8 @@ const CheckInManagement = () => {
             }
 
             const [roomsRes, bookingsRes] = await Promise.all([
-                dashboardService.getRoomStatus(),
-                dashboardService.getAllBookings({ status: 'confirmed' }) // Only show confirmed ones ready for check-in
+                dashboardService.getRoomStatus(demoMode),
+                dashboardService.getAllBookings({ status: 'confirmed' }, demoMode) // Only show confirmed ones ready for check-in
             ]);
 
             if (roomsRes.success) setRooms(roomsRes.data);
@@ -249,20 +249,20 @@ const CheckInManagement = () => {
                     <Text size="sm" c="dimmed">Monitor room readiness and finalize guest arrivals.</Text>
                 </Box>
                 <Group gap="sm">
-                    <div className="flex bg-gray-100 p-1 rounded-lg opacity-80 cursor-not-allowed">
+                    <Paper shadow="xs" p={4} radius="xl" className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex">
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all text-gray-400 bg-transparent"
+                            onClick={() => setDemoMode(false)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             LIVE
                         </button>
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all bg-white shadow text-blue-600"
+                            onClick={() => setDemoMode(true)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             DEMO
                         </button>
-                    </div>
+                    </Paper>
                     <Button
                         variant="subtle"
                         leftSection={<IconRefresh size={16} />}

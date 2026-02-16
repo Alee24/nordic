@@ -6,8 +6,7 @@ class PaymentService {
     private $conn;
 
     public function __construct() {
-        $this->db = new Database();
-        $this->conn = $this->db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
     }
 
     public function getProviderSettings($provider) {
@@ -235,7 +234,7 @@ class PaymentService {
     }
 
     public function updateBookingPaymentStatus($bookingId, $status) {
-        $stmt = $this->conn->prepare("UPDATE bookings SET payment_status = :p_status, booking_status = 'confirmed' WHERE id = :id");
+        $stmt = $this->conn->prepare("UPDATE bookings SET payment_status = :p_status, status = 'confirmed' WHERE id = :id");
         $paymentStatus = ($status === 'completed') ? 'paid' : 'unpaid';
         $stmt->bindParam(':p_status', $paymentStatus);
         $stmt->bindParam(':id', $bookingId);

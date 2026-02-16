@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Stack, Loader, Center, Blockquote, Text, Group, Box, Button, SimpleGrid } from '@mantine/core';
+import { Grid, Stack, Loader, Center, Blockquote, Text, Group, Box, Button, SimpleGrid, Paper, ThemeIcon } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { IconInfoCircle, IconAlertCircle } from '@tabler/icons-react';
 
 import { dashboardService } from '../../../services/dashboardService';
 import { StatsGrid } from './StatsGrid';
@@ -11,7 +11,7 @@ import { RecentBookingsTable } from './RecentBookingsTable';
 const DashboardOverview = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [demoMode, setDemoMode] = useState(true); // Default to true for WOW effect
+    const [demoMode, setDemoMode] = useState(false); // Default to live
     const [data, setData] = useState({
         stats: null,
         recentBookings: [],
@@ -29,52 +29,51 @@ const DashboardOverview = () => {
         try {
             const [statsRes, bookingsRes, revenueRes, occupancyRes] = await Promise.allSettled([
                 dashboardService.getStatistics(demoMode),
-                dashboardService.getRecentBookings(),
-                dashboardService.getMonthlyRevenue(),
-                dashboardService.getOccupancyTrends()
+                dashboardService.getRecentBookings(10, demoMode),
+                dashboardService.getMonthlyRevenue(12),
+                dashboardService.getOccupancyTrends(30)
             ]);
 
+            console.log("Dashboard Data Fetch Results:", { statsRes, bookingsRes, revenueRes, occupancyRes });
+
             const stats = statsRes.status === 'fulfilled' && statsRes.value.success ? statsRes.value.data : null;
+            const bookings = bookingsRes.status === 'fulfilled' && bookingsRes.value.success ? bookingsRes.value.data : [];
+            const revenue = revenueRes.status === 'fulfilled' && revenueRes.value.success ? revenueRes.value.data : [];
+            const occupancy = occupancyRes.status === 'fulfilled' && occupancyRes.value.success ? occupancyRes.value.data : [];
 
-            // If stats fail and we are in demo mode, or if everything fails, we use mock data
+            if (!stats && !demoMode) {
+                // If it's not demo mode and stats failed, we really can't show much, but let's try to not crash
+                throw new Error('Crucial dashboard data missing. Please check your API/Apache connection.');
+            }
+
+            setData({
+                stats: stats || (demoMode ? {
+                    monthly_revenue: 124500,
+                    occupancy_rate: 85,
+                    revenue_per_room: 450,
+                    total_guests: 1240,
+                    today_checkins: 12,
+                    today_checkouts: 8,
+                    maintenance_alerts: 2
+                } : null),
+                recentBookings: bookings.length > 0 ? bookings : (demoMode ? [
+                    { id: '1', guest_name: 'John Doe', suite_name: 'Presidential Suite', check_in: '2024-02-11', status: 'Confirmed', total_price: 1200 },
+                    { id: '2', guest_name: 'Jane Smith', suite_name: 'Ocean View Deluxe', check_in: '2024-02-12', status: 'Pending', total_price: 850 }
+                ] : []),
+                revenue: revenue.length > 0 ? revenue : (demoMode ? [
+                    { month: 'Jan', revenue: 45000 },
+                    { month: 'Feb', revenue: 52000 },
+                    { month: 'Mar', revenue: 48000 }
+                ] : []),
+                occupancy: occupancy
+            });
+
             if (!stats && demoMode) {
-                console.warn('API Unreachable, falling back to Hardcoded Mock Data');
-                setData({
-                    stats: {
-                        monthly_revenue: 124500,
-                        occupancy_rate: 85,
-                        revenue_per_room: 450,
-                        total_guests: 1240,
-                        today_checkins: 12,
-                        today_checkouts: 8,
-                        maintenance_alerts: 2
-                    },
-                    recentBookings: [
-                        { id: '1', guest_name: 'John Doe', suite_name: 'Presidential Suite', check_in: '2024-02-11', status: 'Confirmed', total_price: 1200 },
-                        { id: '2', guest_name: 'Jane Smith', suite_name: 'Ocean View Deluxe', check_in: '2024-02-12', status: 'Pending', total_price: 850 }
-                    ],
-                    revenue: [
-                        { month: 'Jan', revenue: 45000 },
-                        { month: 'Feb', revenue: 52000 },
-                        { month: 'Mar', revenue: 48000 }
-                    ],
-                    occupancy: []
-                });
-
                 notifications.show({
                     title: 'Offline Mode',
-                    message: 'Showing demo data as the server is currently unreachable.',
+                    message: 'Using simulated data as the live API is currently unreachable.',
                     color: 'orange',
                     icon: <IconInfoCircle />,
-                });
-            } else if (!stats) {
-                throw new Error('Could not connect to the server.');
-            } else {
-                setData({
-                    stats: stats,
-                    recentBookings: (bookingsRes.status === 'fulfilled' && bookingsRes.value.success ? bookingsRes.value.data : []) || [],
-                    revenue: (revenueRes.status === 'fulfilled' && revenueRes.value.success ? revenueRes.value.data : []) || [],
-                    occupancy: (occupancyRes.status === 'fulfilled' && occupancyRes.value.success ? occupancyRes.value.data : []) || []
                 });
             }
 
@@ -100,7 +99,26 @@ const DashboardOverview = () => {
         );
     }
 
-    // Removed full-screen error block to allow Demo mode fallback to persist the UI
+    if (error) {
+        return (
+            <Center h={400}>
+                <Stack align="center" gap="md">
+                    <ThemeIcon size={64} radius="xl" color="red" variant="light">
+                        <IconAlertCircle size={32} />
+                    </ThemeIcon>
+                    <Text fw={800} size="xl">Content Error</Text>
+                    <Text c="dimmed" maw={400} ta="center">{error}</Text>
+                    <Group mt="md">
+                        <Button variant="light" color="blue" onClick={fetchDashboardData}>Retry Connection</Button>
+                        <Button variant="filled" color="blue" onClick={() => {
+                            setDemoMode(true);
+                            setError(null);
+                        }}>Enter Demo Mode</Button>
+                    </Group>
+                </Stack>
+            </Center>
+        );
+    }
 
     return (
         <Stack gap="lg">
@@ -109,20 +127,20 @@ const DashboardOverview = () => {
                     <Text size="xl" fw={800} className="text-gray-900 dark:text-white">Overview</Text>
                     <Text size="sm" c="dimmed">Welcome back, here's what's happening at Norden today.</Text>
                 </Box>
-                <div className="flex bg-gray-100 p-1 rounded-lg opacity-80 cursor-not-allowed">
+                <Paper shadow="xs" p={4} radius="xl" className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex">
                     <button
-                        disabled
-                        className="px-3 py-1 text-xs font-bold rounded-md transition-all text-gray-400 bg-transparent"
+                        onClick={() => setDemoMode(false)}
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                     >
                         LIVE
                     </button>
                     <button
-                        disabled
-                        className="px-3 py-1 text-xs font-bold rounded-md transition-all bg-white shadow text-blue-600"
+                        onClick={() => setDemoMode(true)}
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                     >
                         DEMO
                     </button>
-                </div>
+                </Paper>
             </Group>
 
             <StatsGrid data={data.stats} />

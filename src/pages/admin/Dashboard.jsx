@@ -10,7 +10,10 @@ import {
     useMantineTheme,
     NavLink,
     LoadingOverlay,
-    ScrollArea
+    ScrollArea,
+    Paper,
+    Stack,
+    Button
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -39,11 +42,43 @@ import PaymentSettingsPage from './PaymentSettingsPage';
 import FlightTracker from './FlightTracker';
 import useManagementStore from '../../store/useManagementStore';
 
+// Local Error Boundary for Dashboard Content
+class DashboardErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <Paper p="xl" withBorder radius="md" style={{ background: '#fff5f5' }}>
+                    <Stack align="center" gap="md">
+                        <Text fw={900} size="xl" c="red">Sub-component Crash</Text>
+                        <Text size="sm" ta="center">One of the dashboard modules failed to load.</Text>
+                        <pre style={{ fontSize: '12px', color: '#e03131', background: '#fff', padding: '10px', borderRadius: '4px' }}>
+                            {this.state.error?.toString()}
+                        </pre>
+                        <Button variant="light" color="red" onClick={() => this.setState({ hasError: false, error: null })}>
+                            Try Re-rendering
+                        </Button>
+                    </Stack>
+                </Paper>
+            );
+        }
+        return this.props.children;
+    }
+}
+
 const Dashboard = ({ onExit }) => {
-    const { user, logout } = useManagementStore();
+    const { user, logout, isAdmin } = useManagementStore();
     const [opened, { toggle }] = useDisclosure();
     const theme = useMantineTheme();
     const [active, setActive] = useState('Overview');
+
+    console.log("Dashboard Rendering - Current Mode:", active, "IsAdmin:", isAdmin);
 
     const handleLogout = async () => {
         await logout();
@@ -93,6 +128,7 @@ const Dashboard = ({ onExit }) => {
             case 'Settings':
                 return <Settings />;
             default:
+                console.log("Dashboard - Rendering default (Overview)");
                 return <DashboardOverview />;
         }
     };
@@ -113,11 +149,11 @@ const Dashboard = ({ onExit }) => {
                     <Group>
                         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
                         <Group gap="xs">
-                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
                                 N
                             </div>
                             <Text fw={900} size="xl" className="text-gray-900 dark:text-white tracking-tight">
-                                NORDIC<span className="text-blue-600">ADMIN</span>
+                                NORDEN<span className="text-blue-600">SUITES</span>
                             </Text>
                         </Group>
                     </Group>
@@ -168,7 +204,9 @@ const Dashboard = ({ onExit }) => {
             </AppShell.Navbar>
 
             <AppShell.Main className="bg-gray-50 dark:bg-gray-900 min-h-screen">
-                {renderContent()}
+                <DashboardErrorBoundary>
+                    {renderContent()}
+                </DashboardErrorBoundary>
             </AppShell.Main>
         </AppShell>
     );

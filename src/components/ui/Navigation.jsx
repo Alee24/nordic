@@ -50,7 +50,7 @@ const Navigation = () => {
                     </div>
                     <div className="flex items-baseline gap-2">
                         <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none drop-shadow-sm transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDEN</span>
-                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none drop-shadow-sm transition-colors duration-500 ${scrolled ? 'text-norden-gold-500' : 'text-norden-gold-500'}`}>SUITS</span>
+                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none drop-shadow-sm transition-colors duration-500 ${scrolled ? 'text-norden-gold-500' : 'text-norden-gold-500'}`}>SUITES</span>
                     </div>
                 </Link>
 

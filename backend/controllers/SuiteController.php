@@ -15,6 +15,18 @@ class SuiteController {
      */
     public function getAllSuites() {
         try {
+            $useDemoData = isset($_GET['demo']) && $_GET['demo'] === 'true';
+
+            if ($useDemoData) {
+                $mockSuites = [
+                    ['id' => 'suite-101', 'title' => 'Royal Ocean Suite', 'price_per_night' => 450.00, 'capacity' => 2, 'status' => 'available'],
+                    ['id' => 'suite-102', 'title' => 'Executive City View', 'price_per_night' => 350.00, 'capacity' => 2, 'status' => 'occupied'],
+                    ['id' => 'suite-201', 'title' => 'Family Garden Suite', 'price_per_night' => 250.00, 'capacity' => 4, 'status' => 'cleaning'],
+                ];
+                sendSuccess($mockSuites, 'Demo suites retrieved successfully');
+                return;
+            }
+
             // Map rooms to the "suites" structure the dashboard expects
             $query = "SELECT 
                 id, 
@@ -24,7 +36,7 @@ class SuiteController {
                 description, 
                 amenities as features, 
                 photos as images,
-                'available' as status 
+                status 
                 FROM rooms 
                 ORDER BY base_price ASC";
                 
@@ -66,7 +78,7 @@ class SuiteController {
                 description, 
                 amenities as features, 
                 photos as images,
-                'available' as status 
+                status 
                 FROM rooms WHERE id = :suite_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':suite_id', $suiteId);
@@ -127,7 +139,7 @@ class SuiteController {
                 SELECT COUNT(*) as booking_count 
                 FROM bookings 
                 WHERE room_id = :suite_id 
-                AND booking_status NOT IN ('cancelled')
+                AND status NOT IN ('cancelled')
                 AND (
                     (check_in <= :check_in AND check_out > :check_in)
                     OR (check_in < :check_out AND check_out >= :check_out)

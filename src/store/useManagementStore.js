@@ -43,6 +43,7 @@ const useManagementStore = create((set, get) => ({
     },
 
     checkAuth: async () => {
+        set({ loading: true });
         try {
             const response = await axios.get(`${API_BASE}/auth.php/check`);
             if (response.data.success) {
@@ -50,10 +51,13 @@ const useManagementStore = create((set, get) => ({
                     isAdmin: response.data.data.user.account_type === 'admin',
                     user: response.data.data.user
                 });
+            } else {
+                set({ isAdmin: false, user: null });
             }
-            set({ loading: false });
         } catch (error) {
-            set({ isAdmin: false, user: null, loading: false });
+            set({ isAdmin: false, user: null });
+        } finally {
+            set({ loading: false });
         }
     },
 

@@ -1,6 +1,8 @@
 services:
   frontend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8542:8542"
     volumes:
@@ -12,13 +14,13 @@ services:
       - backend
 
   backend:
-    build: 
+    build:
       context: .
       dockerfile: backend/Dockerfile
     ports:
       - "8569:80"
     volumes:
-      - .:/var/www/html
+      - ./backend:/var/www/html/backend
     environment:
       - DB_HOST=db
       - DB_NAME=nordic_db

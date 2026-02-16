@@ -7,8 +7,7 @@ class GuestController {
     private $conn;
 
     public function __construct() {
-        $this->db = new Database();
-        $this->conn = $this->db->getConnection();
+        $this->conn = Database::getInstance()->getConnection();
     }
 
     /**
@@ -33,7 +32,7 @@ class GuestController {
             }
 
             $stmt->execute();
-            $guests = $stmt->fetchAll();
+            $guests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             sendSuccess($guests, 'Guests retrieved successfully');
 
@@ -54,7 +53,7 @@ class GuestController {
             $stmt->bindParam(':guest_id', $guestId);
             $stmt->execute();
 
-            $guest = $stmt->fetch();
+            $guest = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$guest) {
                 sendError('Guest not found', 404);
@@ -65,7 +64,7 @@ class GuestController {
                 SELECT 
                     b.*,
                     s.title as suite_name,
-                    s.price_per_night
+                    s.price as price_per_night
                 FROM bookings b
                 LEFT JOIN suites s ON b.suite_id = s.id
                 WHERE b.guest_id = :guest_id
@@ -76,7 +75,7 @@ class GuestController {
             $bookingsStmt->bindParam(':guest_id', $guestId);
             $bookingsStmt->execute();
 
-            $guest['bookings'] = $bookingsStmt->fetchAll();
+            $guest['bookings'] = $bookingsStmt->fetchAll(PDO::FETCH_ASSOC);
 
             sendSuccess($guest, 'Guest retrieved successfully');
 
@@ -114,31 +113,20 @@ class GuestController {
                 sendError('Email already exists', 409);
             }
 
-            // Generate guest ID
-            $guestId = $this->generateUUID();
-
             // Insert guest
             $insertQuery = "
                 INSERT INTO guests 
-                (id, full_name, email, id_proof_url, signature_url, flight_number, preferred_vehicle, created_at)
+                (full_name, email, created_at)
                 VALUES 
-                (:id, :full_name, :email, :id_proof_url, :signature_url, :flight_number, :preferred_vehicle, NOW())
+                (:full_name, :email, NOW())
             ";
 
             $stmt = $this->conn->prepare($insertQuery);
-            $stmt->bindParam(':id', $guestId);
             $stmt->bindParam(':full_name', $data['full_name']);
             $stmt->bindParam(':email', $data['email']);
-            $idProofUrl = $data['id_proof_url'] ?? null;
-            $stmt->bindParam(':id_proof_url', $idProofUrl);
-            $signatureUrl = $data['signature_url'] ?? null;
-            $stmt->bindParam(':signature_url', $signatureUrl);
-            $flightNumber = $data['flight_number'] ?? null;
-            $stmt->bindParam(':flight_number', $flightNumber);
-            $preferredVehicle = $data['preferred_vehicle'] ?? null;
-            $stmt->bindParam(':preferred_vehicle', $preferredVehicle);
 
             if ($stmt->execute()) {
+                $guestId = $this->conn->lastInsertId();
                 sendSuccess([
                     'guest_id' => $guestId,
                     'full_name' => $data['full_name'],

@@ -3,9 +3,7 @@
 -- Database: nordic
 -- =====================================================
 
--- Create database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS `nordic` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `nordic`;
+-- Database will be selected by the setup script
 
 SET FOREIGN_KEY_CHECKS = 0;
 

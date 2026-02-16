@@ -92,6 +92,11 @@ try {
         $suiteController->updateSuiteStatus($id, $status);
     }
 
+    // GET /api/dashboard.php?action=guests
+    elseif ($method === 'GET' && $action === 'guests') {
+        $controller->getRecentGuests(); // Reusing or adding a method in DashboardController
+    }
+
     // POST /api/dashboard.php?action=finalize-checkin&id={id}
     elseif ($method === 'POST' && $action === 'finalize-checkin') {
         $id = $_GET['id'] ?? null;

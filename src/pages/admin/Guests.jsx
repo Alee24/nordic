@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Paper,
     Text,
@@ -23,6 +23,8 @@ import {
     IconDotsVertical,
     IconUserPlus
 } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
+import { dashboardService } from '../../services/dashboardService';
 
 const mockGuests = [
     { id: 1, name: 'John Smith', email: 'john@example.com', phone: '+1 234 567 890', bookings: 4, lastStay: '2024-01-15', status: 'Active' },
@@ -33,11 +35,42 @@ const mockGuests = [
 
 const Guests = () => {
     const [search, setSearch] = useState('');
-    const [demoMode, setDemoMode] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [guests, setGuests] = useState([]);
+    const [demoMode, setDemoMode] = useState(false);
 
-    const filteredGuests = mockGuests.filter(g =>
-        g.name.toLowerCase().includes(search.toLowerCase()) ||
-        g.email.toLowerCase().includes(search.toLowerCase())
+    useEffect(() => {
+        loadData();
+    }, [demoMode]);
+
+    const loadData = async () => {
+        setLoading(true);
+        try {
+            if (demoMode) {
+                setTimeout(() => {
+                    setGuests(mockGuests);
+                    setLoading(false);
+                }, 500);
+                return;
+            }
+
+            const res = await dashboardService.getGuests(demoMode);
+            if (res.success) {
+                setGuests(res.data || []);
+            } else {
+                throw new Error(res.error);
+            }
+        } catch (error) {
+            notifications.show({ title: 'Error', message: 'Failed to sync guest directory', color: 'red' });
+            setGuests([]);
+        } finally {
+            if (!demoMode) setLoading(false);
+        }
+    };
+
+    const filteredGuests = (Array.isArray(guests) ? guests : []).filter(g =>
+        (g.name || '').toLowerCase().includes(search.toLowerCase()) ||
+        (g.email || '').toLowerCase().includes(search.toLowerCase())
     );
 
     const rows = filteredGuests.map((guest) => (
@@ -93,20 +126,20 @@ const Guests = () => {
                     <Text size="sm" c="dimmed">Manage guest profiles and booking history.</Text>
                 </Box>
                 <Group gap="sm">
-                    <div className="flex bg-gray-100 p-1 rounded-lg opacity-80 cursor-not-allowed">
+                    <Paper shadow="xs" p={4} radius="xl" className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex">
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all text-gray-400 bg-transparent"
+                            onClick={() => setDemoMode(false)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             LIVE
                         </button>
                         <button
-                            disabled
-                            className="px-3 py-1 text-xs font-bold rounded-md transition-all bg-white shadow text-blue-600"
+                            onClick={() => setDemoMode(true)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                         >
                             DEMO
                         </button>
-                    </div>
+                    </Paper>
                     <Button variant="filled" color="blue" leftSection={<IconUserPlus size={18} />}>
                         Register Guest
                     </Button>

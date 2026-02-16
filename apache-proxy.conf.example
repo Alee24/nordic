@@ -1,11 +1,12 @@
 <VirtualHost *:80>
-    ServerName your-domain.com
-    ServerAdmin webmaster@your-domain.com
+    ServerName www.nordensuites.com
+    ServerAlias nordensuites.com
+    ServerAdmin webmaster@nordensuites.com
 
     ProxyPreserveHost On
-    ProxyPass / http://localhost:8080/
-    ProxyPassReverse / http://localhost:8080/
+    ProxyPass / http://localhost:80/
+    ProxyPassReverse / http://localhost:80/
 
-    ErrorLog ${APACHE_LOG_DIR}/nordic-error.log
-    CustomLog ${APACHE_LOG_DIR}/nordic-access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/norden-error.log
+    CustomLog ${APACHE_LOG_DIR}/norden-access.log combined
 </VirtualHost>

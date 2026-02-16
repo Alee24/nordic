@@ -21,6 +21,40 @@ import BookingSearchPage from './pages/BookingSearchPage';
 import PropertyDetailsPage from './pages/PropertyDetailsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PaymentSettingsPage from './pages/admin/PaymentSettingsPage';
+import SocialProof from './components/ui/SocialProof';
+
+// Simple Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("CRITICAL UI ERROR:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '40px', background: '#1a1b1e', color: '#ff6b6b', minHeight: '100vh', fontFamily: 'monospace' }}>
+          <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Something went wrong.</h1>
+          <pre style={{ background: '#25262b', padding: '20px', borderRadius: '8px', overflow: 'auto' }}>
+            {this.state.error?.toString()}
+          </pre>
+          <button
+            onClick={() => window.location.reload()}
+            style={{ marginTop: '20px', padding: '10px 20px', background: '#228be6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          >
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function App() {
   const { isAdmin, currentView, setView, checkAuth, loading } = useManagementStore();
@@ -29,50 +63,52 @@ function App() {
     checkAuth();
   }, [checkAuth]);
 
-  /* 
   if (loading) {
     return <LoadingOverlay visible loaderProps={{ color: 'gold', size: 'xl' }} overlayBlur={2} />;
   }
-  */
 
-  if (currentView === 'staff') {
-    if (!isAdmin) {
-      return <LoginPage />;
-    }
-    return <Dashboard onExit={() => setView('guest')} />;
-  }
+  console.log("App Rendering - View:", currentView, "IsAdmin:", isAdmin);
 
   return (
-    <Box className="relative">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/suites" element={<SuitesPage />} />
-        <Route path="/suites/:id" element={<SuiteDetailsPage />} />
-        <Route path="/rooms" element={<RoomsPage />} />
-        <Route path="/dorms" element={<RoomsPage />} />
-        <Route path="/apartments" element={<ApartmentsPage />} />
-        <Route path="/laundry" element={<LaundryPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/experiences" element={<ExperiencesPage />} />
-        <Route path="/concierge" element={<ConciergePage />} />
-        <Route path="/booking-search" element={<BookingSearchPage />} />
-        <Route path="/property/:id" element={<PropertyDetailsPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/admin/login" element={isAdmin ? <Navigate to="/" /> : <LoginPage />} />
-        <Route path="/admin/payment-settings" element={isAdmin ? <PaymentSettingsPage /> : <LoginPage />} />
-        <Route path="/my-booking" element={<BookingLookupPage />} />
-      </Routes>
+    <ErrorBoundary>
+      <Box className="relative">
+        {currentView === 'staff' ? (
+          !isAdmin ? <LoginPage /> : <Dashboard onExit={() => setView('guest')} />
+        ) : (
+          <>
+            <SocialProof />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/suites" element={<SuitesPage />} />
+              <Route path="/suites/:id" element={<SuiteDetailsPage />} />
+              <Route path="/rooms" element={<RoomsPage />} />
+              <Route path="/dorms" element={<RoomsPage />} />
+              <Route path="/apartments" element={<ApartmentsPage />} />
+              <Route path="/laundry" element={<LaundryPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/experiences" element={<ExperiencesPage />} />
+              <Route path="/concierge" element={<ConciergePage />} />
+              <Route path="/booking-search" element={<BookingSearchPage />} />
+              <Route path="/property/:id" element={<PropertyDetailsPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/admin/login" element={isAdmin ? <Navigate to="/" /> : <LoginPage />} />
+              <Route path="/admin/payment-settings" element={isAdmin ? <PaymentSettingsPage /> : <LoginPage />} />
+              <Route path="/my-booking" element={<BookingLookupPage />} />
+            </Routes>
 
-      {/* Staff Dashboard Access Button - only toggle view, logic inside handles auth */}
-      <Box className="fixed bottom-10 right-10 z-[100]">
-        <button
-          onClick={() => setView('staff')}
-          className="bg-norden-gold text-norden-dark px-6 py-3 rounded-full font-bold shadow-2xl hover:scale-105 transition-all active:scale-95"
-        >
-          {isAdmin ? 'DASHBOARD' : 'ADMIN LOGIN'}
-        </button>
+            {/* Staff Dashboard Access Button - only toggle view, logic inside handles auth */}
+            <Box className="fixed bottom-10 right-10 z-[100]">
+              <button
+                onClick={() => setView('staff')}
+                className="bg-norden-gold text-norden-dark px-6 py-3 rounded-full font-bold shadow-2xl hover:scale-105 transition-all active:scale-95"
+              >
+                {isAdmin ? 'DASHBOARD' : 'ADMIN LOGIN'}
+              </button>
+            </Box>
+          </>
+        )}
       </Box>
-    </Box>
+    </ErrorBoundary>
   );
 }
 

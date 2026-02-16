@@ -26,7 +26,7 @@ export function RevenueChart({ data }) {
                 gridAxis="xy"
                 withGradient
                 tooltipAnimationDuration={200}
-                valueFormatter={(value) => `$${new Intl.NumberFormat('en-US').format(value)}`}
+                valueFormatter={(value) => `KES ${new Intl.NumberFormat('en-US').format(value)}`}
             />
         </Paper>
     );

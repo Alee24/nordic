@@ -32,17 +32,36 @@ export const dashboardService = {
     /**
      * Get recent bookings
      * @param {number} limit 
+     * @param {boolean} demo
      * @returns {Promise<{success: boolean, data: array, error: string}>}
      */
-    getRecentBookings: async (limit = 10) => {
+    getRecentBookings: async (limit = 10, demo = false) => {
         try {
-            const response = await api.get(`/dashboard.php?action=recent-bookings&limit=${limit}`);
+            const response = await api.get(`/dashboard.php?action=recent-bookings&limit=${limit}&demo=${demo}`);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Recent Bookings Error:', error);
             return {
                 success: false,
                 error: error.response?.data?.message || 'Failed to fetch recent bookings'
+            };
+        }
+    },
+
+    /**
+     * Get all guests
+     * @param {boolean} demo
+     * @returns {Promise<{success: boolean, data: array, error: string}>}
+     */
+    getGuests: async (demo = false) => {
+        try {
+            const response = await api.get(`/dashboard.php?action=guests&demo=${demo}`);
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            console.error('Guests Error:', error);
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Failed to fetch guests'
             };
         }
     },
@@ -85,11 +104,12 @@ export const dashboardService = {
 
     /**
      * Get all rooms/suites with their current status
+     * @param {boolean} demo
      * @returns {Promise<{success: boolean, data: array, error: string}>}
      */
-    getRoomStatus: async () => {
+    getRoomStatus: async (demo = false) => {
         try {
-            const response = await api.get('/suites.php');
+            const response = await api.get(`/suites.php?demo=${demo}`);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Room Status Error:', error);
@@ -155,11 +175,12 @@ export const dashboardService = {
     /**
      * Get all bookings with filters
      * @param {object} filters 
+     * @param {boolean} demo
      * @returns {Promise<{success: boolean, data: array, error: string}>}
      */
-    getAllBookings: async (filters = {}) => {
+    getAllBookings: async (filters = {}, demo = false) => {
         try {
-            const params = new URLSearchParams(filters);
+            const params = new URLSearchParams({ ...filters, demo });
             const response = await api.get(`/dashboard.php?action=bookings&${params.toString()}`);
             return { success: true, data: response.data.data };
         } catch (error) {

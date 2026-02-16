@@ -149,7 +149,7 @@ const Bookings = () => {
 
             Object.keys(apiFilters).forEach(key => apiFilters[key] === '' && delete apiFilters[key]);
 
-            const response = await dashboardService.getAllBookings(apiFilters);
+            const response = await dashboardService.getAllBookings(apiFilters, demoMode);
             if (response.success) {
                 setData(Array.isArray(response.data) ? response.data : []);
             } else {
@@ -271,7 +271,7 @@ const Bookings = () => {
 
                 <Table.Td>
                     <Text fw={800} fz="sm" className="text-slate-900 dark:text-white">
-                        ${price.toLocaleString()}
+                        KES {price.toLocaleString()}
                     </Text>
                 </Table.Td>
 
@@ -368,7 +368,7 @@ const Bookings = () => {
                         <Badge variant="light" color="violet">Gross</Badge>
                     </Group>
                     <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">Total Revenue</Text>
-                    <Text fz="xl" fw={900}>${stats.revenue.toLocaleString()}</Text>
+                    <Text fz="xl" fw={900}>KES {stats.revenue.toLocaleString()}</Text>
                 </Card>
             </SimpleGrid>
 
@@ -500,13 +500,48 @@ const Bookings = () => {
                             </Group>
                             <Group justify="space-between">
                                 <Text fw={700}>Total Amount Paid</Text>
-                                <Text fw={900} fz="xl" c="blue">${Number(selectedBooking.total_price).toLocaleString()}</Text>
+                                <Text fw={900} fz="xl" c="blue">KES {Number(selectedBooking.total_price).toLocaleString()}</Text>
                             </Group>
                         </div>
 
                         <Group mt="xl" grow>
                             <Button variant="light" color="red">Delete Record</Button>
-                            <Button variant="filled">Download Invoice</Button>
+                            <Button
+                                variant="filled"
+                                onClick={() => {
+                                    try {
+                                        console.log('Download Invoice clicked for booking:', selectedBooking.id);
+                                        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8569/backend/api';
+                                        const baseUrl = apiUrl.replace('/api', '');
+                                        const invoiceUrl = `${baseUrl}/api/invoice.php?id=${selectedBooking.id}`;
+                                        console.log('Invoice URL:', invoiceUrl);
+
+                                        // Try to open in new window
+                                        const newWindow = window.open(invoiceUrl, '_blank');
+
+                                        if (!newWindow) {
+                                            // Fallback if popup blocked
+                                            console.warn('Popup blocked, trying location.href');
+                                            window.location.href = invoiceUrl;
+                                        } else {
+                                            notifications.show({
+                                                title: 'Invoice Generated',
+                                                message: 'Opening invoice in new window. Use browser print to save as PDF.',
+                                                color: 'blue'
+                                            });
+                                        }
+                                    } catch (error) {
+                                        console.error('Invoice download error:', error);
+                                        notifications.show({
+                                            title: 'Error',
+                                            message: 'Failed to open invoice. Check console for details.',
+                                            color: 'red'
+                                        });
+                                    }
+                                }}
+                            >
+                                Download Invoice
+                            </Button>
                         </Group>
                     </Stack>
                 )}

@@ -87,7 +87,7 @@ export function RecentBookingsTable({ data }) {
 
             <Table.Td>
                 <Text fw={700} fz="sm">
-                    ${Number(booking.total_price).toLocaleString()}
+                    KES {Number(booking.total_price).toLocaleString()}
                 </Text>
             </Table.Td>
 
