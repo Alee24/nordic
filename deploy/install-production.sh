@@ -59,17 +59,29 @@ apt update && apt upgrade -y
 # 2. Install Dependencies
 #########################
 log_info "Installing required packages..."
+
+# Detect available PHP version (8.3 for Ubuntu 24.04, 8.1 for Ubuntu 22.04)
+if apt-cache show php8.3 > /dev/null 2>&1; then
+    PHP_VERSION="8.3"
+elif apt-cache show php8.1 > /dev/null 2>&1; then
+    PHP_VERSION="8.1"
+else
+    PHP_VERSION="8.2"  # Fallback
+fi
+
+log_info "Detected PHP version: $PHP_VERSION"
+
 apt install -y \
     apache2 \
     mysql-server \
-    php8.1 \
-    php8.1-mysql \
-    php8.1-curl \
-    php8.1-json \
-    php8.1-mbstring \
-    php8.1-xml \
-    php8.1-zip \
-    php8.1-gd \
+    php${PHP_VERSION} \
+    php${PHP_VERSION}-mysql \
+    php${PHP_VERSION}-curl \
+    php${PHP_VERSION}-mbstring \
+    php${PHP_VERSION}-xml \
+    php${PHP_VERSION}-zip \
+    php${PHP_VERSION}-gd \
+    libapache2-mod-php${PHP_VERSION} \
     git \
     curl \
     certbot \
