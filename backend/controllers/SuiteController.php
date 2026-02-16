@@ -36,7 +36,7 @@ class SuiteController {
                 description, 
                 amenities as features, 
                 photos as images,
-                status 
+                CASE WHEN is_available = 1 THEN 'available' ELSE 'occupied' END as status 
                 FROM rooms 
                 ORDER BY base_price ASC";
                 
@@ -78,7 +78,7 @@ class SuiteController {
                 description, 
                 amenities as features, 
                 photos as images,
-                status 
+                CASE WHEN is_available = 1 THEN 'available' ELSE 'occupied' END as status 
                 FROM rooms WHERE id = :room_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':room_id', $suiteId);
