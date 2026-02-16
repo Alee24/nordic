@@ -153,8 +153,15 @@ chmod -R 775 "$APP_DIR/backend/uploads"
 #########################
 log_info "Initializing database schema..."
 
-# Run database migrations
-php "$APP_DIR/backend/setup_database.php"
+# Import the SQL schema directly
+if [ -f "$APP_DIR/backend/migrations/setup_nordic_db.sql" ]; then
+    log_info "Importing database schema..."
+    mysql -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$APP_DIR/backend/migrations/setup_nordic_db.sql"
+    log_info "Database schema imported successfully"
+else
+    log_error "Migration file not found: $APP_DIR/backend/migrations/setup_nordic_db.sql"
+    exit 1
+fi
 
 #########################
 # 7. Configure Frontend (React/Vite)
@@ -170,7 +177,9 @@ VITE_BOOKING_API_URL=https://$DOMAIN/backend/api/booking.php
 EOF
 
 # Install dependencies and build
-npm install
+log_info "Installing Node.js dependencies (this may take a few minutes)..."
+npm install --legacy-peer-deps
+log_info "Building production frontend..."
 npm run build
 
 #########################
