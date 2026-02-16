@@ -68,7 +68,7 @@ const Home = () => {
                         </div>
 
                         <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif text-white mb-8 tracking-tight drop-shadow-2xl">
-                            Coastal <br /> <span className="italic text-norden-gold-500">Excellence</span>
+                            <span className="italic text-norden-gold-500">Excellence</span>
                         </h1>
 
                         <p className="max-w-2xl mx-auto text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md">
