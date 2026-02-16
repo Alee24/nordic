@@ -183,3 +183,4 @@ class PropertyController {
         return $result['booking_count'] == 0;
     }
 }
+

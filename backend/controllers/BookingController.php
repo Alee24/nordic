@@ -22,12 +22,12 @@ class BookingController {
                     [
                         'id' => '1', 'guest_name' => 'John Doe', 'guest_email' => 'john@example.com', 'guest_phone' => '+1 234 567 890',
                         'booking_reference' => 'BR-ABCD123', 'check_in' => '2026-02-11', 'check_out' => '2026-02-15',
-                        'status' => 'confirmed', 'payment_status' => 'paid', 'total_price' => 1200.00, 'suite_name' => 'Royal Ocean Suite'
+                        'booking_status' => 'confirmed', 'payment_status' => 'paid', 'total_amount' => 1200.00, 'suite_name' => 'Royal Ocean Suite'
                     ],
                     [
                         'id' => '2', 'guest_name' => 'Jane Smith', 'guest_email' => 'jane@example.com', 'guest_phone' => '+1 987 654 321',
                         'booking_reference' => 'BR-EFGH456', 'check_in' => '2026-02-12', 'check_out' => '2026-02-14',
-                        'status' => 'pending', 'payment_status' => 'unpaid', 'total_price' => 850.00, 'suite_name' => 'Executive City View'
+                        'booking_status' => 'pending', 'payment_status' => 'unpaid', 'total_amount' => 850.00, 'suite_name' => 'Executive City View'
                     ]
                 ];
                 sendSuccess($mockBookings, 'Demo bookings retrieved successfully');
@@ -43,9 +43,9 @@ class BookingController {
                     b.booking_reference,
                     b.check_in,
                     b.check_out,
-                    b.status,
+                    b.booking_status,
                     b.payment_status,
-                    b.total_price,
+                    b.total_amount,
                     r.name as suite_name
                 FROM bookings b
                 LEFT JOIN rooms r ON b.room_id = r.id
@@ -56,7 +56,7 @@ class BookingController {
 
             // Apply filters
             if (!empty($filters['status'])) {
-                $query .= " AND b.status = :status";
+                $query .= " AND b.booking_status = :status";
                 $params[':status'] = $filters['status'];
             }
 
@@ -107,8 +107,8 @@ class BookingController {
             $query = "
                 SELECT 
                     b.*,
-                    b.status,
-                    b.total_price,
+                    b.booking_status,
+                    b.total_amount,
                     r.name as suite_name,
                     r.description as suite_description,
                     r.base_price as price_per_night,
@@ -197,9 +197,9 @@ class BookingController {
             // Insert booking
             $insertQuery = "
                 INSERT INTO bookings 
-                (booking_reference, property_id, room_id, guest_name, guest_email, guest_phone, check_in, check_out, total_price, status, payment_status, created_at)
+                (booking_reference, property_id, room_id, guest_name, guest_email, guest_phone, check_in, check_out, total_amount, status, payment_status, created_at)
                 VALUES 
-                (:ref, :property_id, :room_id, :guest_name, :guest_email, :guest_phone, :check_in, :check_out, :total_price, 'pending', 'unpaid', NOW())
+                (:ref, :property_id, :room_id, :guest_name, :guest_email, :guest_phone, :check_in, :check_out, :total_amount, 'pending', 'unpaid', NOW())
             ";
 
             $stmt = $this->conn->prepare($insertQuery);
@@ -211,7 +211,7 @@ class BookingController {
             $stmt->bindParam(':guest_phone', $data['guest_phone']);
             $stmt->bindParam(':check_in', $data['check_in']);
             $stmt->bindParam(':check_out', $data['check_out']);
-            $stmt->bindParam(':total_price', $totalPrice);
+            $stmt->bindParam(':total_amount', $totalPrice);
 
             if ($stmt->execute()) {
                 $bookingId = $this->conn->lastInsertId();
@@ -222,8 +222,8 @@ class BookingController {
                     'check_in' => $data['check_in'],
                     'check_out' => $data['check_out'],
                     'nights' => $nights,
-                    'total_price' => (float)$totalPrice,
-                    'status' => 'pending',
+                    'total_amount' => (float)$totalPrice,
+                    'booking_status' => 'pending',
                     'payment_status' => 'unpaid'
                 ], 'Booking created successfully', 201);
             } else {
@@ -259,7 +259,7 @@ class BookingController {
 
                 sendSuccess([
                     'booking_id' => $bookingId,
-                    'status' => $status
+                    'booking_status' => $status
                 ], 'Booking status updated successfully');
             } else {
                 sendError('Failed to update booking status', 500);
@@ -294,7 +294,7 @@ class BookingController {
 
                 // If payment is confirmed, update booking status to confirmed
                 if ($status === 'paid') {
-                    $updateBookingQuery = "UPDATE bookings SET status = 'confirmed' WHERE id = :booking_id AND status = 'pending'";
+                    $updateBookingQuery = "UPDATE bookings SET status = 'confirmed' WHERE id = :booking_id AND booking_status = 'pending'";
                     $updateStmt = $this->conn->prepare($updateBookingQuery);
                     $updateStmt->bindParam(':booking_id', $bookingId);
                     $updateStmt->execute();
@@ -378,3 +378,4 @@ class BookingController {
         }
     }
 }
+

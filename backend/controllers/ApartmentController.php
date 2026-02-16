@@ -118,15 +118,15 @@ class ApartmentController {
 
             // Calculate price (Mock calculation, ideally fetches unit price * nights)
             // For now trusting frontend price or recalculating simple logic
-            $totalPrice = $data['total_price']; 
+            $totalPrice = $data['total_amount']; 
 
             $bookingId = $this->generateUUID();
 
             $query = "
                 INSERT INTO apartment_bookings 
-                (id, unit_id, user_id, check_in, check_out, total_price, status, payment_status)
+                (id, unit_id, user_id, check_in, check_out, total_amount, status, payment_status)
                 VALUES 
-                (:id, :unit_id, :user_id, :check_in, :check_out, :total_price, 'pending', 'unpaid')
+                (:id, :unit_id, :user_id, :check_in, :check_out, :total_amount, 'pending', 'unpaid')
             ";
 
             $stmt = $this->conn->prepare($query);
@@ -136,7 +136,7 @@ class ApartmentController {
                 ':user_id' => $data['user_id'],
                 ':check_in' => $data['check_in'],
                 ':check_out' => $data['check_out'],
-                ':total_price' => $totalPrice
+                ':total_amount' => $totalPrice
             ]);
 
             if ($result) {
@@ -164,3 +164,4 @@ class ApartmentController {
         );
     }
 }
+

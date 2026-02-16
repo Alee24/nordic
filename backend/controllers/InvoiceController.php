@@ -98,7 +98,7 @@ class InvoiceController {
         $checkIn = date('M d, Y', strtotime($booking['check_in']));
         $checkOut = date('M d, Y', strtotime($booking['check_out']));
         $nights = (strtotime($booking['check_out']) - strtotime($booking['check_in'])) / 86400;
-        $totalPrice = number_format($booking['total_price'], 2);
+        $totalPrice = number_format($booking['total_amount'], 2);
         $invoiceDate = date('F d, Y');
         
         return <<<HTML
@@ -277,3 +277,4 @@ margin: 0;
 HTML;
     }
 }
+

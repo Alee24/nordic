@@ -166,9 +166,9 @@ class DormBookingController {
             // Insert booking
             $insertQuery = "
                 INSERT INTO dorm_bookings 
-                (id, guest_id, dorm_id, guest_name, guest_email, guest_phone, check_in, check_out, num_guests, total_price, special_requests, status, payment_status)
+                (id, guest_id, dorm_id, guest_name, guest_email, guest_phone, check_in, check_out, num_guests, total_amount, special_requests, status, payment_status)
                 VALUES 
-                (:id, :guest_id, :dorm_id, :guest_name, :guest_email, :guest_phone, :check_in, :check_out, :num_guests, :total_price, :special_requests, 'pending', 'unpaid')
+                (:id, :guest_id, :dorm_id, :guest_name, :guest_email, :guest_phone, :check_in, :check_out, :num_guests, :total_amount, :special_requests, 'pending', 'unpaid')
             ";
 
             $stmt = $this->conn->prepare($insertQuery);
@@ -182,7 +182,7 @@ class DormBookingController {
             $stmt->bindParam(':check_in', $data['check_in']);
             $stmt->bindParam(':check_out', $data['check_out']);
             $stmt->bindParam(':num_guests', $data['num_guests']);
-            $stmt->bindParam(':total_price', $totalPrice);
+            $stmt->bindParam(':total_amount', $totalPrice);
             $specialRequests = $data['special_requests'] ?? null;
             $stmt->bindParam(':special_requests', $specialRequests);
 
@@ -193,8 +193,8 @@ class DormBookingController {
                     'check_in' => $data['check_in'],
                     'check_out' => $data['check_out'],
                     'nights' => $nights,
-                    'total_price' => (float)$totalPrice,
-                    'status' => 'pending',
+                    'total_amount' => (float)$totalPrice,
+                    'booking_status' => 'pending',
                     'payment_status' => 'unpaid'
                 ], 'Booking created successfully', 201);
             } else {
@@ -324,3 +324,4 @@ class DormBookingController {
         );
     }
 }
+

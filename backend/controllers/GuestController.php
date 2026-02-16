@@ -66,7 +66,7 @@ class GuestController {
                     s.title as suite_name,
                     s.price as price_per_night
                 FROM bookings b
-                LEFT JOIN suites s ON b.suite_id = s.id
+                LEFT JOIN rooms s ON b.room_id = s.id
                 WHERE b.guest_id = :guest_id
                 ORDER BY b.created_at DESC
             ";
@@ -208,3 +208,4 @@ class GuestController {
         );
     }
 }
+

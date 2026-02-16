@@ -32,7 +32,7 @@ class ReviewController {
                 SELECT * FROM bookings 
                 WHERE id = :booking_id 
                 AND user_id = :user_id 
-                AND status = 'checked_out'
+                AND booking_status = 'checked_out'
             ";
             $stmt = $this->conn->prepare($bookingQuery);
             $stmt->bindParam(':booking_id', $data['booking_id']);
@@ -102,7 +102,7 @@ class ReviewController {
             if ($stmt->execute()) {
                 sendSuccess([
                     'review_id' => $this->conn->lastInsertId(),
-                    'status' => 'approved'
+                    'booking_status' => 'approved'
                 ], 'Review submitted successfully', 201);
             } else {
                 sendError('Failed to submit review', 500);
@@ -142,7 +142,7 @@ class ReviewController {
             $reviews = $stmt->fetchAll();
 
             // Get total count
-            $countQuery = "SELECT COUNT(*) as total FROM reviews WHERE property_id = :property_id AND status = 'approved'";
+            $countQuery = "SELECT COUNT(*) as total FROM reviews WHERE property_id = :property_id AND booking_status = 'approved'";
             $stmt = $this->conn->prepare($countQuery);
             $stmt->bindParam(':property_id', $propertyId);
             $stmt->execute();
@@ -177,7 +177,7 @@ class ReviewController {
                     AVG(value_rating) as avg_value,
                     COUNT(*) as review_count
                 FROM reviews
-                WHERE property_id = :property_id AND status = 'approved'
+                WHERE property_id = :property_id AND booking_status = 'approved'
             ";
 
             $stmt = $this->conn->prepare($query);
@@ -203,3 +203,4 @@ class ReviewController {
         }
     }
 }
+

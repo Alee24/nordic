@@ -24,8 +24,8 @@ class BookingLookupController {
                     ab.user_id,
                     ab.check_in,
                     ab.check_out,
-                    ab.total_price,
-                    ab.status,
+                    ab.total_amount,
+                    ab.booking_status,
                     ab.payment_status,
                     ab.created_at,
                     au.view_type,
@@ -48,8 +48,8 @@ class BookingLookupController {
                         b.user_id,
                         b.check_in_date as check_in,
                         b.check_out_date as check_out,
-                        b.total_price,
-                        b.status,
+                        b.total_amount,
+                        b.booking_status,
                         b.payment_status,
                         b.created_at,
                         r.name as room_name
@@ -80,3 +80,4 @@ class BookingLookupController {
         }
     }
 }
+
