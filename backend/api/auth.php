@@ -49,6 +49,10 @@ switch ($action) {
             $controller->checkSession();
         }
         break;
+    case 'change-password':
+        $data = json_decode(file_get_contents('php://input'), true);
+        $controller->changePassword($data);
+        break;
     default:
         sendError('Invalid auth endpoint', 404);
 }
