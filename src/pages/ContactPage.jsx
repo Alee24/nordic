@@ -35,7 +35,7 @@ const ContactPage = () => {
         };
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/messages.php`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

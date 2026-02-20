@@ -34,7 +34,7 @@ const CheckoutPage = () => {
 
     const fetchAvailableProviders = async () => {
         try {
-            const response = await axios.get(`${API_BASE}/payment-settings.php`);
+            const response = await axios.get(`${API_BASE}/settings?category=payment`);
             if (response.data.success) {
                 setProviders(response.data.data.filter(p => p.is_active));
             }
@@ -54,7 +54,7 @@ const CheckoutPage = () => {
             let response;
             if (paymentMethod === 'mpesa') {
                 if (!phoneNumber) throw new Error('Phone number is required for M-Pesa');
-                response = await axios.post(`${API_BASE}/payment.php/mpesa`, { ...data, phone_number: phoneNumber });
+                response = await axios.post(`${API_BASE}/payment/mpesa`, { ...data, phone_number: phoneNumber });
                 notifications.show({
                     title: 'STK Push Sent',
                     message: 'Please check your phone and enter your PIN',
@@ -62,13 +62,13 @@ const CheckoutPage = () => {
                 });
                 setTimeout(() => navigate('/my-booking'), 5000);
             } else if (paymentMethod === 'paypal') {
-                response = await axios.post(`${API_BASE}/payment.php/paypal`, data);
+                response = await axios.post(`${API_BASE}/payment/paypal`, data);
                 if (response.data.data.links) {
                     const approvalUrl = response.data.data.links.find(l => l.rel === 'approve').href;
                     window.location.href = approvalUrl;
                 }
             } else if (paymentMethod === 'stripe') {
-                response = await axios.post(`${API_BASE}/payment.php/stripe`, data);
+                response = await axios.post(`${API_BASE}/payment/stripe`, data);
                 if (response.data.data.url) {
                     window.location.href = response.data.data.url;
                 }

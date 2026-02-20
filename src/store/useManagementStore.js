@@ -16,7 +16,7 @@ const useManagementStore = create((set, get) => ({
 
     login: async (email, password) => {
         try {
-            const response = await axios.post(`${API_BASE}/auth.php/login`, { email, password });
+            const response = await axios.post(`${API_BASE}/auth/login`, { email, password });
             if (response.data.success) {
                 set({
                     isAdmin: response.data.data.user.role === 'admin',
@@ -35,7 +35,7 @@ const useManagementStore = create((set, get) => ({
 
     logout: async () => {
         try {
-            await axios.post(`${API_BASE}/auth.php/logout`);
+            await axios.post(`${API_BASE}/auth/logout`);
             set({ isAdmin: false, user: null, currentView: 'guest' });
         } catch (error) {
             console.error('Logout failed', error);
@@ -45,7 +45,7 @@ const useManagementStore = create((set, get) => ({
     checkAuth: async () => {
         set({ loading: true });
         try {
-            const response = await axios.get(`${API_BASE}/auth.php/check`, { timeout: 5000 });
+            const response = await axios.get(`${API_BASE}/auth/check`, { timeout: 5000 });
             if (response.data.success) {
                 set({
                     isAdmin: response.data.data.user.role === 'admin',

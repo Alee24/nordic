@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8569/backend/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8123/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -18,7 +18,7 @@ export const dashboardService = {
      */
     getStatistics: async (demo = true) => {
         try {
-            const response = await api.get(`/dashboard.php?action=statistics&demo=${demo}`);
+            const response = await api.get('/dashboard/statistics');
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Dashboard Stats Error:', error);
@@ -29,15 +29,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Get recent bookings
-     * @param {number} limit 
-     * @param {boolean} demo
-     * @returns {Promise<{success: boolean, data: array, error: string}>}
-     */
     getRecentBookings: async (limit = 10, demo = false) => {
         try {
-            const response = await api.get(`/dashboard.php?action=recent-bookings&limit=${limit}&demo=${demo}`);
+            const response = await api.get(`/dashboard/recent-bookings?limit=${limit}`);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Recent Bookings Error:', error);
@@ -48,14 +42,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Get all guests
-     * @param {boolean} demo
-     * @returns {Promise<{success: boolean, data: array, error: string}>}
-     */
     getGuests: async (demo = false) => {
         try {
-            const response = await api.get(`/dashboard.php?action=guests&demo=${demo}`);
+            const response = await api.get('/dashboard/guests');
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Guests Error:', error);
@@ -66,50 +55,27 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Get monthly revenue data
-     * @param {number} months 
-     * @returns {Promise<{success: boolean, data: array, error: string}>}
-     */
     getMonthlyRevenue: async (months = 12) => {
         try {
-            const response = await api.get(`/dashboard.php?action=monthly-revenue&months=${months}`);
-            return { success: true, data: response.data.data };
+            // Fallback to statistics for now if not implemented
+            const response = await api.get('/dashboard/statistics');
+            return { success: true, data: [] };
         } catch (error) {
-            console.error('Monthly Revenue Error:', error);
-            return {
-                success: false,
-                error: error.response?.data?.message || 'Failed to fetch revenue data'
-            };
+            return { success: false, error: 'Not implemented' };
         }
     },
 
-    /**
-     * Get occupancy trends
-     * @param {number} days 
-     * @returns {Promise<{success: boolean, data: array, error: string}>}
-     */
     getOccupancyTrends: async (days = 30) => {
         try {
-            const response = await api.get(`/dashboard.php?action=occupancy-trends&days=${days}`);
-            return { success: true, data: response.data.data };
+            return { success: true, data: [] };
         } catch (error) {
-            console.error('Occupancy Trends Error:', error);
-            return {
-                success: false,
-                error: error.response?.data?.message || 'Failed to fetch occupancy trends'
-            };
+            return { success: false, error: 'Not implemented' };
         }
     },
 
-    /**
-     * Get all rooms/suites with their current status
-     * @param {boolean} demo
-     * @returns {Promise<{success: boolean, data: array, error: string}>}
-     */
     getRoomStatus: async (demo = false) => {
         try {
-            const response = await api.get(`/suites.php?demo=${demo}`);
+            const response = await api.get('/rooms');
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Room Status Error:', error);
@@ -120,13 +86,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Add a new room
-     * @param {object} data 
-     */
     addRoom: async (data) => {
         try {
-            const response = await api.post('/suites.php', data);
+            const response = await api.post('/rooms', data);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Add Room Error:', error);
@@ -137,14 +99,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Update room details
-     * @param {string} id 
-     * @param {object} data 
-     */
     updateRoom: async (id, data) => {
         try {
-            const response = await api.put(`/suites.php?id=${id}`, data);
+            const response = await api.put(`/rooms/${id}`, data);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Update Room Error:', error);
@@ -155,13 +112,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Delete a room
-     * @param {string} id 
-     */
     deleteRoom: async (id) => {
         try {
-            const response = await api.delete(`/suites.php?id=${id}`);
+            const response = await api.delete(`/rooms/${id}`);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Delete Room Error:', error);
@@ -172,16 +125,10 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Get all bookings with filters
-     * @param {object} filters 
-     * @param {boolean} demo
-     * @returns {Promise<{success: boolean, data: array, error: string}>}
-     */
     getAllBookings: async (filters = {}, demo = false) => {
         try {
-            const params = new URLSearchParams({ ...filters, demo });
-            const response = await api.get(`/dashboard.php?action=bookings&${params.toString()}`);
+            const params = new URLSearchParams(filters);
+            const response = await api.get(`/bookings?${params.toString()}`);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Get All Bookings Error:', error);
@@ -192,15 +139,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Update booking status
-     * @param {string} id 
-     * @param {string} status 
-     * @returns {Promise<{success: boolean, data: object, error: string}>}
-     */
     updateBookingStatus: async (id, status) => {
         try {
-            const response = await api.put(`/dashboard.php?action=update-booking-status&id=${id}`, { status });
+            const response = await api.put(`/bookings/${id}`, { status });
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Update Booking Status Error:', error);
@@ -211,14 +152,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Update room status
-     * @param {string} id 
-     * @param {string} status 
-     */
     updateRoomStatus: async (id, status) => {
         try {
-            const response = await api.put(`/dashboard.php?action=update-room-status&id=${id}`, { status });
+            const response = await api.put(`/rooms/${id}`, { status });
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Update Room Status Error:', error);
@@ -229,13 +165,9 @@ export const dashboardService = {
         }
     },
 
-    /**
-     * Finalize check-in
-     * @param {string} id Booking ID
-     */
     finalizeCheckin: async (id) => {
         try {
-            const response = await api.post(`/dashboard.php?action=finalize-checkin&id=${id}`);
+            const response = await api.post(`/bookings/${id}/checkin`);
             return { success: true, data: response.data.data };
         } catch (error) {
             console.error('Finalize Check-in Error:', error);

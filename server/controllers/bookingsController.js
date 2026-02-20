@@ -64,4 +64,31 @@ const createBooking = async (req, res) => {
     }
 };
 
-module.exports = { getBookings, createBooking };
+const updateBookingStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const booking = await prisma.booking.update({
+            where: { id: parseInt(id) },
+            data: { status }
+        });
+        res.json({ success: true, data: booking });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+const finalizeCheckin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const booking = await prisma.booking.update({
+            where: { id: parseInt(id) },
+            data: { status: 'checked_in' }
+        });
+        res.json({ success: true, data: booking });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = { getBookings, createBooking, updateBookingStatus, finalizeCheckin };
