@@ -100,8 +100,9 @@ fs.writeFileSync(path.join(root, '.env'),
 
 # Run Migrations
 echo -e "${GREEN}>>> Running database migrations...${NC}"
-# Fix permission for Prisma binaries if needed
-chmod +x node_modules/.bin/prisma || true
+# Comprehensive fix for Prisma permissions (Engines and CLI)
+chmod -R +x node_modules/.bin/prisma 2>/dev/null || true
+chmod -R +x node_modules/@prisma/engines 2>/dev/null || true
 npx prisma migrate deploy
 npx prisma generate
 
