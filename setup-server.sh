@@ -62,18 +62,23 @@ echo -e "${GREEN}>>> Step 4: Setting up Application...${NC}"
 # Assume script is run from project root or current dir is project root
 PROJECT_ROOT=$(pwd)
 
+# Install Backend Deps
+cd "$PROJECT_ROOT/server"
+npm install
+
+# URL Encode the password for Prisma (Robut way to handle special chars like @, #, !)
+echo -e "${GREEN}>>> Encoding database credentials...${NC}"
+ENCODED_PASS=$(node -e "console.log(encodeURIComponent(process.argv[1]))" "$DB_PASS")
+
 # Backend Environment
 echo -e "${GREEN}>>> Configuring Backend...${NC}"
 cat > "$PROJECT_ROOT/server/.env" <<EOF
 PORT=8123
 JWT_SECRET='$JWT_SECRET'
 FRONTEND_URL=https://$SERVER_DOMAIN
-DATABASE_URL="postgresql://nordic_user:$DB_PASS@localhost:5432/nordic_db?schema=public"
+DATABASE_URL="postgresql://nordic_user:${ENCODED_PASS}@localhost:5432/nordic_db?schema=public"
 EOF
 
-# Install Backend Deps
-cd "$PROJECT_ROOT/server"
-npm install
 npx prisma migrate deploy
 npx prisma generate
 
