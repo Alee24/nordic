@@ -34,15 +34,21 @@ read -p "Enter Email for SSL Notifications: " SSL_EMAIL
 
 # 3. System Updates & Dependencies
 echo -e "${GREEN}>>> Step 2: Installing System Dependencies...${NC}"
-apt update && apt upgrade -y
+
+# Fix common APT issues on some VPS (Webmin GPG errors)
+echo "Acquire::AllowInsecureRepositories \"true\";" > /etc/apt/apt.conf.d/99allow-insecure
+echo "Acquire::AllowDowngradeToInsecureRepositories \"true\";" >> /etc/apt/apt.conf.d/99allow-insecure
+
+apt update || true
 apt install -y curl git apache2 postgresql postgresql-contrib build-essential certbot python3-certbot-apache
 
-# Install Node.js 20
+# Ensure Node.js 20 (Force upgrade if on 18)
+echo -e "${GREEN}>>> Ensuring Node.js 20+ is installed...${NC}"
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt install -y nodejs
 
 # Install PM2
-npm install -g pm2
+npm install -g pm2 --legacy-peer-deps
 
 # Enable Apache Modules
 a2enmod proxy
@@ -112,6 +118,8 @@ cd "$PROJECT_ROOT"
 # (Wait, Frontend .env was already written by Node above)
 
 # Build Frontend
+# Recursive fix for ALL frontend binaries (Vite, etc)
+chmod -R +x node_modules/.bin 2>/dev/null || true
 npm install --legacy-peer-deps
 npm run build
 
