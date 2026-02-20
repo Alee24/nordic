@@ -52,10 +52,16 @@ a2enmod headers
 a2enmod ssl
 
 # 4. Database Setup
-echo -e "${GREEN}>>> Step 3: Configuring PostgreSQL...${NC}"
-sudo -u postgres psql -c "CREATE DATABASE nordic_db;" || true
-sudo -u postgres psql -c "CREATE USER nordic_user WITH PASSWORD '$DB_PASS';" || true
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nordic_db TO nordic_user;" || true
+echo -e "${GREEN}>>> Step 3: Configuring PostgreSQL (Fresh Start)...${NC}"
+# Drop existing to ensure fresh start and valid credentials
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS nordic_db;" || true
+sudo -u postgres psql -c "DROP USER IF EXISTS nordic_user;" || true
+
+# Recreate everything
+sudo -u postgres psql -c "CREATE DATABASE nordic_db;"
+sudo -u postgres psql -c "CREATE USER nordic_user WITH PASSWORD '$DB_PASS';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nordic_db TO nordic_user;"
+sudo -u postgres psql -c "ALTER DATABASE nordic_db OWNER TO nordic_user;"
 
 # 5. Application Setup
 echo -e "${GREEN}>>> Step 4: Setting up Application...${NC}"
