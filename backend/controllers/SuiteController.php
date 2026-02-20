@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../utils/response.php';
+require_once __DIR__ . '/../utils/Logger.php';
 
 class SuiteController {
     private $db;
@@ -113,6 +114,8 @@ class SuiteController {
      */
     public function checkAvailability($suiteId, $checkIn, $checkOut) {
         try {
+            Logger::info("Check Availability Request: Suite $suiteId, $checkIn - $checkOut");
+
             // Validate dates
             if (!validateDate($checkIn) || !validateDate($checkOut)) {
                 sendError('Invalid date format. Use YYYY-MM-DD', 400);
@@ -131,15 +134,19 @@ class SuiteController {
             $suite = $suiteStmt->fetch();
 
             if (!$suite) {
+                Logger::warning("Check Availability: Suite not found $suiteId");
                 sendError('Suite not found', 404);
             }
 
+            // BYPASS AVAILABILITY CHECK FOR TESTING
+            // User requested: "all rooms need to be available... no need to verify any thism"
+            /*
             // Check for overlapping bookings
             $bookingQuery = "
                 SELECT COUNT(*) as booking_count 
                 FROM bookings 
                 WHERE room_id = :room_id 
-                AND status NOT IN ('cancelled')
+                AND booking_status NOT IN ('cancelled')
                 AND (
                     (check_in <= :check_in AND check_out > :check_in)
                     OR (check_in < :check_out AND check_out >= :check_out)
@@ -155,6 +162,11 @@ class SuiteController {
 
             $result = $bookingStmt->fetch();
             $isAvailable = $result['booking_count'] == 0;
+            */
+            
+            // Testing Mode: Always Available
+            $isAvailable = true; 
+            Logger::info("Availability Check Bypassed: returning TRUE for Suite $suiteId");
 
             sendSuccess([
                 'room_id' => $suiteId,
@@ -166,7 +178,7 @@ class SuiteController {
             ], 'Availability checked successfully');
 
         } catch (Exception $e) {
-            error_log("Check Availability Error: " . $e->getMessage());
+            Logger::error("Check Availability Error: " . $e->getMessage());
             sendError('Failed to check availability: ' . $e->getMessage(), 500);
         }
     }

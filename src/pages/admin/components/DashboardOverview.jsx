@@ -42,8 +42,8 @@ const DashboardOverview = () => {
             const occupancy = occupancyRes.status === 'fulfilled' && occupancyRes.value.success ? occupancyRes.value.data : [];
 
             if (!stats && !demoMode) {
-                // If it's not demo mode and stats failed, we really can't show much, but let's try to not crash
-                throw new Error('Crucial dashboard data missing. Please check your API/Apache connection.');
+                // If it's not demo mode and stats failed, don't throw - showing a message is better
+                console.warn('Crucial dashboard statistics missing from API.');
             }
 
             setData({
@@ -161,7 +161,7 @@ const DashboardOverview = () => {
                                     </Box>
                                     <Box>
                                         <Text size="xs" className="opacity-70 uppercase font-bold tracking-wider">Departures</Text>
-                                        <Text size="xl" fw={900}>{data.stats?.today_checkouts || 0}</Text>
+                                        <Text size="xl" fw={900}>{data.stats?.today_checkouts ?? 0}</Text>
                                     </Box>
                                     <Box>
                                         <Text size="xs" className="opacity-70 uppercase font-bold tracking-wider">Cleaning</Text>

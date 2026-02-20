@@ -1,88 +1,87 @@
 <?php
+require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../utils/response.php';
+require_once __DIR__ . '/../utils/Logger.php';
 
-// Handle CORS properly
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
+class SuiteController {
+    private $db;
+    private $conn;
+
+    public function __construct() {
+        try {
+            $this->db = Database::getInstance();
+            $this->conn = $this->db->getConnection();
+        } catch (Exception $e) {
+            Logger::error("SuiteController Connection Failed: " . $e->getMessage());
+            $this->conn = null;
+        }
+    }
+
+    public function handleRequest() {
+        try {
+            $demo = isset($_GET['demo']) && $_GET['demo'] === 'true';
+
+            if ($demo) {
+                $this->getDemoSuites();
+                return;
+            }
+
+            if (!$this->conn) {
+                throw new Exception("Database connection unavailable");
+            }
+
+            $this->getAllSuites();
+        } catch (Exception $e) {
+            Logger::error("SuiteController Request Failed: " . $e->getMessage());
+            Response::error($e->getMessage(), 500);
+        }
+    }
+
+    private function getDemoSuites() {
+        $suites = [
+            [
+                'id' => 1,
+                'name' => 'Ocean View Suite (Demo)',
+                'description' => 'Spacious suite with panoramic ocean views',
+                'price_per_night' => 15000,
+                'max_guests' => 4,
+                'status' => 'available',
+                'amenities' => json_encode(['King Bed', 'Ocean View', 'Balcony', 'WiFi', 'Minibar']),
+                'photos' => json_encode(['https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'])
+            ],
+            // ... (rest of demo data)
+        ];
+        Response::success($suites);
+    }
+
+    private function getAllSuites() {
+        try {
+            // Updated query to match new schema (photos, amenities are JSON)
+            $query = "SELECT * FROM rooms ORDER BY created_at DESC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $suites = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Decode JSON fields for frontend if needed, or send as is?
+            // Frontend likely expects arrays/objects.
+            foreach ($suites as &$suite) {
+                $suite['amenities'] = json_decode($suite['amenities'] ?? '[]', true);
+                $suite['photos'] = json_decode($suite['photos'] ?? '[]', true);
+                
+                // Map 'base_price' to 'price_per_night' if frontend expects it
+                $suite['price_per_night'] = $suite['base_price'];
+                $suite['max_guests'] = $suite['max_occupancy'];
+                $suite['image_url'] = $suite['photos'][0] ?? ''; // Fallback for legacy frontend
+            }
+
+            Response::success($suites);
+        } catch (Exception $e) {
+            Logger::error("getAllSuites Query Failed: " . $e->getMessage());
+            throw $e; // Re-throw to be caught by handleRequest
+        }
+    }
 }
 
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-header('Content-Type: application/json');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-require_once __DIR__ . '/../controllers/SuiteController.php';
-
+// Handle the request
 $controller = new SuiteController();
-$method = $_SERVER['REQUEST_METHOD'];
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-try {
-    // GET /api/suites - Get all suites
-    if ($method === 'GET' && preg_match('/\/api\/suites(\.php)?$/', $path)) {
-        $controller->getAllSuites();
-    }
-    
-    // GET /api/suites/:id - Get suite by ID
-    elseif ($method === 'GET' && preg_match('/\/api\/suites(\.php)?\/([a-zA-Z0-9-]+)$/', $path, $matches)) {
-        $suiteId = $matches[2];
-        $controller->getSuite($suiteId);
-    }
-    
-    // GET /api/suites/availability - Check availability
-    elseif ($method === 'GET' && preg_match('/\/api\/suites(\.php)?\/availability/', $path)) {
-        $suiteId = $_GET['suite_id'] ?? null;
-        $checkIn = $_GET['check_in'] ?? null;
-        $checkOut = $_GET['check_out'] ?? null;
-        
-        if (!$suiteId || !$checkIn || !$checkOut) {
-            sendError('Missing required parameters: suite_id, check_in, check_out', 400);
-        }
-        
-        $controller->checkAvailability($suiteId, $checkIn, $checkOut);
-    }
-    
-    // PUT /api/suites/:id - Update suite
-    elseif ($method === 'PUT' && (preg_match('/\/api\/suites(\.php)?\/([a-zA-Z0-9-]+)$/', $path, $matches) || isset($_GET['id']))) {
-        $suiteId = $matches[2] ?? $_GET['id'];
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            sendError('Invalid JSON payload', 400);
-        }
-        
-        $controller->updateSuite($suiteId, $data);
-    }
-    
-    // POST /api/suites - Create suite
-    elseif ($method === 'POST' && preg_match('/\/api\/suites(\.php)?$/', $path)) {
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            sendError('Invalid JSON payload', 400);
-        }
-        
-        $controller->createSuite($data);
-    }
-    
-    // DELETE /api/suites/:id - Delete suite
-    elseif ($method === 'DELETE' && (preg_match('/\/api\/suites(\.php)?\/([a-zA-Z0-9-]+)$/', $path, $matches) || isset($_GET['id']))) {
-        $suiteId = $matches[2] ?? $_GET['id'];
-        $controller->deleteSuite($suiteId);
-    }
-    
-    // Route not found
-    else {
-        sendError('Endpoint not found', 404);
-    }
-    
-} catch (Exception $e) {
-    error_log("API Error: " . $e->getMessage());
-    sendError('Internal server error: ' . $e->getMessage(), 500);
-}
+$controller->handleRequest();

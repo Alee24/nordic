@@ -24,15 +24,46 @@ import Section from '../components/ui/Section';
 const ContactPage = () => {
     const [submitted, setSubmitted] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitted(true);
-        notifications.show({
-            title: 'Message Sent',
-            message: 'Our concierge will get back to you shortly. Welcome home.',
-            color: 'gold',
-        });
-        setTimeout(() => setSubmitted(false), 5000);
+        const formData = new FormData(e.target);
+        const data = {
+            guest_name: formData.get('guest_name'),
+            guest_email: formData.get('guest_email'),
+            subject: formData.get('subject'),
+            message: formData.get('message'),
+        };
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/messages.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setSubmitted(true);
+                notifications.show({
+                    title: 'Message Sent',
+                    message: 'Our concierge will get back to you shortly. Welcome home.',
+                    color: 'gold',
+                });
+                setTimeout(() => setSubmitted(false), 5000);
+                e.target.reset();
+            } else {
+                throw new Error(result.error || 'Failed to send message');
+            }
+        } catch (error) {
+            notifications.show({
+                title: 'Error',
+                message: error.message || 'Something went wrong. Please try again.',
+                color: 'red',
+            });
+        }
     };
 
     return (
@@ -167,6 +198,7 @@ const ContactPage = () => {
                                         <Grid>
                                             <Grid.Col span={{ base: 12, sm: 6 }}>
                                                 <TextInput
+                                                    name="guest_name"
                                                     label="Guest Name"
                                                     placeholder="Enter your name"
                                                     radius="md"
@@ -177,17 +209,20 @@ const ContactPage = () => {
                                             </Grid.Col>
                                             <Grid.Col span={{ base: 12, sm: 6 }}>
                                                 <TextInput
+                                                    name="guest_email"
                                                     label="Email Address"
                                                     placeholder="your@email.com"
                                                     radius="md"
                                                     size="md"
                                                     required
+                                                    type="email"
                                                     classNames={{ label: 'text-theme-text', input: 'bg-theme-surface border-theme-border text-theme-text' }}
                                                 />
                                             </Grid.Col>
                                         </Grid>
 
                                         <TextInput
+                                            name="subject"
                                             label="Subject"
                                             placeholder="Reservation Inquiry, Event Planning, etc."
                                             radius="md"
@@ -196,6 +231,7 @@ const ContactPage = () => {
                                         />
 
                                         <Textarea
+                                            name="message"
                                             label="How can our concierge assist you?"
                                             placeholder="Tell us about your requirements..."
                                             minRows={4}

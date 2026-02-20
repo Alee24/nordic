@@ -130,11 +130,12 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
 
         const bookingData = {
             property_id: 'nordic-main',
-            room_id: selectedRoom.id,
-            check_in: dates[0].toISOString().split('T')[0],
-            check_out: dates[1].toISOString().split('T')[0],
+            roomId: selectedRoom.id,
+            checkIn: dates[0].toISOString().split('T')[0],
+            checkOut: dates[1].toISOString().split('T')[0],
             num_adults: guests,
             num_children: 0,
+            totalPrice: totalPrice,
             user_id: localStorage.getItem('user_id'),
             guest_name: guestInfo.name,
             guest_email: guestInfo.email,

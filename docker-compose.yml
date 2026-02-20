@@ -1,45 +1,56 @@
+version: '3.8'
+
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8542:8542"
-    volumes:
-      - .:/app
-      - /app/node_modules
+  # MySQL Service (Legacy/Ref, kept for safety but not used)
+  # db:
+  #   image: mysql:8.0
+  #   ...
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: nordic_postgres
+    restart: always
     environment:
-      - VITE_API_URL=http://localhost:8569/backend/api
-    depends_on:
-      - backend
+      POSTGRES_USER: nordic_user
+      POSTGRES_PASSWORD: nordic_password
+      POSTGRES_DB: nordic_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
-    ports:
-      - "8569:80"
-    volumes:
-      - ./backend:/var/www/html/backend
-    environment:
-      - DB_HOST=db
-      - DB_NAME=nordic_db
-      - DB_USER=root
-      - DB_PASS=root_password
-      - DB_PORT=3306
-    depends_on:
-      - db
-
-  db:
-    image: mysql:8.0
+      context: ./server
+    container_name: nordic_backend
     restart: always
-    environment:
-      MYSQL_DATABASE: nordic_db
-      MYSQL_ROOT_PASSWORD: root_password
     ports:
-      - "3307:3306"
+      - "8123:8123"
     volumes:
-      - db_data:/var/lib/mysql
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      DATABASE_URL: "postgresql://nordic_user:nordic_password@postgres:5432/nordic_db?schema=public"
+      PORT: 8123
+      JWT_SECRET: "nordic_secret_key_change_me"
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: .
+    container_name: nordic_frontend
+    restart: always
+    ports:
+      - "8124:8124"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.js:/app/vite.config.js
+      - ./package.json:/app/package.json
+    environment:
+      - VITE_API_URL=http://localhost:8123/api
 
 volumes:
-  db_data:
+  postgres_data:

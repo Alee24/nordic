@@ -12,7 +12,7 @@ import {
 import { notifications } from '@mantine/notifications';
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8569/backend/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const PaymentSettingsPage = () => {
     const [settings, setSettings] = useState([]);

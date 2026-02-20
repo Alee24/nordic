@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Configure base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8569/norden/backend';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const roomApi = axios.create({
     baseURL: API_BASE_URL,

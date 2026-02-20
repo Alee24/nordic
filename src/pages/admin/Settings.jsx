@@ -229,7 +229,7 @@ const PasswordChangeForm = () => {
 
         setLoading(true);
         try {
-            const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8569/backend/api';
+            const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
             const response = await fetch(`${API_BASE}/auth.php/change-password`, {
                 method: 'POST',
                 headers: {

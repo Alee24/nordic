@@ -28,7 +28,8 @@ import {
     IconMenu2,
     IconDoorEnter,
     IconCurrencyDollar,
-    IconPlaneDeparture
+    IconPlaneDeparture,
+    IconMessage
 } from '@tabler/icons-react';
 
 // Components (We will create these next)
@@ -40,6 +41,7 @@ import Guests from './Guests';
 import Settings from './Settings';
 import PaymentSettingsPage from './PaymentSettingsPage';
 import FlightTracker from './FlightTracker';
+import Messages from './Messages';
 import useManagementStore from '../../store/useManagementStore';
 
 // Local Error Boundary for Dashboard Content
@@ -91,6 +93,7 @@ const Dashboard = ({ onExit }) => {
         { icon: IconCalendarEvent, label: 'Bookings' },
         { icon: IconBed, label: 'Rooms' },
         { icon: IconUser, label: 'Guests' },
+        { icon: IconMessage, label: 'Messages' },
         { icon: IconPlaneDeparture, label: 'Flights' },
         { icon: IconCurrencyDollar, label: 'Payments' },
         { icon: IconSettings, label: 'Settings' },
@@ -121,6 +124,8 @@ const Dashboard = ({ onExit }) => {
                 return <Rooms />;
             case 'Guests':
                 return <Guests />;
+            case 'Messages':
+                return <Messages />;
             case 'Flights':
                 return <FlightTracker />;
             case 'Payments':
@@ -174,7 +179,7 @@ const Dashboard = ({ onExit }) => {
                             </Avatar>
                             <div className="hidden sm:block text-left">
                                 <Text size="sm" fw={600} lh={1}>{user?.first_name} {user?.last_name}</Text>
-                                <Text size="xs" c="dimmed" lh={1} mt={2}>{user?.account_type}</Text>
+                                <Text size="xs" c="dimmed" lh={1} mt={2}>{user?.role}</Text>
                             </div>
                         </UnstyledButton>
                     </Group>
@@ -200,6 +205,9 @@ const Dashboard = ({ onExit }) => {
                         color="red"
                         className="rounded-md font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10"
                     />
+                    <Text size="xs" c="dimmed" className="text-center mt-4">
+                        Developed by <a href="https://www.kkdes.co.ke" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>KKDES</a>
+                    </Text>
                 </AppShell.Section>
             </AppShell.Navbar>
 

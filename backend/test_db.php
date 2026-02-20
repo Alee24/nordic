@@ -1,50 +1,35 @@
 <?php
-// Simple database test script
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+// backend/test_db.php
+require_once __DIR__ . '/config/Database.php';
 
-$host = 'localhost';
-$dbname = 'nordic';
-$username = 'root';
-$password = '';
+echo "<h1>Database Connection and Schema Test</h1>";
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $db = Database::getInstance()->getConnection();
+    echo "<p style='color:green'>Database Connection Successful!</p>";
     
-    // Test 1: Check if tables exist
-    $tables = $conn->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
-    
-    // Test 2: Count records
-    $propCount = $conn->query("SELECT COUNT(*) FROM properties")->fetchColumn();
-    $roomCount = $conn->query("SELECT COUNT(*) FROM rooms")->fetchColumn();
-    $userCount = $conn->query("SELECT COUNT(*) FROM users")->fetchColumn();
-    
-    // Test 3: Get all rooms
-    $rooms = $conn->query("SELECT * FROM rooms")->fetchAll();
-    
-    // Test 4: Get property
-    $property = $conn->query("SELECT * FROM properties WHERE id = 'nordic-main'")->fetch();
-    
-    echo json_encode([
-        'success' => true,
-        'database' => $dbname,
-        'tables' => $tables,
-        'counts' => [
-            'properties' => (int)$propCount,
-            'rooms' => (int)$roomCount,
-            'users' => (int)$userCount
-        ],
-        'property' => $property,
-        'rooms' => $rooms
-    ], JSON_PRETTY_PRINT);
-    
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ], JSON_PRETTY_PRINT);
+    // Check tables
+    $stmt = $db->query("SHOW TABLES");
+    $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    echo "<h3>Tables Found:</h3><ul>";
+    foreach ($tables as $t) {
+        echo "<li>$t</li>";
+    }
+    echo "</ul>";
+
+    // Check Rooms
+    if (in_array('rooms', $tables)) {
+        $stmt = $db->query("SELECT COUNT(*) as count FROM rooms");
+        $count = $stmt->fetchColumn();
+        echo "<p>Rooms Table Row Count: <strong>$count</strong></p>";
+        
+        $stmt = $db->query("SELECT * FROM rooms LIMIT 1");
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        echo "<pre>" . print_r($row, true) . "</pre>";
+    } else {
+        echo "<p style='color:red'>TABLE 'rooms' NOT FOUND!</p>";
+    }
+
+} catch (Exception $e) {
+    echo "<p style='color:red'>Connection Failed: " . $e->getMessage() . "</p>";
 }
-?>

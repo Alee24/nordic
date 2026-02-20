@@ -1,44 +1,53 @@
 <?php
-// Migration Runner Script
-// Run this to execute database migrations
+require_once __DIR__ . '/config/Database.php';
 
-require_once __DIR__ . '/config/database.php';
+header('Content-Type: application/json');
 
-function runMigration($migrationFile) {
-    echo "Running migration: $migrationFile\n";
+try {
+    $conn = Database::getInstance()->getConnection();
     
-    try {
-        $db = new Database();
-        $conn = $db->getConnection();
+    echo json_encode([
+        'status' => 'running',
+        'message' => 'Executing migration: Add status column to rooms table'
+    ]) . "\n";
+    
+    // Check if status column exists
+    $checkQuery = "SHOW COLUMNS FROM rooms LIKE 'status'";
+    $result = $conn->query($checkQuery);
+    
+    if ($result->rowCount() > 0) {
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Status column already exists in rooms table'
+        ]) . "\n";
+    } else {
+        // Add status column
+        $alterQuery = "ALTER TABLE rooms 
+            ADD COLUMN status ENUM('available', 'occupied', 'cleaning', 'maintenance') 
+            DEFAULT 'available' 
+            AFTER photos";
         
-        // Read migration file
-        $sql = file_get_contents($migrationFile);
+        $conn->exec($alterQuery);
         
-        if ($sql === false) {
-            throw new Exception("Could not read migration file: $migrationFile");
-        }
+        // Update existing records based on is_available
+        $updateQuery = "UPDATE rooms 
+            SET status = CASE 
+                WHEN is_available = 1 THEN 'available' 
+                ELSE 'occupied' 
+            END";
         
-        // Execute migration
-        $conn->exec($sql);
+        $conn->exec($updateQuery);
         
-        echo "✓ Migration completed successfully!\n\n";
-        return true;
-        
-    } catch (Exception $e) {
-        echo "✗ Migration failed: " . $e->getMessage() . "\n\n";
-        return false;
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Status column added successfully to rooms table'
+        ]) . "\n";
     }
+    
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]) . "\n";
+    http_response_code(500);
 }
-
-// Get migration file from command line argument or use default
-$migrationFile = $argv[1] ?? __DIR__ . '/../migrations/002_create_dorms_schema.sql';
-
-if (!file_exists($migrationFile)) {
-    echo "Error: Migration file not found: $migrationFile\n";
-    exit(1);
-}
-
-echo "=== NORDIC Database Migration Runner ===\n\n";
-$success = runMigration($migrationFile);
-
-exit($success ? 0 : 1);

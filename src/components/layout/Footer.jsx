@@ -70,7 +70,12 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-theme-muted text-xs">© 2026 Norden Suits. All rights reserved.</p>
+                    <div className="text-center md:text-left">
+                        <p className="text-theme-muted text-xs">© 2026 Norden Suits. All rights reserved.</p>
+                        <p className="text-theme-muted text-xs mt-1">
+                            Developed by <a href="https://www.kkdes.co.ke" target="_blank" rel="noopener noreferrer" className="text-norden-gold-500 hover:text-norden-gold-400 font-semibold transition-colors">KKDES</a>
+                        </p>
+                    </div>
                     <div className="flex gap-6">
                         <Link to="#" className="text-theme-muted hover:text-theme-muted text-xs">Privacy Policy</Link>
                         <Link to="#" className="text-theme-muted hover:text-theme-muted text-xs">Terms of Service</Link>

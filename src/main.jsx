@@ -1,43 +1,35 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom';
-import App from './App.jsx'
+import { BrowserRouter } from 'react-router-dom'
+import { MantineProvider } from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
 import './index.css'
-import Layout from './components/layout/Layout.jsx'
+import '@mantine/core/styles.css'
+import '@mantine/notifications/styles.css'
 
-// Basic Error Boundary for the root level
-class RootErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ padding: '20px', background: 'black', color: 'white', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <h1 style={{ color: 'red' }}>Fatal Boot Error</h1>
-          <pre>{this.state.error?.toString()}</pre>
-          <button onClick={() => window.location.reload()}>Retry Boot</button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
+// Import the actual App component
+import App from './App.jsx'
 
-const container = document.getElementById('root');
-const root = createRoot(container);
-root.render(
-  <React.StrictMode>
-    <RootErrorBoundary>
-      <BrowserRouter>
-        <Layout>
+console.log('🚀 Starting Norden Suites...')
+
+const container = document.getElementById('root')
+if (!container) {
+  console.error('❌ Root element not found!')
+  document.body.innerHTML = '<div style="color: red; padding: 50px; font-size: 24px;">CRITICAL ERROR: Root element missing</div>'
+} else {
+  console.log('✅ Root element found, mounting React...')
+
+  const root = createRoot(container)
+  root.render(
+    <React.StrictMode>
+      <MantineProvider defaultColorScheme="dark">
+        <Notifications position="top-right" />
+        <BrowserRouter>
           <App />
-        </Layout>
-      </BrowserRouter>
-    </RootErrorBoundary>
-  </React.StrictMode>,
-)
+        </BrowserRouter>
+      </MantineProvider>
+    </React.StrictMode>
+  )
+
+  console.log('✅ React app mounted successfully!')
+}
