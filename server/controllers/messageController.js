@@ -12,6 +12,9 @@ const createMessage = async (req, res) => {
                 message
             }
         });
+        const { sendContactNotification } = require('../services/emailService');
+        sendContactNotification(newMessage).catch(err => console.error('Delayed email error:', err));
+
         res.json({ success: true, data: newMessage });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

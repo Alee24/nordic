@@ -1,39 +1,4 @@
-import axios from 'axios';
-
-// Use the Node.js API server
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8123/api';
-
-const api = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    timeout: 10000, // 10 second timeout
-});
-
-// Add request interceptor for debugging
-api.interceptors.request.use(
-    (config) => {
-        console.log('API Request:', config.method.toUpperCase(), config.url);
-        return config;
-    },
-    (error) => {
-        console.error('Request Error:', error);
-        return Promise.reject(error);
-    }
-);
-
-// Add response interceptor for debugging
-api.interceptors.response.use(
-    (response) => {
-        console.log('API Response:', response.status, response.data);
-        return response;
-    },
-    (error) => {
-        console.error('Response Error:', error.response || error.message);
-        return Promise.reject(error);
-    }
-);
+import api from './api';
 
 // Error handler
 const handleError = (error) => {
@@ -122,10 +87,61 @@ export const getBookingById = async (bookingId) => {
     }
 };
 
+// SUITES
+export const getAllSuites = async () => {
+    try {
+        const response = await api.get('/suites');
+        return response.data;
+    } catch (error) {
+        handleError(error);
+    }
+};
+
+export const checkAvailability = async (suiteId, checkIn, checkOut) => {
+    try {
+        const response = await api.post('/suites/check-availability', {
+            suite_id: suiteId,
+            check_in: checkIn,
+            check_out: checkOut
+        });
+        return response.data;
+    } catch (error) {
+        handleError(error);
+    }
+};
+
+export const updatePaymentStatus = async (bookingId, status) => {
+    try {
+        const response = await api.put(`/bookings/${bookingId}/payment`, { status });
+        return response.data;
+    } catch (error) {
+        handleError(error);
+    }
+};
+
 // SEARCH
 export const searchProperties = async (filters) => {
     try {
         const response = await api.get('/search', { params: filters });
+        return response.data;
+    } catch (error) {
+        handleError(error);
+    }
+};
+
+// AUTH
+export const loginUser = async (email, password) => {
+    try {
+        const response = await api.post('/auth/login', { email, password });
+        return response.data;
+    } catch (error) {
+        handleError(error);
+    }
+};
+
+export const registerUser = async (userData) => {
+    try {
+        const response = await api.post('/auth/register', userData);
         return response.data;
     } catch (error) {
         handleError(error);
@@ -140,5 +156,10 @@ export default {
     createBooking,
     getMyBookings,
     getBookingById,
+    getAllSuites,
+    checkAvailability,
+    updatePaymentStatus,
     searchProperties,
+    loginUser,
+    registerUser
 };

@@ -86,15 +86,6 @@ const Navigation = () => {
                         Coastal Experience
                     </Button>
 
-                    <Button
-                        variant="subtle"
-                        component={Link}
-                        to="/laundry"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/laundry') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
-                            }`}
-                    >
-                        Laundry
-                    </Button>
 
                     <Button
                         variant="subtle"
@@ -145,7 +136,6 @@ const Navigation = () => {
                                     <Link to="/" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Home</Link>
                                     <Link to="/suites" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Residences</Link>
                                     <Link to="/experiences" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Compass /> Experience</Link>
-                                    <Link to="/laundry" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Sparkles /> Laundry</Link>
                                     <Link to="/contact" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><MessageSquare /> Contact</Link>
                                 </Stack>
                             </div>

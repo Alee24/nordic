@@ -1,15 +1,4 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8123/api';
-
-// Create axios instance with default config
-const api = axios.create({
-    baseURL: API_URL,
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+import api from './api';
 
 export const dashboardService = {
     /**
@@ -206,7 +195,7 @@ export const dashboardService = {
      */
     getSettings: async (category = null) => {
         try {
-            const response = await api.get(`/settings.php${category ? `?category=${category}` : ''}`);
+            const response = await api.get(`/settings${category ? `?category=${category}` : ''}`);
             return { success: true, data: response.data.data };
         } catch (error) {
             return { success: false, error: error.response?.data?.message || 'Failed to fetch settings' };
@@ -218,7 +207,7 @@ export const dashboardService = {
      */
     updateSetting: async (key, value, category = 'general') => {
         try {
-            const response = await api.post('/settings.php', { key, value, category });
+            const response = await api.post('/settings', { key, value, category });
             return { success: true, data: response.data.data };
         } catch (error) {
             return { success: false, error: error.response?.data?.message || 'Failed to update setting' };

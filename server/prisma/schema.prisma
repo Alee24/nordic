@@ -32,16 +32,18 @@ model Room {
 }
 
 model Booking {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  roomId    Int
-  checkIn   DateTime
-  checkOut  DateTime
-  status    String   @default("confirmed") // 'confirmed', 'cancelled', 'completed', 'pending', 'checked_in', 'checked_out'
-  totalPrice Decimal
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  room      Room     @relation(fields: [roomId], references: [id])
+  id            Int      @id @default(autoincrement())
+  reference     String?  @unique @default(cuid())
+  userId        Int
+  roomId        Int
+  checkIn       DateTime
+  checkOut      DateTime
+  status        String   @default("confirmed") // 'confirmed', 'cancelled', 'completed', 'pending', 'checked_in', 'checked_out'
+  paymentStatus String   @default("pending")   // 'pending', 'paid', 'refunded', 'failed'
+  totalPrice    Decimal
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+  room          Room     @relation(fields: [roomId], references: [id])
 }
 
 model Message {

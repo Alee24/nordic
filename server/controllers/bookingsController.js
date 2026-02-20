@@ -7,6 +7,9 @@ const getBookings = async (req, res) => {
             include: {
                 room: true,
                 user: true
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         });
         res.json({ success: true, data: bookings });
@@ -41,6 +44,9 @@ const createBooking = async (req, res) => {
             userId = user.id;
         }
 
+        // Generate a random-ish reference
+        const reference = `BK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
         const booking = await prisma.booking.create({
             data: {
                 userId,
@@ -48,7 +54,9 @@ const createBooking = async (req, res) => {
                 checkIn: new Date(checkIn),
                 checkOut: new Date(checkOut),
                 totalPrice: parseFloat(totalPrice),
-                status: 'confirmed'
+                status: 'confirmed',
+                paymentStatus: 'pending',
+                reference: reference
             },
             include: {
                 room: true,
@@ -56,7 +64,14 @@ const createBooking = async (req, res) => {
             }
         });
 
-        console.log('Booking created successfully:', booking.id);
+        try {
+            const { sendBookingConfirmation } = require('../services/emailService');
+            sendBookingConfirmation(booking).catch(err => console.error('Delayed email error:', err));
+        } catch (e) {
+            console.warn('Email service not available or failed to load:', e.message);
+        }
+
+        console.log('Booking created successfully:', booking.id, 'Ref:', reference);
         res.json({ success: true, data: booking });
     } catch (error) {
         console.error('Booking creation error:', error);

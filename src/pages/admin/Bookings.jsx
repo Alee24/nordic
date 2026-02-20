@@ -193,7 +193,7 @@ const Bookings = () => {
             total: bookingsList.length,
             confirmed: bookingsList.filter(b => b.status === 'confirmed').length,
             pending: bookingsList.filter(b => b.status === 'pending').length,
-            revenue: bookingsList.reduce((acc, b) => acc + (Number(b.total_price) || 0), 0)
+            revenue: bookingsList.reduce((acc, b) => acc + (Number(b.totalPrice) || Number(b.total_price) || 0), 0)
         };
     }, [data]);
 
@@ -204,25 +204,44 @@ const Bookings = () => {
 
     const rows = (Array.isArray(data) ? data : []).map((booking) => {
         if (!booking) return null;
-        const price = booking.total_price ? Number(booking.total_price) : 0;
+
+        // Map backend Prisma fields to UI expected fields
+        const guestName = booking.user?.name || booking.guest_name || 'Guest';
+        const guestEmail = booking.user?.email || booking.guest_email || 'No email';
+        const suiteName = booking.room?.name || booking.suite_name || 'Standard Suite';
+        const reference = booking.reference || booking.booking_reference || 'N/A';
+        const price = booking.totalPrice ? Number(booking.totalPrice) : (booking.total_price ? Number(booking.total_price) : 0);
+        const checkIn = booking.checkIn ? new Date(booking.checkIn).toLocaleDateString() : (booking.check_in || 'N/A');
+        const checkOut = booking.checkOut ? new Date(booking.checkOut).toLocaleDateString() : (booking.check_out || 'N/A');
+        const paymentStatus = booking.paymentStatus || booking.payment_status || 'pending';
 
         return (
             <Table.Tr
                 key={booking.id || Math.random()}
-                onClick={() => openDetails(booking)}
+                onClick={() => openDetails({
+                    ...booking,
+                    guest_name: guestName,
+                    guest_email: guestEmail,
+                    suite_name: suiteName,
+                    booking_reference: reference,
+                    total_price: price,
+                    check_in: checkIn,
+                    check_out: checkOut,
+                    payment_status: paymentStatus
+                })}
                 className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all border-b border-slate-100 dark:border-slate-800"
             >
                 <Table.Td>
                     <Group gap="sm">
                         <Avatar color="blue" radius="md" variant="light">
-                            {booking.guest_name ? booking.guest_name.charAt(0) : 'G'}
+                            {guestName.charAt(0)}
                         </Avatar>
                         <div>
                             <Text fz="sm" fw={600} className="text-slate-900 dark:text-slate-100">
-                                {booking.guest_name || 'Guest'}
+                                {guestName}
                             </Text>
                             <Text c="dimmed" fz="xs">
-                                {booking.guest_email || 'No email'}
+                                {guestEmail}
                             </Text>
                         </div>
                     </Group>
@@ -230,8 +249,8 @@ const Bookings = () => {
 
                 <Table.Td>
                     <Stack gap={0}>
-                        <Text fz="sm" fw={500}>{booking.suite_name || 'Standard Suite'}</Text>
-                        <Text c="dimmed" fz="xs">Ref: {booking.booking_reference || 'N/A'}</Text>
+                        <Text fz="sm" fw={500}>{suiteName}</Text>
+                        <Text c="dimmed" fz="xs">Ref: {reference}</Text>
                     </Stack>
                 </Table.Td>
 
@@ -239,12 +258,12 @@ const Bookings = () => {
                     <Group gap="xs">
                         <Stack gap={0}>
                             <Text fz="xs" fw={700} c="dimmed">IN</Text>
-                            <Text fz="sm">{booking.check_in || 'N/A'}</Text>
+                            <Text fz="sm">{checkIn}</Text>
                         </Stack>
                         <IconChevronRight size={14} className="text-slate-300" />
                         <Stack gap={0}>
                             <Text fz="xs" fw={700} c="dimmed">OUT</Text>
-                            <Text fz="sm">{booking.check_out || 'N/A'}</Text>
+                            <Text fz="sm">{checkOut}</Text>
                         </Stack>
                     </Group>
                 </Table.Td>
@@ -261,11 +280,11 @@ const Bookings = () => {
 
                 <Table.Td>
                     <Badge
-                        color={paymentColors[booking.payment_status] || 'gray'}
+                        color={paymentColors[paymentStatus] || 'gray'}
                         variant="light"
                         className="capitalize"
                     >
-                        {booking.payment_status || 'unknown'}
+                        {paymentStatus}
                     </Badge>
                 </Table.Td>
 

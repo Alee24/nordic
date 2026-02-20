@@ -1,14 +1,4 @@
-import axios from 'axios';
-
-// Configure base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-const roomApi = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+import api from './api';
 
 // Error handler
 const handleError = (error) => {
@@ -27,7 +17,7 @@ export const roomApiService = {
      */
     getAllRooms: async () => {
         try {
-            const response = await roomApi.get('/api/suites');
+            const response = await api.get('/suites');
             return response.data;
         } catch (error) {
             handleError(error);
@@ -39,7 +29,7 @@ export const roomApiService = {
      */
     checkAvailability: async (suiteId, checkIn, checkOut) => {
         try {
-            const response = await roomApi.post('/api/suites/check-availability', {
+            const response = await api.post('/suites/check-availability', {
                 suite_id: suiteId,
                 check_in: checkIn,
                 check_out: checkOut
@@ -55,7 +45,7 @@ export const roomApiService = {
      */
     createBooking: async (bookingData) => {
         try {
-            const response = await roomApi.post('/api/bookings', bookingData);
+            const response = await api.post('/bookings', bookingData);
             return response.data;
         } catch (error) {
             handleError(error);
@@ -67,7 +57,7 @@ export const roomApiService = {
      */
     updatePaymentStatus: async (bookingId, status) => {
         try {
-            const response = await roomApi.put(`/api/bookings/${bookingId}/payment`, { status });
+            const response = await api.put(`/bookings/${bookingId}/payment`, { status });
             return response.data;
         } catch (error) {
             handleError(error);
