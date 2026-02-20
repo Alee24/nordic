@@ -69,7 +69,7 @@ PROJECT_ROOT=$(pwd)
 # Install Backend Deps first so we have 'node' available
 echo -e "${GREEN}>>> Installing backend dependencies...${NC}"
 cd "$PROJECT_ROOT/server"
-npm install --no-audit
+npm install --no-audit --legacy-peer-deps
 
 # Use Node.js to safely write the .env files (Avoids Bash escaping issues)
 echo -e "${GREEN}>>> Generating production environment files...${NC}"
@@ -106,12 +106,10 @@ npx prisma generate
 # Frontend Environment
 echo -e "${GREEN}>>> Configuring Frontend...${NC}"
 cd "$PROJECT_ROOT"
-cat > "$PROJECT_ROOT/.env" <<EOF
-VITE_API_URL=https://$SERVER_DOMAIN/api
-EOF
+# (Wait, Frontend .env was already written by Node above)
 
 # Build Frontend
-npm install
+npm install --legacy-peer-deps
 npm run build
 
 # 6. Apache Configuration
