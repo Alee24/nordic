@@ -52,39 +52,54 @@ a2enmod headers
 a2enmod ssl
 
 # 4. Database Setup
-echo -e "${GREEN}>>> Step 3: Configuring PostgreSQL (Fresh Start)...${NC}"
-# Drop existing to ensure fresh start and valid credentials
+echo -e "${GREEN}>>> Step 3: Configuring PostgreSQL (Bulletproof Fresh Start)...${NC}"
+# Force drop with sudo to ensure no permission issues
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS nordic_db;" || true
 sudo -u postgres psql -c "DROP USER IF EXISTS nordic_user;" || true
 
-# Recreate everything
-sudo -u postgres psql -c "CREATE DATABASE nordic_db;"
+# Recreate with explicit ownership
 sudo -u postgres psql -c "CREATE USER nordic_user WITH PASSWORD '$DB_PASS';"
+sudo -u postgres psql -c "CREATE DATABASE nordic_db OWNER nordic_user;"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nordic_db TO nordic_user;"
-sudo -u postgres psql -c "ALTER DATABASE nordic_db OWNER TO nordic_user;"
 
 # 5. Application Setup
 echo -e "${GREEN}>>> Step 4: Setting up Application...${NC}"
-# Assume script is run from project root or current dir is project root
 PROJECT_ROOT=$(pwd)
 
-# Install Backend Deps
+# Install Backend Deps first so we have 'node' available
+echo -e "${GREEN}>>> Installing backend dependencies...${NC}"
 cd "$PROJECT_ROOT/server"
-npm install
+npm install --no-audit
 
-# URL Encode the password for Prisma (Robut way to handle special chars like @, #, !)
-echo -e "${GREEN}>>> Encoding database credentials...${NC}"
-ENCODED_PASS=$(node -e "console.log(encodeURIComponent(process.argv[1]))" "$DB_PASS")
+# Use Node.js to safely write the .env files (Avoids Bash escaping issues)
+echo -e "${GREEN}>>> Generating production environment files...${NC}"
+node -e "
+const fs = require('fs');
+const path = require('path');
+const pass = process.argv[1];
+const domain = process.argv[2];
+const secret = process.argv[3];
+const root = process.argv[4];
 
-# Backend Environment
-echo -e "${GREEN}>>> Configuring Backend...${NC}"
-cat > "$PROJECT_ROOT/server/.env" <<EOF
-PORT=8123
-JWT_SECRET='$JWT_SECRET'
-FRONTEND_URL=https://$SERVER_DOMAIN
-DATABASE_URL="postgresql://nordic_user:${ENCODED_PASS}@localhost:5432/nordic_db?schema=public"
-EOF
+const encodedPass = encodeURIComponent(pass);
+const dbUrl = 'postgresql://nordic_user:' + encodedPass + '@localhost:5432/nordic_db?schema=public';
 
+// Write Backend .env
+fs.writeFileSync(path.join(root, 'server', '.env'), 
+  'PORT=8123\n' +
+  'JWT_SECRET=\"' + secret + '\"\n' +
+  'FRONTEND_URL=https://' + domain + '\n' +
+  'DATABASE_URL=\"' + dbUrl + '\"\n'
+);
+
+// Write Frontend .env
+fs.writeFileSync(path.join(root, '.env'), 
+  'VITE_API_URL=https://' + domain + '/api\n'
+);
+" "$DB_PASS" "$SERVER_DOMAIN" "$JWT_SECRET" "$PROJECT_ROOT"
+
+# Run Migrations
+echo -e "${GREEN}>>> Running database migrations...${NC}"
 npx prisma migrate deploy
 npx prisma generate
 
