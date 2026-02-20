@@ -100,6 +100,8 @@ fs.writeFileSync(path.join(root, '.env'),
 
 # Run Migrations
 echo -e "${GREEN}>>> Running database migrations...${NC}"
+# Fix permission for Prisma binaries if needed
+chmod +x node_modules/.bin/prisma || true
 npx prisma migrate deploy
 npx prisma generate
 
@@ -117,17 +119,24 @@ echo -e "${GREEN}>>> Step 5: Configuring Apache VirtualHost & SSL...${NC}"
 
 # Ensure www-data can access the files
 echo -e "${GREEN}>>> Setting directory permissions...${NC}"
+# Make sure the parent directory is reachable
+chmod o+x /var/www
+chmod o+x /var/www/html
 chown -R www-data:www-data "$PROJECT_ROOT"
 find "$PROJECT_ROOT" -type d -exec chmod 755 {} \;
 find "$PROJECT_ROOT" -type f -exec chmod 644 {} \;
+
+# Use the absolute path for DocumentRoot
+REAL_DIST="$PROJECT_ROOT/dist"
+echo -e "Setting DocumentRoot to: ${BLUE}$REAL_DIST${NC}"
 
 # First, create a temporary HTTP-only config to allow Certbot to verify
 cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
 <VirtualHost *:80>
     ServerName $SERVER_DOMAIN
     ServerAlias www.$SERVER_DOMAIN
-    DocumentRoot $PROJECT_ROOT/dist
-    <Directory "$PROJECT_ROOT/dist">
+    DocumentRoot $REAL_DIST
+    <Directory "$REAL_DIST">
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
@@ -158,9 +167,9 @@ cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
     ServerName $SERVER_DOMAIN
     ServerAlias www.$SERVER_DOMAIN
     
-    DocumentRoot $PROJECT_ROOT/dist
+    DocumentRoot $REAL_DIST
     
-    <Directory "$PROJECT_ROOT/dist">
+    <Directory "$REAL_DIST">
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
