@@ -72,10 +72,20 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nordic_db TO nordic_u
 echo -e "${GREEN}>>> Step 4: Setting up Application...${NC}"
 PROJECT_ROOT=$(pwd)
 
-# Install Backend Deps first so we have 'node' available
+# PRE-INSTALL PERMISSIONS: Ensure www-data can access but don't break logic yet
+echo -e "${GREEN}>>> Optimizing directory permissions...${NC}"
+chmod o+x /var/www || true
+chmod o+x /var/www/html || true
+chown -R www-data:www-data "$PROJECT_ROOT"
+# Apply 755 to directories and 644 to files, BUT EXCLUDE node_modules to keep binaries working
+find "$PROJECT_ROOT" -path "$PROJECT_ROOT/node_modules" -prune -o -type d -exec chmod 755 {} \;
+find "$PROJECT_ROOT" -path "$PROJECT_ROOT/node_modules" -prune -o -type f -exec chmod 644 {} \;
+
+# Install Backend Deps
 echo -e "${GREEN}>>> Installing backend dependencies...${NC}"
 cd "$PROJECT_ROOT/server"
 npm install --no-audit --legacy-peer-deps
+chmod -R +x node_modules/.bin 2>/dev/null || true
 
 # Use Node.js to safely write the .env files (Avoids Bash escaping issues)
 echo -e "${GREEN}>>> Generating production environment files...${NC}"
@@ -125,15 +135,6 @@ npm run build
 
 # 6. Apache Configuration
 echo -e "${GREEN}>>> Step 5: Configuring Apache VirtualHost & SSL...${NC}"
-
-# Ensure www-data can access the files
-echo -e "${GREEN}>>> Setting directory permissions...${NC}"
-# Make sure the parent directory is reachable
-chmod o+x /var/www
-chmod o+x /var/www/html
-chown -R www-data:www-data "$PROJECT_ROOT"
-find "$PROJECT_ROOT" -type d -exec chmod 755 {} \;
-find "$PROJECT_ROOT" -type f -exec chmod 644 {} \;
 
 # Use the absolute path for DocumentRoot
 REAL_DIST="$PROJECT_ROOT/dist"
