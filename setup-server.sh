@@ -118,9 +118,9 @@ cd "$PROJECT_ROOT"
 # (Wait, Frontend .env was already written by Node above)
 
 # Build Frontend
-# Recursive fix for ALL frontend binaries (Vite, etc)
-chmod -R +x node_modules/.bin 2>/dev/null || true
 npm install --legacy-peer-deps
+# Recursive fix for ALL frontend binaries (Vite, etc) - MUST BE AFTER INSTALL
+chmod -R +x node_modules/.bin 2>/dev/null || true
 npm run build
 
 # 6. Apache Configuration
