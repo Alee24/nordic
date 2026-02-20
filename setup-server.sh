@@ -66,7 +66,7 @@ PROJECT_ROOT=$(pwd)
 echo -e "${GREEN}>>> Configuring Backend...${NC}"
 cat > "$PROJECT_ROOT/server/.env" <<EOF
 PORT=8123
-JWT_SECRET=$JWT_SECRET
+JWT_SECRET='$JWT_SECRET'
 FRONTEND_URL=https://$SERVER_DOMAIN
 DATABASE_URL="postgresql://nordic_user:$DB_PASS@localhost:5432/nordic_db?schema=public"
 EOF
