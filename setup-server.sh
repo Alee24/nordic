@@ -115,6 +115,12 @@ npm run build
 # 6. Apache Configuration
 echo -e "${GREEN}>>> Step 5: Configuring Apache VirtualHost & SSL...${NC}"
 
+# Ensure www-data can access the files
+echo -e "${GREEN}>>> Setting directory permissions...${NC}"
+chown -R www-data:www-data "$PROJECT_ROOT"
+find "$PROJECT_ROOT" -type d -exec chmod 755 {} \;
+find "$PROJECT_ROOT" -type f -exec chmod 644 {} \;
+
 # First, create a temporary HTTP-only config to allow Certbot to verify
 cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
 <VirtualHost *:80>
@@ -133,9 +139,9 @@ a2dissite 000-default.conf || true
 a2ensite nordensuites.conf
 systemctl reload apache2
 
-# Run Certbot to get the certificate (Interactive mode for Let's Encrypt)
+# Run Certbot to get the certificate
 echo -e "${BLUE}>>> Running Certbot for SSL generation...${NC}"
-certbot --apache -d $SERVER_DOMAIN -d www.$SERVER_DOMAIN --non-interactive --agree-tos -m $SSL_EMAIL --redirect --hsts
+certbot --apache -d $SERVER_DOMAIN -d www.$SERVER_DOMAIN --non-interactive --agree-tos -m $SSL_EMAIL --redirect --hsts || true
 
 # Now apply the final production config with SSL and Proxy
 cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
