@@ -26,14 +26,16 @@ fi
 
 # 2. Gather Configuration
 echo -e "${GREEN}>>> Step 1: Gathering Configuration...${NC}"
-read -p "Enter your Server IP or Domain Name (e.g., example.com): " SERVER_DOMAIN
+SERVER_DOMAIN="nordensuites.com"
+echo -e "Using default domain: ${BLUE}$SERVER_DOMAIN${NC}"
 read -p "Enter a secure JWT Secret: " JWT_SECRET
 read -p "Enter Database Password for 'nordic_user': " DB_PASS
+read -p "Enter Email for SSL Notifications: " SSL_EMAIL
 
 # 3. System Updates & Dependencies
 echo -e "${GREEN}>>> Step 2: Installing System Dependencies...${NC}"
 apt update && apt upgrade -y
-apt install -y curl git apache2 postgresql postgresql-contrib build-essential
+apt install -y curl git apache2 postgresql postgresql-contrib build-essential certbot python3-certbot-apache
 
 # Install Node.js 20
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
@@ -47,6 +49,7 @@ a2enmod proxy
 a2enmod proxy_http
 a2enmod rewrite
 a2enmod headers
+a2enmod ssl
 
 # 4. Database Setup
 echo -e "${GREEN}>>> Step 3: Configuring PostgreSQL...${NC}"
@@ -64,7 +67,7 @@ echo -e "${GREEN}>>> Configuring Backend...${NC}"
 cat > "$PROJECT_ROOT/server/.env" <<EOF
 PORT=8123
 JWT_SECRET=$JWT_SECRET
-FRONTEND_URL=http://$SERVER_DOMAIN
+FRONTEND_URL=https://$SERVER_DOMAIN
 DATABASE_URL="postgresql://nordic_user:$DB_PASS@localhost:5432/nordic_db?schema=public"
 EOF
 
@@ -78,7 +81,7 @@ npx prisma generate
 echo -e "${GREEN}>>> Configuring Frontend...${NC}"
 cd "$PROJECT_ROOT"
 cat > "$PROJECT_ROOT/.env" <<EOF
-VITE_API_URL=http://$SERVER_DOMAIN/api
+VITE_API_URL=https://$SERVER_DOMAIN/api
 EOF
 
 # Build Frontend
@@ -86,10 +89,44 @@ npm install
 npm run build
 
 # 6. Apache Configuration
-echo -e "${GREEN}>>> Step 5: Configuring Apache VirtualHost...${NC}"
-cat > "/etc/apache2/sites-available/norden-suits.conf" <<EOF
+echo -e "${GREEN}>>> Step 5: Configuring Apache VirtualHost & SSL...${NC}"
+
+# First, create a temporary HTTP-only config to allow Certbot to verify
+cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
 <VirtualHost *:80>
     ServerName $SERVER_DOMAIN
+    ServerAlias www.$SERVER_DOMAIN
+    DocumentRoot $PROJECT_ROOT/dist
+    <Directory "$PROJECT_ROOT/dist">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+EOF
+
+a2dissite 000-default.conf || true
+a2ensite nordensuites.conf
+systemctl reload apache2
+
+# Run Certbot to get the certificate (Interactive mode for Let's Encrypt)
+echo -e "${BLUE}>>> Running Certbot for SSL generation...${NC}"
+certbot --apache -d $SERVER_DOMAIN -d www.$SERVER_DOMAIN --non-interactive --agree-tos -m $SSL_EMAIL --redirect --hsts
+
+# Now apply the final production config with SSL and Proxy
+cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
+<VirtualHost *:80>
+    ServerName $SERVER_DOMAIN
+    ServerAlias www.$SERVER_DOMAIN
+    RewriteEngine On
+    RewriteCond %{SERVER_NAME} =$SERVER_DOMAIN [OR]
+    RewriteCond %{SERVER_NAME} =www.$SERVER_DOMAIN
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName $SERVER_DOMAIN
+    ServerAlias www.$SERVER_DOMAIN
     
     DocumentRoot $PROJECT_ROOT/dist
     
@@ -97,8 +134,6 @@ cat > "/etc/apache2/sites-available/norden-suits.conf" <<EOF
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
-        
-        # SPA Routing: Redirect all requests to index.html
         RewriteEngine On
         RewriteBase /
         RewriteRule ^index\.html$ - [L]
@@ -107,19 +142,20 @@ cat > "/etc/apache2/sites-available/norden-suits.conf" <<EOF
         RewriteRule . /index.html [L]
     </Directory>
 
-    # API Proxy
     ProxyPreserveHost On
     ProxyPass /api http://127.0.0.1:8123/api
     ProxyPassReverse /api http://127.0.0.1:8123/api
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/$SERVER_DOMAIN/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/$SERVER_DOMAIN/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
 
     ErrorLog \${APACHE_LOG_DIR}/norden_error.log
     CustomLog \${APACHE_LOG_DIR}/norden_access.log combined
 </VirtualHost>
 EOF
 
-# Enable Site & Restart Apache
-a2dissite 000-default.conf || true
-a2ensite norden-suits.conf
 systemctl restart apache2
 
 # 7. Start Backend with PM2
@@ -133,7 +169,7 @@ pm2 save
 pm2 startup | tail -n 1 | bash || true
 
 echo -e "${BLUE}====================================================${NC}"
-echo -e "${GREEN}   Installation Complete!${NC}"
-echo -e "${GREEN}   URL: http://$SERVER_DOMAIN${NC}"
+echo -e "${GREEN}   Production SSL Installation Complete!${NC}"
+echo -e "${GREEN}   URL: https://$SERVER_DOMAIN${NC}"
 echo -e "${BLUE}====================================================${NC}"
 echo -e "Developed by | KKDES https://kkdes.co.ke/"
