@@ -134,9 +134,7 @@ const Home = () => {
                             </div>
                         </div>
 
-                        <Button variant="outline" icon={<ArrowRight size={18} />}>
-                            Explore Services
-                        </Button>
+
                     </motion.div>
 
                     <motion.div
@@ -225,59 +223,6 @@ const Home = () => {
                 </div>
             </Section>
 
-            {/* NEW: Arrival Portal Promotion */}
-            <Section className="bg-norden-dark-900 overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-                    <div className="w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-norden-gold-500/30 via-transparent to-transparent" />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                    <div className="relative z-10">
-                        <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Smart Concierge</span>
-                        <h2 className="text-4xl md:text-6xl font-serif text-white mt-4 mb-8">
-                            Arrive on your <br /> <span className="italic text-norden-gold-500">own terms.</span>
-                        </h2>
-                        <p className="text-gray-400 text-lg mb-10 leading-relaxed">
-                            Skip the front desk entirely. Use our interactive 3D arrival portal to select your residence,
-                            verify your stay, and activate your digital door key—all from your mobile device.
-                        </p>
-                        <Group gap="xl">
-                            <Link to="/apartments">
-                                <Button className="bg-norden-gold-500 text-norden-dark-900 font-bold px-10 py-4 h-auto text-lg rounded-full hover:bg-white transition-colors">
-                                    Open Arrival Portal
-                                </Button>
-                            </Link>
-                            <div className="flex -space-x-3">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-norden-dark-900 overflow-hidden">
-                                        <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Guest" />
-                                    </div>
-                                ))}
-                                <div className="w-10 h-10 rounded-full border-2 border-norden-dark-900 bg-norden-gold-500 flex items-center justify-center text-[10px] font-bold text-norden-dark-900">
-                                    +500
-                                </div>
-                            </div>
-                        </Group>
-                    </div>
-
-                    <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        className="relative"
-                    >
-                        <div className="aspect-square bg-white/5 rounded-3xl backdrop-blur-3xl border border-white/10 p-8 flex flex-col items-center justify-center text-center">
-                            <div className="w-32 h-32 bg-norden-gold-500 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(212,175,55,0.3)]">
-                                <LogIn size={64} className="text-norden-dark-900" />
-                            </div>
-                            <Text size="xl" fw={700} c="white" className="font-serif mb-4">Interactive 3D Check-in</Text>
-                            <Text c="dimmed">Visual residence selection & digital key activation</Text>
-                        </div>
-                        {/* Decorative elements */}
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-norden-gold-500/10 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl" />
-                    </motion.div>
-                </div>
-            </Section>
 
             {/* Featured Suites */}
             <Section className="bg-theme-surface/50">
