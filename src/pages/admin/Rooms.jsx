@@ -32,22 +32,30 @@ const STATUS_OPTIONS = [
 const FALLBACK = 'https://images.unsplash.com/photo-1522770179533-24471fcdba45?q=80&w=800';
 
 /**
- * Resolve an imageUrl coming from the DB.
- * Old records may have absolute URLs like https://nordensuites.com/uploads/foo.jpg
- * New records use relative paths like /uploads/foo.jpg
- * Both map to the same file on disk — we always want to use the relative path so
- * the browser requests it from the current origin and Apache serves it via Alias.
+ * Always returns a usable src for <img>.
+ * - Relative paths (/uploads/...) → returned as-is (Apache Alias serves them)
+ * - Old absolute URLs (https://nordensuites.com/uploads/...) → stripped to /uploads/...
+ * - External URLs (Unsplash, etc.) → used as-is
+ * - null/empty → FALLBACK
  */
 const resolveImageUrl = (url) => {
     if (!url) return FALLBACK;
+    // Already relative
     if (url.startsWith('/uploads/')) return url;
-    // Handle old absolute URLs — strip domain and keep the path
+    // Old absolute URL from this domain — strip to relative path
     try {
         const parsed = new URL(url);
         if (parsed.pathname.startsWith('/uploads/')) return parsed.pathname;
     } catch (_) { /* not a full URL */ }
-    // External URLs (Unsplash, etc.) — use as-is
+    // External or unknown — use as-is
     return url;
+};
+
+// Returns true if this url is a real uploaded image (not a fallback)
+const isRealImage = (url) => {
+    if (!url) return false;
+    const resolved = resolveImageUrl(url);
+    return resolved !== FALLBACK && resolved.startsWith('/uploads/');
 };
 
 const emptyForm = {
@@ -87,10 +95,12 @@ const Rooms = () => {
     const openEdit = (room) => {
         setSelectedRoom(room);
         setIsEdit(true);
+        // Prefer imageUrl field; also check image_url snake_case variant from some API responses
+        const img = room.imageUrl || room.image_url || room.photos?.[0] || '';
         setFormData({
             name: room.name || '', type: room.type || 'suite',
             price: Number(room.price) || 0, description: room.description || '',
-            imageUrl: room.imageUrl || '', status: room.status || 'available',
+            imageUrl: img, status: room.status || 'available',
         });
         open();
     };
@@ -182,6 +192,7 @@ const Rooms = () => {
         });
 
     const previewSrc = formData.imageUrl ? resolveImageUrl(formData.imageUrl) : null;
+    const hasRealPreview = previewSrc && previewSrc !== FALLBACK;
 
     return (
         <Stack gap="xl">
@@ -277,7 +288,7 @@ const Rooms = () => {
                         <Textarea label="Description" placeholder="Describe the room..." minRows={3}
                             value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
 
-                        {/* Image Upload Section — upload only, no link input */}
+                        {/* Image Upload — upload only, shows current image if set */}
                         <Stack gap="xs">
                             <Text size="sm" fw={500}>Room Image</Text>
                             <input
@@ -287,36 +298,56 @@ const Rooms = () => {
                                 style={{ display: 'none' }}
                                 onChange={handleImageUpload}
                             />
-                            <Button
-                                variant="light"
-                                leftSection={uploadingImage ? <Loader size={14} /> : <IconUpload size={15} />}
-                                disabled={uploadingImage}
-                                onClick={() => fileInputRef.current?.click()}
-                                size="sm"
-                                radius="md"
-                                fullWidth
-                            >
-                                {uploadingImage ? 'Uploading…' : previewSrc && previewSrc !== FALLBACK ? 'Replace Image' : 'Upload Image (JPG, PNG, WEBP)'}
-                            </Button>
 
-                            {previewSrc && previewSrc !== FALLBACK && (
-                                <Box style={{ position: 'relative', borderRadius: 8, overflow: 'hidden' }}>
+                            {/* Current image preview — always shown when imageUrl exists */}
+                            {hasRealPreview && (
+                                <Box style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', border: '2px solid #e5e7eb' }}>
                                     <img
                                         src={previewSrc}
-                                        alt="Preview"
-                                        style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block', borderRadius: 8 }}
-                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                        alt="Current room image"
+                                        style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
+                                        onError={(e) => { e.target.src = FALLBACK; }}
                                     />
+                                    <Box style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }}
+                                        onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+                                        onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
+                                    >
+                                        <Button size="xs" variant="white" leftSection={<IconUpload size={12} />} onClick={() => fileInputRef.current?.click()}>Replace</Button>
+                                    </Box>
                                     <ActionIcon
-                                        style={{ position: 'absolute', top: 8, right: 8 }}
-                                        color="red"
-                                        variant="filled"
-                                        size="sm"
+                                        style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.9)' }}
+                                        color="red" variant="subtle" size="sm" radius="xl"
                                         onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
                                     >
-                                        <IconX size={12} />
+                                        <IconX size={14} />
                                     </ActionIcon>
                                 </Box>
+                            )}
+
+                            {/* Upload button — shows when uploading or no image */}
+                            {!hasRealPreview && (
+                                <Button
+                                    variant="light" color="blue"
+                                    leftSection={uploadingImage ? <Loader size={14} /> : <IconUpload size={15} />}
+                                    disabled={uploadingImage}
+                                    onClick={() => fileInputRef.current?.click()}
+                                    size="sm" radius="md" fullWidth
+                                    style={{ height: 80, border: '2px dashed #93c5fd' }}
+                                >
+                                    {uploadingImage ? 'Uploading…' : 'Upload Image (JPG, PNG, WEBP)'}
+                                </Button>
+                            )}
+
+                            {/* Show upload button below image when one already exists */}
+                            {hasRealPreview && (
+                                <Button
+                                    variant="subtle" color="gray" size="xs"
+                                    leftSection={uploadingImage ? <Loader size={12} /> : <IconUpload size={13} />}
+                                    disabled={uploadingImage}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {uploadingImage ? 'Uploading…' : 'Replace Image'}
+                                </Button>
                             )}
                         </Stack>
 
