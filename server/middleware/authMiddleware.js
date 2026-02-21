@@ -1,7 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    // Accept token from Authorization header OR ?token= query param
+    // (query param is needed when opening routes in a new browser tab, e.g. invoice)
+    const headerToken = req.headers.authorization?.split(' ')[1];
+    const queryToken = req.query.token;
+    const token = headerToken || queryToken;
 
     if (!token) {
         return res.status(401).json({ success: false, message: 'Not authenticated' });

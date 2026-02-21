@@ -21,6 +21,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const additionalRoutes = require('./routes/additionalRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const invoiceRoutes = require('./routes/invoiceRoutes');
 
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -32,6 +33,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api', additionalRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api', settingsRoutes);
+app.use('/api/bookings', invoiceRoutes);
 
 const PORT = process.env.PORT || 8123;
 app.listen(PORT, '0.0.0.0', () => {

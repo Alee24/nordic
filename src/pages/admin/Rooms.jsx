@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     Paper, Text, Group, Button, Stack, SimpleGrid, Card, Image,
     Badge, ActionIcon, Loader, Center, TextInput, Select, Box, Divider, Modal,
-    NumberInput, Textarea, Progress
+    NumberInput, Textarea, AspectRatio
 } from '@mantine/core';
 import {
     IconPlus, IconSearch, IconBed, IconTrash, IconEdit,
-    IconAdjustmentsHorizontal, IconPhoto, IconCheck, IconUpload
+    IconAdjustmentsHorizontal, IconPhoto, IconCheck, IconUpload, IconX
 } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -14,35 +14,45 @@ import { dashboardService } from '../../services/dashboardService';
 import api from '../../services/api';
 
 const STATUS_COLORS = {
-    available: 'green',
-    occupied: 'blue',
-    maintenance: 'orange',
-    cleaning: 'yellow',
+    available: 'green', occupied: 'blue',
+    maintenance: 'orange', cleaning: 'yellow',
 };
 
 const ROOM_TYPES = [
-    { value: 'studio', label: 'Studio' },
-    { value: 'suite', label: 'Suite' },
-    { value: 'penthouse', label: 'Penthouse' },
-    { value: 'family', label: 'Family' },
-    { value: 'deluxe', label: 'Deluxe' },
-    { value: 'standard', label: 'Standard' },
+    { value: 'studio', label: 'Studio' }, { value: 'suite', label: 'Suite' },
+    { value: 'penthouse', label: 'Penthouse' }, { value: 'family', label: 'Family' },
+    { value: 'deluxe', label: 'Deluxe' }, { value: 'standard', label: 'Standard' },
 ];
 
 const STATUS_OPTIONS = [
-    { value: 'available', label: 'Available' },
-    { value: 'occupied', label: 'Occupied' },
-    { value: 'maintenance', label: 'Maintenance' },
-    { value: 'cleaning', label: 'Cleaning' },
+    { value: 'available', label: 'Available' }, { value: 'occupied', label: 'Occupied' },
+    { value: 'maintenance', label: 'Maintenance' }, { value: 'cleaning', label: 'Cleaning' },
 ];
 
+const FALLBACK = 'https://images.unsplash.com/photo-1522770179533-24471fcdba45?q=80&w=800';
+
+/**
+ * Resolve an imageUrl coming from the DB.
+ * Old records may have absolute URLs like https://nordensuites.com/uploads/foo.jpg
+ * New records use relative paths like /uploads/foo.jpg
+ * Both map to the same file on disk — we always want to use the relative path so
+ * the browser requests it from the current origin and Apache serves it via Alias.
+ */
+const resolveImageUrl = (url) => {
+    if (!url) return FALLBACK;
+    if (url.startsWith('/uploads/')) return url;
+    // Handle old absolute URLs — strip domain and keep the path
+    try {
+        const parsed = new URL(url);
+        if (parsed.pathname.startsWith('/uploads/')) return parsed.pathname;
+    } catch (_) { /* not a full URL */ }
+    // External URLs (Unsplash, etc.) — use as-is
+    return url;
+};
+
 const emptyForm = {
-    name: '',
-    type: 'suite',
-    price: 0,
-    description: '',
-    imageUrl: '',
-    status: 'available',
+    name: '', type: 'suite', price: 0,
+    description: '', imageUrl: '', status: 'available',
 };
 
 const Rooms = () => {
@@ -64,11 +74,8 @@ const Rooms = () => {
         setLoading(true);
         try {
             const response = await dashboardService.getRoomStatus();
-            if (response.success) {
-                setRooms(response.data || []);
-            } else {
-                notifications.show({ title: 'Error', message: response.error, color: 'red' });
-            }
+            if (response.success) setRooms(response.data || []);
+            else notifications.show({ title: 'Error', message: response.error, color: 'red' });
         } catch (error) {
             notifications.show({ title: 'Error', message: error.message, color: 'red' });
         } finally {
@@ -76,23 +83,14 @@ const Rooms = () => {
         }
     };
 
-    const openAdd = () => {
-        setSelectedRoom(null);
-        setIsEdit(false);
-        setFormData(emptyForm);
-        open();
-    };
-
+    const openAdd = () => { setSelectedRoom(null); setIsEdit(false); setFormData(emptyForm); open(); };
     const openEdit = (room) => {
         setSelectedRoom(room);
         setIsEdit(true);
         setFormData({
-            name: room.name || '',
-            type: room.type || 'suite',
-            price: Number(room.price) || 0,
-            description: room.description || '',
-            imageUrl: room.imageUrl || '',
-            status: room.status || 'available',
+            name: room.name || '', type: room.type || 'suite',
+            price: Number(room.price) || 0, description: room.description || '',
+            imageUrl: room.imageUrl || '', status: room.status || 'available',
         });
         open();
     };
@@ -100,20 +98,35 @@ const Rooms = () => {
     const handleImageUpload = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // Client-side format guard
+        const allowed = /^image\/(jpeg|jpg|png|gif|webp)$/i;
+        if (!allowed.test(file.type)) {
+            notifications.show({ title: 'Invalid file', message: 'Only JPG, PNG, WEBP and GIF images are allowed.', color: 'red' });
+            return;
+        }
+
         setUploadingImage(true);
         try {
             const form = new FormData();
             form.append('image', file);
-            const token = localStorage.getItem('token');
+            // The api instance already injects the Authorization header via interceptor
             const res = await api.post('/upload', form, {
-                headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
             if (res.data.success) {
-                setFormData(prev => ({ ...prev, imageUrl: res.data.data.url }));
-                notifications.show({ title: 'Image Uploaded', message: 'Image uploaded successfully', color: 'green', icon: <IconCheck size={16} /> });
+                const relUrl = res.data.data.url; // already a relative path like /uploads/room_xxx.jpg
+                setFormData(prev => ({ ...prev, imageUrl: relUrl }));
+                notifications.show({ title: 'Image Uploaded ✓', message: 'Image saved and ready.', color: 'green', icon: <IconCheck size={16} /> });
+            } else {
+                throw new Error(res.data.message || 'Upload failed');
             }
         } catch (err) {
-            notifications.show({ title: 'Upload Failed', message: err.response?.data?.message || err.message, color: 'red' });
+            notifications.show({
+                title: 'Upload Failed',
+                message: err.response?.data?.message || err.message,
+                color: 'red'
+            });
         } finally {
             setUploadingImage(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -122,40 +135,23 @@ const Rooms = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.name.trim()) {
-            notifications.show({ title: 'Validation', message: 'Room name is required', color: 'orange' });
-            return;
-        }
-        if (!formData.price || formData.price <= 0) {
-            notifications.show({ title: 'Validation', message: 'Price must be greater than 0', color: 'orange' });
-            return;
-        }
+        if (!formData.name.trim()) { notifications.show({ title: 'Validation', message: 'Room name is required', color: 'orange' }); return; }
+        if (!formData.price || formData.price <= 0) { notifications.show({ title: 'Validation', message: 'Price must be greater than 0', color: 'orange' }); return; }
         setSaving(true);
         try {
             const payload = {
-                name: formData.name.trim(),
-                type: formData.type,
-                price: formData.price,
-                description: formData.description.trim(),
-                imageUrl: formData.imageUrl.trim() || null,
-                status: formData.status,
+                name: formData.name.trim(), type: formData.type,
+                price: formData.price, description: formData.description.trim(),
+                imageUrl: formData.imageUrl || null, status: formData.status,
             };
             const response = isEdit
                 ? await dashboardService.updateRoom(selectedRoom.id, payload)
                 : await dashboardService.addRoom(payload);
-
             if (response.success) {
-                notifications.show({
-                    title: isEdit ? 'Room Updated' : 'Room Created',
-                    message: `${formData.name} has been ${isEdit ? 'updated' : 'added'} successfully`,
-                    color: 'green',
-                    icon: <IconCheck size={16} />,
-                });
+                notifications.show({ title: isEdit ? 'Room Updated' : 'Room Created', message: `${formData.name} saved successfully`, color: 'green' });
                 close();
                 fetchRooms();
-            } else {
-                throw new Error(response.error);
-            }
+            } else throw new Error(response.error);
         } catch (error) {
             notifications.show({ title: 'Error', message: error.message, color: 'red' });
         } finally {
@@ -167,115 +163,58 @@ const Rooms = () => {
         if (!window.confirm(`Delete room "${name}"? This cannot be undone.`)) return;
         try {
             const response = await dashboardService.deleteRoom(id);
-            if (response.success) {
-                notifications.show({ title: 'Deleted', message: `${name} removed`, color: 'orange' });
-                fetchRooms();
-            } else {
-                throw new Error(response.error);
-            }
+            if (response.success) { notifications.show({ title: 'Deleted', message: `${name} removed`, color: 'orange' }); fetchRooms(); }
+            else throw new Error(response.error);
         } catch (error) {
             notifications.show({ title: 'Error', message: error.message, color: 'red' });
         }
     };
 
     const filteredRooms = rooms
-        .filter(room => {
+        .filter(r => {
             const q = search.toLowerCase();
-            return (
-                (room.name || '').toLowerCase().includes(q) ||
-                (room.type || '').toLowerCase().includes(q) ||
-                (room.description || '').toLowerCase().includes(q)
-            );
+            return (r.name || '').toLowerCase().includes(q) || (r.type || '').toLowerCase().includes(q);
         })
         .sort((a, b) => {
             if (sortBy === 'price-low') return Number(a.price) - Number(b.price);
             if (sortBy === 'price-high') return Number(b.price) - Number(a.price);
-            if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '');
-            return 0;
+            return (a.name || '').localeCompare(b.name || '');
         });
+
+    const previewSrc = formData.imageUrl ? resolveImageUrl(formData.imageUrl) : null;
 
     return (
         <Stack gap="xl">
             {/* Header */}
             <Group justify="space-between" align="end">
                 <Box>
-                    <Group gap="xs" mb={4}>
-                        <IconBed size={28} color="#2563eb" />
-                        <Text size="2xl" fw={900} style={{ letterSpacing: '-0.5px' }}>Room Inventory</Text>
-                    </Group>
+                    <Group gap="xs" mb={4}><IconBed size={28} color="#2563eb" /><Text size="2xl" fw={900} style={{ letterSpacing: '-0.5px' }}>Room Inventory</Text></Group>
                     <Text size="sm" c="dimmed">Manage suites, pricing, and availability.</Text>
                 </Box>
-                <Button
-                    size="md"
-                    radius="md"
-                    leftSection={<IconPlus size={18} />}
-                    color="blue"
-                    onClick={openAdd}
-                >
-                    Add New Room
-                </Button>
+                <Button size="md" radius="md" leftSection={<IconPlus size={18} />} color="blue" onClick={openAdd}>Add New Room</Button>
             </Group>
 
             {/* Search & Filter */}
             <Paper p="md" radius="lg" withBorder>
                 <Group>
-                    <TextInput
-                        placeholder="Search by name, type..."
-                        leftSection={<IconSearch size={16} />}
-                        style={{ flex: 1 }}
-                        radius="md"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <Select
-                        placeholder="Sort by"
-                        leftSection={<IconAdjustmentsHorizontal size={16} />}
-                        data={[
-                            { value: 'name', label: 'Name' },
-                            { value: 'price-low', label: 'Price: Lowest' },
-                            { value: 'price-high', label: 'Price: Highest' },
-                        ]}
-                        value={sortBy}
-                        onChange={setSortBy}
-                        radius="md"
-                        w={180}
-                    />
+                    <TextInput placeholder="Search by name, type..." leftSection={<IconSearch size={16} />}
+                        style={{ flex: 1 }} radius="md" value={search} onChange={(e) => setSearch(e.target.value)} />
+                    <Select placeholder="Sort by" leftSection={<IconAdjustmentsHorizontal size={16} />}
+                        data={[{ value: 'name', label: 'Name' }, { value: 'price-low', label: 'Price: Lowest' }, { value: 'price-high', label: 'Price: Highest' }]}
+                        value={sortBy} onChange={setSortBy} radius="md" w={180} />
                 </Group>
             </Paper>
 
-            {/* Rooms Grid */}
+            {/* Grid */}
             {loading ? (
-                <Center h={400}>
-                    <Stack align="center">
-                        <Loader size="xl" type="dots" />
-                        <Text size="sm" c="dimmed">Loading rooms...</Text>
-                    </Stack>
-                </Center>
+                <Center h={400}><Stack align="center"><Loader size="xl" type="dots" /><Text size="sm" c="dimmed">Loading rooms...</Text></Stack></Center>
             ) : filteredRooms.length === 0 ? (
                 <Paper p={60} withBorder radius="xl" style={{ borderStyle: 'dashed', borderWidth: 2 }}>
                     <Center>
                         <Stack align="center" gap="md">
-                            <Box style={{ padding: 16, background: '#eff6ff', borderRadius: '50%' }}>
-                                <IconBed size={48} color="#93c5fd" />
-                            </Box>
-                            <Box style={{ textAlign: 'center' }}>
-                                <Text fw={800} size="xl">
-                                    {search ? 'No matching rooms' : 'No rooms yet'}
-                                </Text>
-                                <Text size="sm" c="dimmed" mt={4}>
-                                    {search ? 'Try a different search term.' : 'Click "Add New Room" to create your first room.'}
-                                </Text>
-                            </Box>
-                            {search && (
-                                <Button variant="light" radius="md" onClick={() => setSearch('')}>
-                                    Clear search
-                                </Button>
-                            )}
-                            {!search && (
-                                <Button radius="md" color="blue" leftSection={<IconPlus size={16} />} onClick={openAdd}>
-                                    Add New Room
-                                </Button>
-                            )}
+                            <Box style={{ padding: 16, background: '#eff6ff', borderRadius: '50%' }}><IconBed size={48} color="#93c5fd" /></Box>
+                            <Text fw={800} size="lg">{search ? 'No matching rooms' : 'No rooms yet'}</Text>
+                            {!search && <Button radius="md" color="blue" leftSection={<IconPlus size={16} />} onClick={openAdd}>Add New Room</Button>}
                         </Stack>
                     </Center>
                 </Paper>
@@ -284,65 +223,31 @@ const Rooms = () => {
                     {filteredRooms.map((room) => (
                         <Card key={room.id} shadow="md" padding="lg" radius="lg" withBorder>
                             <Card.Section style={{ position: 'relative', overflow: 'hidden' }}>
-                                <Image
-                                    src={room.imageUrl || 'https://images.unsplash.com/photo-1522770179533-24471fcdba45?q=80&w=2000'}
-                                    height={200}
+                                <img
+                                    src={resolveImageUrl(room.imageUrl)}
                                     alt={room.name}
-                                    style={{ objectFit: 'cover' }}
+                                    style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }}
+                                    onError={(e) => { e.target.src = FALLBACK; }}
                                 />
                                 <Box style={{ position: 'absolute', top: 10, right: 10 }}>
-                                    <Badge size="lg" variant="filled" color="dark">
-                                        KES {Number(room.price).toLocaleString()}
-                                    </Badge>
+                                    <Badge size="lg" variant="filled" color="dark">KES {Number(room.price).toLocaleString('en-KE')}</Badge>
                                 </Box>
                                 <Box style={{ position: 'absolute', top: 10, left: 10 }}>
-                                    <Badge
-                                        size="sm"
-                                        variant="filled"
-                                        color={STATUS_COLORS[room.status] || 'gray'}
-                                    >
+                                    <Badge size="sm" variant="filled" color={STATUS_COLORS[room.status] || 'gray'}>
                                         {(room.status || 'unknown').toUpperCase()}
                                     </Badge>
                                 </Box>
                             </Card.Section>
-
                             <Stack gap="xs" mt="md">
                                 <Group justify="space-between" wrap="nowrap">
-                                    <Text fw={700} size="lg" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {room.name}
-                                    </Text>
-                                    <Badge color="blue" variant="light" size="sm">
-                                        {(room.type || 'suite').toUpperCase()}
-                                    </Badge>
+                                    <Text fw={700} size="lg" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{room.name}</Text>
+                                    <Badge color="blue" variant="light" size="sm">{(room.type || 'suite').toUpperCase()}</Badge>
                                 </Group>
-
-                                <Text size="sm" c="dimmed" lineClamp={2}>
-                                    {room.description || 'No description provided.'}
-                                </Text>
-
+                                <Text size="sm" c="dimmed" lineClamp={2}>{room.description || 'No description provided.'}</Text>
                                 <Divider my="sm" variant="dashed" />
-
                                 <Group gap="xs">
-                                    <Button
-                                        variant="light"
-                                        color="blue"
-                                        style={{ flex: 1 }}
-                                        radius="md"
-                                        size="sm"
-                                        leftSection={<IconEdit size={15} />}
-                                        onClick={() => openEdit(room)}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <ActionIcon
-                                        variant="subtle"
-                                        color="red"
-                                        size="lg"
-                                        radius="md"
-                                        onClick={() => handleDelete(room.id, room.name)}
-                                    >
-                                        <IconTrash size={17} />
-                                    </ActionIcon>
+                                    <Button variant="light" color="blue" style={{ flex: 1 }} radius="md" size="sm" leftSection={<IconEdit size={15} />} onClick={() => openEdit(room)}>Edit</Button>
+                                    <ActionIcon variant="subtle" color="red" size="lg" radius="md" onClick={() => handleDelete(room.id, room.name)}><IconTrash size={17} /></ActionIcon>
                                 </Group>
                             </Stack>
                         </Card>
@@ -352,96 +257,54 @@ const Rooms = () => {
 
             {/* Add / Edit Modal */}
             <Modal
-                opened={opened}
-                onClose={close}
+                opened={opened} onClose={close}
                 title={<Text fw={700} size="lg">{isEdit ? 'Edit Room' : 'Add New Room'}</Text>}
-                size="lg"
-                radius="md"
-                overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+                size="lg" radius="md" overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
             >
                 <form onSubmit={handleSubmit}>
                     <Stack gap="md">
-                        <TextInput
-                            label="Room Name"
-                            placeholder="e.g. Ocean View Suite 101"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        />
-
+                        <TextInput label="Room Name" placeholder="e.g. Ocean View Suite 101" required
+                            value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                         <Group grow>
-                            <Select
-                                label="Room Type"
-                                required
-                                data={ROOM_TYPES}
-                                value={formData.type}
-                                onChange={(val) => setFormData({ ...formData, type: val })}
-                            />
-                            <Select
-                                label="Status"
-                                data={STATUS_OPTIONS}
-                                value={formData.status}
-                                onChange={(val) => setFormData({ ...formData, status: val })}
-                            />
+                            <Select label="Room Type" required data={ROOM_TYPES} value={formData.type}
+                                onChange={(val) => setFormData({ ...formData, type: val })} />
+                            <Select label="Status" data={STATUS_OPTIONS} value={formData.status}
+                                onChange={(val) => setFormData({ ...formData, status: val })} />
                         </Group>
+                        <NumberInput label="Price per Night (KES)" placeholder="e.g. 12000" required min={0}
+                            prefix="KES " thousandSeparator="," value={formData.price}
+                            onChange={(val) => setFormData({ ...formData, price: val })} />
+                        <Textarea label="Description" placeholder="Describe the room..." minRows={3}
+                            value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
 
-                        <NumberInput
-                            label="Price per Night (KES)"
-                            placeholder="e.g. 12000"
-                            required
-                            min={0}
-                            prefix="KES "
-                            thousandSeparator=","
-                            value={formData.price}
-                            onChange={(val) => setFormData({ ...formData, price: val })}
-                        />
-
-                        <Textarea
-                            label="Description"
-                            placeholder="Describe the room..."
-                            minRows={3}
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        />
-
+                        {/* Image Upload Section — upload only, no link input */}
                         <Stack gap="xs">
                             <Text size="sm" fw={500}>Room Image</Text>
-                            <Group gap="sm">
-                                <Button
-                                    variant="light"
-                                    leftSection={uploadingImage ? <Loader size={14} /> : <IconUpload size={15} />}
-                                    disabled={uploadingImage}
-                                    onClick={() => fileInputRef.current?.click()}
-                                    size="sm"
-                                    radius="md"
-                                >
-                                    {uploadingImage ? 'Uploading...' : 'Upload Image'}
-                                </Button>
-                                <Text size="xs" c="dimmed">or</Text>
-                                <TextInput
-                                    placeholder="Paste image URL..."
-                                    leftSection={<IconPhoto size={14} />}
-                                    style={{ flex: 1 }}
-                                    value={formData.imageUrl}
-                                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                                    size="sm"
-                                />
-                            </Group>
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/*"
+                                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                                 style={{ display: 'none' }}
                                 onChange={handleImageUpload}
                             />
-                            {formData.imageUrl && (
-                                <Box style={{ position: 'relative' }}>
-                                    <Image
-                                        src={formData.imageUrl}
-                                        height={160}
-                                        radius="md"
+                            <Button
+                                variant="light"
+                                leftSection={uploadingImage ? <Loader size={14} /> : <IconUpload size={15} />}
+                                disabled={uploadingImage}
+                                onClick={() => fileInputRef.current?.click()}
+                                size="sm"
+                                radius="md"
+                                fullWidth
+                            >
+                                {uploadingImage ? 'Uploading…' : previewSrc && previewSrc !== FALLBACK ? 'Replace Image' : 'Upload Image (JPG, PNG, WEBP)'}
+                            </Button>
+
+                            {previewSrc && previewSrc !== FALLBACK && (
+                                <Box style={{ position: 'relative', borderRadius: 8, overflow: 'hidden' }}>
+                                    <img
+                                        src={previewSrc}
                                         alt="Preview"
-                                        style={{ objectFit: 'cover' }}
+                                        style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block', borderRadius: 8 }}
                                         onError={(e) => { e.target.style.display = 'none'; }}
                                     />
                                     <ActionIcon
@@ -451,19 +314,15 @@ const Rooms = () => {
                                         size="sm"
                                         onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
                                     >
-                                        <IconTrash size={12} />
+                                        <IconX size={12} />
                                     </ActionIcon>
                                 </Box>
                             )}
                         </Stack>
 
                         <Group justify="flex-end" mt="sm">
-                            <Button variant="default" radius="md" onClick={close} disabled={saving}>
-                                Cancel
-                            </Button>
-                            <Button type="submit" radius="md" color="blue" loading={saving}>
-                                {isEdit ? 'Save Changes' : 'Create Room'}
-                            </Button>
+                            <Button variant="default" radius="md" onClick={close} disabled={saving}>Cancel</Button>
+                            <Button type="submit" radius="md" color="blue" loading={saving}>{isEdit ? 'Save Changes' : 'Create Room'}</Button>
                         </Group>
                     </Stack>
                 </form>

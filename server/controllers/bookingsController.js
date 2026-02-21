@@ -106,4 +106,15 @@ const finalizeCheckin = async (req, res) => {
     }
 };
 
-module.exports = { getBookings, createBooking, updateBookingStatus, finalizeCheckin };
+const deleteBooking = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.booking.delete({ where: { id: parseInt(id) } });
+        res.json({ success: true, message: 'Booking deleted' });
+    } catch (error) {
+        console.error('Delete booking error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = { getBookings, createBooking, updateBookingStatus, finalizeCheckin, deleteBooking };

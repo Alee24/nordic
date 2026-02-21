@@ -1,199 +1,126 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-    Paper,
-    Table,
-    Text,
-    Group,
-    Badge,
-    ActionIcon,
-    Avatar,
-    Menu,
-    TextInput,
-    Select,
-    Button,
-    Stack,
-    Loader,
-    Center,
-    Pagination,
-    Card,
-    SimpleGrid,
-    Drawer,
-    ScrollArea,
-    Divider,
-    ThemeIcon,
-    Tooltip
+    Paper, Table, Text, Group, Badge, ActionIcon,
+    Avatar, Menu, TextInput, Select, Button, Stack,
+    Loader, Center, Pagination, Card, SimpleGrid,
+    Drawer, ScrollArea, Divider, ThemeIcon, Tooltip, Box
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import {
-    IconDots,
-    IconEye,
-    IconSearch,
-    IconFilter,
-    IconDownload,
-    IconCheck,
-    IconX,
-    IconCalendarEvent,
-    IconUser,
-    IconHome,
-    IconCreditCard,
-    IconClock,
-    IconMail,
-    IconPhone,
-    IconChevronRight
+    IconDots, IconEye, IconSearch, IconDownload,
+    IconCheck, IconX, IconCalendarEvent, IconUser,
+    IconHome, IconCreditCard, IconClock, IconMail,
+    IconPhone, IconChevronRight, IconTrash
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { dashboardService } from '../../services/dashboardService';
+import api from '../../services/api';
 
 const statusColors = {
-    confirmed: 'blue',
-    pending: 'yellow',
-    checked_in: 'green',
-    cancelled: 'red',
-    checked_out: 'gray',
+    confirmed: 'blue', pending: 'yellow', checked_in: 'green',
+    cancelled: 'red', checked_out: 'gray',
 };
-
 const paymentColors = {
-    paid: 'green',
-    pending: 'orange',
-    unpaid: 'red',
-    refunded: 'gray',
+    paid: 'green', pending: 'orange', unpaid: 'red', refunded: 'gray',
 };
 
-const MOCK_BOOKINGS = [
-    {
-        id: '1',
-        guest_name: 'Sarah Johnson',
-        guest_email: 'sarah.j@example.com',
-        guest_phone: '+1 234 567 8901',
-        suite_name: 'Royal Ocean Suite',
-        check_in: '2026-02-12',
-        check_out: '2026-02-15',
-        status: 'confirmed',
-        payment_status: 'paid',
-        total_price: 1250.00,
-        booking_reference: 'BR-A1B2C3'
-    },
-    {
-        id: '2',
-        guest_name: 'Michael Chen',
-        guest_email: 'm.chen@example.com',
-        guest_phone: '+1 987 654 3210',
-        suite_name: 'Deluxe City View',
-        check_in: '2026-02-10',
-        check_out: '2026-02-14',
-        status: 'checked_in',
-        payment_status: 'paid',
-        total_price: 840.00,
-        booking_reference: 'BR-D4E5F6'
-    },
-    {
-        id: '3',
-        guest_name: 'Emma Wilson',
-        guest_email: 'emma.w@example.com',
-        guest_phone: '+1 555 012 3456',
-        suite_name: 'Penthouse Apartment',
-        check_in: '2026-02-18',
-        check_out: '2026-02-25',
-        status: 'pending',
-        payment_status: 'unpaid',
-        total_price: 3500.00,
-        booking_reference: 'BR-G7H8I9'
-    }
-];
+// Normalise a raw booking record from the API into a flat UI shape
+const normalise = (b) => ({
+    ...b,
+    guest_name: b.guestName || (b.user ? `${b.user.firstName || ''} ${b.user.lastName || ''}`.trim() : '') || b.guest_name || 'Guest',
+    guest_email: b.guestEmail || b.user?.email || b.guest_email || '',
+    guest_phone: b.guestPhone || b.user?.phone || b.guest_phone || 'Not provided',
+    suite_name: b.room?.name || b.suite_name || 'Suite',
+    booking_reference: b.bookingReference || b.booking_reference || b.id,
+    total_price: Number(b.totalPrice ?? b.total_price ?? 0),
+    payment_status: b.paymentStatus || b.payment_status || 'pending',
+    check_in: b.checkIn ? new Date(b.checkIn).toLocaleDateString('en-KE') : b.check_in || '—',
+    check_out: b.checkOut ? new Date(b.checkOut).toLocaleDateString('en-KE') : b.check_out || '—',
+});
 
 const Bookings = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
-    const [demoMode, setDemoMode] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [drawerOpened, setDrawerOpened] = useState(false);
-    const [filters, setFilters] = useState({
-        status: '',
-        search: '',
-        date_from: null,
-        date_to: null
-    });
+    const [deleting, setDeleting] = useState(false);
+    const [filters, setFilters] = useState({ status: '', search: '', date_from: null });
 
-    useEffect(() => {
-        fetchBookings();
-    }, [filters, demoMode]);
+    useEffect(() => { fetchBookings(); }, [filters]);
 
     const fetchBookings = async () => {
         setLoading(true);
         try {
-            if (demoMode) {
-                let filtered = [...MOCK_BOOKINGS];
-                if (filters.search) {
-                    const search = filters.search.toLowerCase();
-                    filtered = filtered.filter(b =>
-                        b.guest_name.toLowerCase().includes(search) ||
-                        b.guest_email.toLowerCase().includes(search) ||
-                        b.suite_name.toLowerCase().includes(search)
-                    );
-                }
-                if (filters.status) {
-                    filtered = filtered.filter(b => b.status === filters.status);
-                }
-                setTimeout(() => {
-                    setData(filtered);
-                    setLoading(false);
-                }, 500);
-                return;
-            }
-
             const apiFilters = {
-                ...filters,
-                date_from: filters.date_from ? filters.date_from.toISOString().split('T')[0] : '',
-                date_to: filters.date_to ? filters.date_to.toISOString().split('T')[0] : ''
+                ...(filters.status && { status: filters.status }),
+                ...(filters.search && { search: filters.search }),
+                ...(filters.date_from && { date_from: filters.date_from.toISOString().split('T')[0] }),
             };
-
-            Object.keys(apiFilters).forEach(key => apiFilters[key] === '' && delete apiFilters[key]);
-
-            const response = await dashboardService.getAllBookings(apiFilters, demoMode);
+            const response = await dashboardService.getAllBookings(apiFilters);
             if (response.success) {
-                setData(Array.isArray(response.data) ? response.data : []);
-            } else {
-                setData([]);
-                throw new Error(response.error);
-            }
+                setData((Array.isArray(response.data) ? response.data : []).map(normalise));
+            } else throw new Error(response.error);
         } catch (error) {
             setData([]);
-            notifications.show({
-                title: 'Error',
-                message: error.message || 'Failed to sync with live database',
-                color: 'red'
-            });
+            notifications.show({ title: 'Error loading bookings', message: error.message, color: 'red' });
         } finally {
-            if (!demoMode) setLoading(false);
+            setLoading(false);
         }
     };
 
     const handleStatusUpdate = async (id, newStatus) => {
-        if (demoMode) {
-            setData(prev => (Array.isArray(prev) ? prev : []).map(b => b.id === id ? { ...b, status: newStatus } : b));
-            notifications.show({ title: 'Demo Mode', message: 'Status updated locally', color: 'blue' });
-            return;
-        }
         try {
             const response = await dashboardService.updateBookingStatus(id, newStatus);
             if (response.success) {
-                notifications.show({ title: 'Success', message: 'Booking status updated', color: 'green' });
+                notifications.show({ title: 'Updated', message: `Status changed to ${newStatus}`, color: 'green' });
                 fetchBookings();
-            } else {
-                throw new Error(response.error);
-            }
+                if (selectedBooking?.id === id) setSelectedBooking(prev => ({ ...prev, status: newStatus }));
+            } else throw new Error(response.error);
         } catch (error) {
             notifications.show({ title: 'Error', message: error.message, color: 'red' });
         }
     };
 
+    const handleDelete = async () => {
+        if (!selectedBooking) return;
+        if (!window.confirm(`Delete booking #${selectedBooking.booking_reference}? This cannot be undone.`)) return;
+        setDeleting(true);
+        try {
+            await api.delete(`/bookings/${selectedBooking.id}`);
+            notifications.show({ title: 'Deleted', message: 'Booking record removed', color: 'orange' });
+            setDrawerOpened(false);
+            fetchBookings();
+        } catch (error) {
+            notifications.show({ title: 'Delete failed', message: error.response?.data?.message || error.message, color: 'red' });
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const handleDownloadInvoice = () => {
+        if (!selectedBooking) return;
+        const apiBase = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+        const token = localStorage.getItem('admin_token') || localStorage.getItem('token') || '';
+        // Open invoice in new tab — the backend renders the full HTML invoice
+        const url = `${apiBase}/bookings/${selectedBooking.id}/invoice`;
+        // Pass token via query param since we're opening a new window (no headers)
+        const link = document.createElement('a');
+        link.href = url + `?token=${token}`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        notifications.show({ title: 'Invoice Opened', message: 'Use browser Print → Save as PDF to download.', color: 'blue' });
+    };
+
     const stats = useMemo(() => {
-        const bookingsList = Array.isArray(data) ? data : [];
+        const list = Array.isArray(data) ? data : [];
         return {
-            total: bookingsList.length,
-            confirmed: bookingsList.filter(b => b.status === 'confirmed').length,
-            pending: bookingsList.filter(b => b.status === 'pending').length,
-            revenue: bookingsList.reduce((acc, b) => acc + (Number(b.totalPrice) || Number(b.total_price) || 0), 0)
+            total: list.length,
+            confirmed: list.filter(b => b.status === 'confirmed').length,
+            pending: list.filter(b => b.status === 'pending').length,
+            revenue: list.reduce((acc, b) => acc + (b.total_price || 0), 0),
         };
     }, [data]);
 
@@ -202,203 +129,114 @@ const Bookings = () => {
         setDrawerOpened(true);
     };
 
-    const rows = (Array.isArray(data) ? data : []).map((booking) => {
-        if (!booking) return null;
-
-        // Map backend Prisma fields to UI expected fields
-        const guestName = booking.user?.name || booking.guest_name || 'Guest';
-        const guestEmail = booking.user?.email || booking.guest_email || 'No email';
-        const suiteName = booking.room?.name || booking.suite_name || 'Standard Suite';
-        const reference = booking.reference || booking.booking_reference || 'N/A';
-        const price = booking.totalPrice ? Number(booking.totalPrice) : (booking.total_price ? Number(booking.total_price) : 0);
-        const checkIn = booking.checkIn ? new Date(booking.checkIn).toLocaleDateString() : (booking.check_in || 'N/A');
-        const checkOut = booking.checkOut ? new Date(booking.checkOut).toLocaleDateString() : (booking.check_out || 'N/A');
-        const paymentStatus = booking.paymentStatus || booking.payment_status || 'pending';
-
-        return (
-            <Table.Tr
-                key={booking.id || Math.random()}
-                onClick={() => openDetails({
-                    ...booking,
-                    guest_name: guestName,
-                    guest_email: guestEmail,
-                    suite_name: suiteName,
-                    booking_reference: reference,
-                    total_price: price,
-                    check_in: checkIn,
-                    check_out: checkOut,
-                    payment_status: paymentStatus
-                })}
-                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all border-b border-slate-100 dark:border-slate-800"
-            >
-                <Table.Td>
-                    <Group gap="sm">
-                        <Avatar color="blue" radius="md" variant="light">
-                            {guestName.charAt(0)}
-                        </Avatar>
-                        <div>
-                            <Text fz="sm" fw={600} className="text-slate-900 dark:text-slate-100">
-                                {guestName}
-                            </Text>
-                            <Text c="dimmed" fz="xs">
-                                {guestEmail}
-                            </Text>
-                        </div>
-                    </Group>
-                </Table.Td>
-
-                <Table.Td>
+    const rows = data.map((booking) => (
+        <Table.Tr
+            key={booking.id}
+            onClick={() => openDetails(booking)}
+            style={{ cursor: 'pointer' }}
+            className="hover:bg-slate-50 transition-all border-b border-slate-100"
+        >
+            <Table.Td>
+                <Group gap="sm">
+                    <Avatar color="indigo" radius="md" variant="light">{(booking.guest_name || 'G').charAt(0)}</Avatar>
+                    <div>
+                        <Text fz="sm" fw={600}>{booking.guest_name}</Text>
+                        <Text c="dimmed" fz="xs">{booking.guest_email}</Text>
+                    </div>
+                </Group>
+            </Table.Td>
+            <Table.Td>
+                <Stack gap={0}>
+                    <Text fz="sm" fw={500}>{booking.suite_name}</Text>
+                    <Text c="dimmed" fz="xs">Ref: {booking.booking_reference}</Text>
+                </Stack>
+            </Table.Td>
+            <Table.Td>
+                <Group gap="xs">
                     <Stack gap={0}>
-                        <Text fz="sm" fw={500}>{suiteName}</Text>
-                        <Text c="dimmed" fz="xs">Ref: {reference}</Text>
+                        <Text fz="xs" fw={700} c="dimmed">IN</Text>
+                        <Text fz="sm">{booking.check_in}</Text>
                     </Stack>
-                </Table.Td>
-
-                <Table.Td>
-                    <Group gap="xs">
-                        <Stack gap={0}>
-                            <Text fz="xs" fw={700} c="dimmed">IN</Text>
-                            <Text fz="sm">{checkIn}</Text>
-                        </Stack>
-                        <IconChevronRight size={14} className="text-slate-300" />
-                        <Stack gap={0}>
-                            <Text fz="xs" fw={700} c="dimmed">OUT</Text>
-                            <Text fz="sm">{checkOut}</Text>
-                        </Stack>
-                    </Group>
-                </Table.Td>
-
-                <Table.Td>
-                    <Badge
-                        color={statusColors[booking.status] || 'gray'}
-                        variant="dot"
-                        className="capitalize px-2 py-3"
-                    >
-                        {booking.status?.replace('_', ' ') || 'unknown'}
-                    </Badge>
-                </Table.Td>
-
-                <Table.Td>
-                    <Badge
-                        color={paymentColors[paymentStatus] || 'gray'}
-                        variant="light"
-                        className="capitalize"
-                    >
-                        {paymentStatus}
-                    </Badge>
-                </Table.Td>
-
-                <Table.Td>
-                    <Text fw={800} fz="sm" className="text-slate-900 dark:text-white">
-                        KES {price.toLocaleString()}
-                    </Text>
-                </Table.Td>
-
-                <Table.Td onClick={(e) => e.stopPropagation()}>
-                    <Menu shadow="md" width={200} position="bottom-end">
-                        <Menu.Target>
-                            <ActionIcon variant="subtle" color="gray">
-                                <IconDots size={18} />
-                            </ActionIcon>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                            <Menu.Item leftSection={<IconEye size={14} />} onClick={() => openDetails(booking)}>View Details</Menu.Item>
-                            <Divider />
-                            {booking.status !== 'confirmed' && (
-                                <Menu.Item leftSection={<IconCheck size={14} color="green" />} onClick={() => handleStatusUpdate(booking.id, 'confirmed')}>Confirm</Menu.Item>
-                            )}
-                            {booking.status === 'confirmed' && (
-                                <Menu.Item leftSection={<IconCheck size={14} color="blue" />} onClick={() => handleStatusUpdate(booking.id, 'checked_out')}>Check Out</Menu.Item>
-                            )}
-                            {booking.status !== 'cancelled' && (
-                                <Menu.Item leftSection={<IconX size={14} color="red" />} color="red" onClick={() => handleStatusUpdate(booking.id, 'cancelled')}>Cancel</Menu.Item>
-                            )}
-                        </Menu.Dropdown>
-                    </Menu>
-                </Table.Td>
-            </Table.Tr>
-        );
-    });
+                    <IconChevronRight size={14} color="#d1d5db" />
+                    <Stack gap={0}>
+                        <Text fz="xs" fw={700} c="dimmed">OUT</Text>
+                        <Text fz="sm">{booking.check_out}</Text>
+                    </Stack>
+                </Group>
+            </Table.Td>
+            <Table.Td>
+                <Badge color={statusColors[booking.status] || 'gray'} variant="dot">
+                    {(booking.status || 'unknown').replace('_', ' ')}
+                </Badge>
+            </Table.Td>
+            <Table.Td>
+                <Badge color={paymentColors[booking.payment_status] || 'gray'} variant="light">
+                    {booking.payment_status}
+                </Badge>
+            </Table.Td>
+            <Table.Td>
+                <Text fw={800} fz="sm">KES {booking.total_price.toLocaleString('en-KE')}</Text>
+            </Table.Td>
+            <Table.Td onClick={(e) => e.stopPropagation()}>
+                <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu.Target>
+                        <ActionIcon variant="subtle" color="gray"><IconDots size={18} /></ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <Menu.Item leftSection={<IconEye size={14} />} onClick={() => openDetails(booking)}>View Details</Menu.Item>
+                        <Divider />
+                        {booking.status !== 'confirmed' && (
+                            <Menu.Item leftSection={<IconCheck size={14} color="green" />} onClick={() => handleStatusUpdate(booking.id, 'confirmed')}>Confirm</Menu.Item>
+                        )}
+                        {booking.status === 'confirmed' && (
+                            <Menu.Item leftSection={<IconCheck size={14} color="blue" />} onClick={() => handleStatusUpdate(booking.id, 'checked_out')}>Check Out</Menu.Item>
+                        )}
+                        {booking.status !== 'cancelled' && (
+                            <Menu.Item leftSection={<IconX size={14} color="red" />} color="red" onClick={() => handleStatusUpdate(booking.id, 'cancelled')}>Cancel</Menu.Item>
+                        )}
+                    </Menu.Dropdown>
+                </Menu>
+            </Table.Td>
+        </Table.Tr>
+    ));
 
     return (
-        <Stack gap="xl" className="p-2">
+        <Stack gap="xl" p={2}>
             <Group justify="space-between">
-                <div>
-                    <Text fz={28} fw={900} className="tracking-tight text-slate-900 dark:text-white">Reservations</Text>
-                    <Text fz="sm" c="dimmed" fw={500}>Monitor and manage all apartment bookings across your property.</Text>
-                </div>
-                <Group gap="md">
-                    <Paper shadow="xs" p={4} radius="xl" className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex">
-                        <button
-                            onClick={() => setDemoMode(false)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
-                        >
-                            LIVE
-                        </button>
-                        <button
-                            onClick={() => setDemoMode(true)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
-                        >
-                            DEMO
-                        </button>
-                    </Paper>
-                    <Button variant="gradient" gradient={{ from: 'blue', to: 'cyan' }} radius="md" leftSection={<IconDownload size={18} />}>
-                        Reports
-                    </Button>
-                </Group>
+                <Box>
+                    <Text fz={28} fw={900} style={{ letterSpacing: '-0.5px' }}>Reservations</Text>
+                    <Text fz="sm" c="dimmed">Monitor and manage all apartment bookings across your property.</Text>
+                </Box>
             </Group>
 
+            {/* Stats */}
             <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} gap="lg">
-                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-blue-500">
-                    <Group justify="space-between">
-                        <ThemeIcon color="blue" variant="light" size="xl" radius="md">
-                            <IconCalendarEvent size={24} />
-                        </ThemeIcon>
-                        <Badge variant="light" color="blue">Total</Badge>
-                    </Group>
-                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">All Bookings</Text>
-                    <Text fz="xl" fw={900}>{stats.total}</Text>
-                </Card>
-                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-yellow-500">
-                    <Group justify="space-between">
-                        <ThemeIcon color="yellow" variant="light" size="xl" radius="md">
-                            <IconClock size={24} />
-                        </ThemeIcon>
-                        <Badge variant="light" color="yellow">Pending</Badge>
-                    </Group>
-                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">Pending Approval</Text>
-                    <Text fz="xl" fw={900}>{stats.pending}</Text>
-                </Card>
-                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-green-500">
-                    <Group justify="space-between">
-                        <ThemeIcon color="green" variant="light" size="xl" radius="md">
-                            <IconCheck size={24} />
-                        </ThemeIcon>
-                        <Badge variant="light" color="green">Confirmed</Badge>
-                    </Group>
-                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">Confirmed Stays</Text>
-                    <Text fz="xl" fw={900}>{stats.confirmed}</Text>
-                </Card>
-                <Card shadow="sm" padding="lg" radius="md" withBorder className="border-l-4 border-l-violet-500">
-                    <Group justify="space-between">
-                        <ThemeIcon color="violet" variant="light" size="xl" radius="md">
-                            <IconCreditCard size={24} />
-                        </ThemeIcon>
-                        <Badge variant="light" color="violet">Gross</Badge>
-                    </Group>
-                    <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">Total Revenue</Text>
-                    <Text fz="xl" fw={900}>KES {stats.revenue.toLocaleString()}</Text>
-                </Card>
+                {[
+                    { label: 'All Bookings', value: stats.total, color: 'blue', icon: IconCalendarEvent, badge: 'Total' },
+                    { label: 'Pending Approval', value: stats.pending, color: 'yellow', icon: IconClock, badge: 'Pending' },
+                    { label: 'Confirmed Stays', value: stats.confirmed, color: 'green', icon: IconCheck, badge: 'Confirmed' },
+                    { label: 'Total Revenue', value: `KES ${Math.round(stats.revenue).toLocaleString('en-KE')}`, color: 'violet', icon: IconCreditCard, badge: 'Gross' },
+                ].map((s) => (
+                    <Card key={s.label} shadow="sm" padding="lg" radius="md" withBorder style={{ borderLeftWidth: 4, borderLeftColor: `var(--mantine-color-${s.color}-6)` }}>
+                        <Group justify="space-between">
+                            <ThemeIcon color={s.color} variant="light" size="xl" radius="md"><s.icon size={24} /></ThemeIcon>
+                            <Badge variant="light" color={s.color}>{s.badge}</Badge>
+                        </Group>
+                        <Text fz="xs" c="dimmed" fw={700} tt="uppercase" mt="md">{s.label}</Text>
+                        <Text fz="xl" fw={900}>{s.value}</Text>
+                    </Card>
+                ))}
             </SimpleGrid>
 
-            <Paper shadow="sm" radius="md" p="md" withBorder className="bg-slate-50/50 dark:bg-slate-900/50">
+            {/* Filters */}
+            <Paper shadow="sm" radius="md" p="md" withBorder>
                 <Group align="flex-end">
                     <TextInput
                         placeholder="Search by name, email, or suite..."
                         leftSection={<IconSearch size={16} />}
                         value={filters.search}
                         onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                        className="flex-1"
+                        style={{ flex: 1 }}
                         radius="md"
                     />
                     <Select
@@ -409,10 +247,10 @@ const Bookings = () => {
                             { value: 'pending', label: 'Pending' },
                             { value: 'checked_in', label: 'Checked In' },
                             { value: 'checked_out', label: 'Checked Out' },
-                            { value: 'cancelled', label: 'Cancelled' }
+                            { value: 'cancelled', label: 'Cancelled' },
                         ]}
                         value={filters.status}
-                        onChange={(val) => setFilters(prev => ({ ...prev, status: val }))}
+                        onChange={(val) => setFilters(prev => ({ ...prev, status: val || '' }))}
                         radius="md"
                         style={{ width: 180 }}
                     />
@@ -427,6 +265,7 @@ const Bookings = () => {
                 </Group>
             </Paper>
 
+            {/* Table */}
             <Card shadow="sm" radius="md" withBorder padding={0}>
                 <ScrollArea h={loading ? 300 : 'auto'}>
                     {loading ? (
@@ -434,16 +273,16 @@ const Bookings = () => {
                     ) : rows.length === 0 ? (
                         <Center h={300}>
                             <Stack align="center" gap="xs">
-                                <IconSearch size={48} stroke={1.5} className="text-slate-300" />
+                                <IconSearch size={48} stroke={1.5} opacity={0.3} />
                                 <Text fw={600} c="dimmed">No reservations found</Text>
-                                <Button variant="subtle" size="xs" onClick={() => setFilters({ status: '', search: '', date_from: null, date_to: null })}>Reset all filters</Button>
+                                <Button variant="subtle" size="xs" onClick={() => setFilters({ status: '', search: '', date_from: null })}>Reset filters</Button>
                             </Stack>
                         </Center>
                     ) : (
-                        <Table verticalSpacing="md" horizontalSpacing="lg" highlightOnHover={false}>
-                            <Table.Thead className="bg-slate-50 dark:bg-slate-800">
+                        <Table verticalSpacing="md" horizontalSpacing="lg" highlightOnHover>
+                            <Table.Thead style={{ background: '#f8fafc' }}>
                                 <Table.Tr>
-                                    <Table.Th>GUEST INFORMATION</Table.Th>
+                                    <Table.Th>GUEST</Table.Th>
                                     <Table.Th>SUITE / REF</Table.Th>
                                     <Table.Th>STAY DATES</Table.Th>
                                     <Table.Th>STATUS</Table.Th>
@@ -463,6 +302,7 @@ const Bookings = () => {
                 </Group>
             </Card>
 
+            {/* Booking Detail Drawer */}
             <Drawer
                 opened={drawerOpened}
                 onClose={() => setDrawerOpened(false)}
@@ -473,91 +313,94 @@ const Bookings = () => {
             >
                 {selectedBooking && (
                     <Stack gap="xl">
-                        <Paper withBorder p="md" radius="md" className="bg-blue-50/50 border-blue-100">
+                        {/* Reference Banner */}
+                        <Paper withBorder p="md" radius="md" style={{ background: '#eff6ff', borderColor: '#bfdbfe' }}>
                             <Group justify="space-between">
-                                <Text fw={800} fz="sm" c="blue">#{selectedBooking.booking_reference || 'REF-TBD'}</Text>
-                                <Badge color={statusColors[selectedBooking.status]}>{selectedBooking.status}</Badge>
+                                <Text fw={800} fz="sm" c="blue">#{selectedBooking.booking_reference}</Text>
+                                <Badge color={statusColors[selectedBooking.status] || 'gray'}>{selectedBooking.status}</Badge>
                             </Group>
                         </Paper>
 
+                        {/* Guest details */}
                         <div>
-                            <Text fw={700} fz="sm" mb="md" tt="uppercase" c="dimmed" className="tracking-wider">Guest Details</Text>
-                            <Group mb="sm">
-                                <ThemeIcon variant="light" radius="xl"><IconUser size={16} /></ThemeIcon>
-                                <Text fw={600}>{selectedBooking.guest_name}</Text>
-                            </Group>
-                            <Group mb="sm">
-                                <ThemeIcon variant="light" radius="xl"><IconMail size={16} /></ThemeIcon>
-                                <Text fz="sm">{selectedBooking.guest_email}</Text>
-                            </Group>
-                            <Group>
-                                <ThemeIcon variant="light" radius="xl"><IconPhone size={16} /></ThemeIcon>
-                                <Text fz="sm">{selectedBooking.guest_phone || 'Not provided'}</Text>
-                            </Group>
+                            <Text fw={700} fz="xs" mb="md" tt="uppercase" c="dimmed" style={{ letterSpacing: '0.08em' }}>GUEST DETAILS</Text>
+                            {[
+                                { icon: IconUser, label: selectedBooking.guest_name, fw: 600 },
+                                { icon: IconMail, label: selectedBooking.guest_email },
+                                { icon: IconPhone, label: selectedBooking.guest_phone || 'Not provided' },
+                            ].map(({ icon: Icon, label, fw }) => (
+                                <Group key={label} mb="sm">
+                                    <ThemeIcon variant="light" radius="xl"><Icon size={16} /></ThemeIcon>
+                                    <Text fz="sm" fw={fw}>{label}</Text>
+                                </Group>
+                            ))}
                         </div>
 
                         <Divider />
 
+                        {/* Reservation details */}
                         <div>
-                            <Text fw={700} fz="sm" mb="md" tt="uppercase" c="dimmed" className="tracking-wider">Reservation</Text>
+                            <Text fw={700} fz="xs" mb="md" tt="uppercase" c="dimmed" style={{ letterSpacing: '0.08em' }}>RESERVATION</Text>
                             <Group mb="sm">
                                 <ThemeIcon variant="light" radius="xl" color="violet"><IconHome size={16} /></ThemeIcon>
-                                <Text fw={600}>{selectedBooking.suite_name}</Text>
+                                <Text fw={600} fz="sm">{selectedBooking.suite_name}</Text>
                             </Group>
                             <Group mb="sm">
                                 <ThemeIcon variant="light" radius="xl" color="cyan"><IconCalendarEvent size={16} /></ThemeIcon>
-                                <Text fz="sm">{selectedBooking.check_in} — {selectedBooking.check_out}</Text>
+                                <Text fz="sm">{selectedBooking.check_in} → {selectedBooking.check_out}</Text>
                             </Group>
                         </div>
 
                         <Divider />
 
-                        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                        {/* Payment summary */}
+                        <Box style={{ background: '#f8fafc', borderRadius: 12, padding: 20 }}>
                             <Group justify="space-between" mb="xs">
                                 <Text fz="sm" c="dimmed">Payment Status</Text>
-                                <Badge variant="filled" color={paymentColors[selectedBooking.payment_status]}>{selectedBooking.payment_status}</Badge>
+                                <Badge variant="filled" color={paymentColors[selectedBooking.payment_status] || 'gray'}>
+                                    {selectedBooking.payment_status}
+                                </Badge>
                             </Group>
                             <Group justify="space-between">
-                                <Text fw={700}>Total Amount Paid</Text>
-                                <Text fw={900} fz="xl" c="blue">KES {Number(selectedBooking.total_price).toLocaleString()}</Text>
+                                <Text fw={700}>Total Amount</Text>
+                                <Text fw={900} fz="xl" c="blue">
+                                    KES {selectedBooking.total_price.toLocaleString('en-KE')}
+                                </Text>
                             </Group>
-                        </div>
+                        </Box>
 
-                        <Group mt="xl" grow>
-                            <Button variant="light" color="red">Delete Record</Button>
+                        {/* Status quick actions */}
+                        <Group grow>
+                            {selectedBooking.status !== 'confirmed' && selectedBooking.status !== 'checked_out' && (
+                                <Button variant="light" color="green" leftSection={<IconCheck size={16} />}
+                                    onClick={() => handleStatusUpdate(selectedBooking.id, 'confirmed')}>
+                                    Confirm
+                                </Button>
+                            )}
+                            {selectedBooking.status === 'confirmed' && (
+                                <Button variant="light" color="teal" leftSection={<IconCheck size={16} />}
+                                    onClick={() => handleStatusUpdate(selectedBooking.id, 'checked_out')}>
+                                    Check Out
+                                </Button>
+                            )}
+                        </Group>
+
+                        {/* Action buttons */}
+                        <Group mt="md" grow>
+                            <Button
+                                variant="light"
+                                color="red"
+                                leftSection={<IconTrash size={16} />}
+                                loading={deleting}
+                                onClick={handleDelete}
+                            >
+                                Delete Record
+                            </Button>
                             <Button
                                 variant="filled"
-                                onClick={() => {
-                                    try {
-                                        console.log('Download Invoice clicked for booking:', selectedBooking.id);
-                                        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8569/backend/api';
-                                        const baseUrl = apiUrl.replace('/api', '');
-                                        const invoiceUrl = `${baseUrl}/api/invoice.php?id=${selectedBooking.id}`;
-                                        console.log('Invoice URL:', invoiceUrl);
-
-                                        // Try to open in new window
-                                        const newWindow = window.open(invoiceUrl, '_blank');
-
-                                        if (!newWindow) {
-                                            // Fallback if popup blocked
-                                            console.warn('Popup blocked, trying location.href');
-                                            window.location.href = invoiceUrl;
-                                        } else {
-                                            notifications.show({
-                                                title: 'Invoice Generated',
-                                                message: 'Opening invoice in new window. Use browser print to save as PDF.',
-                                                color: 'blue'
-                                            });
-                                        }
-                                    } catch (error) {
-                                        console.error('Invoice download error:', error);
-                                        notifications.show({
-                                            title: 'Error',
-                                            message: 'Failed to open invoice. Check console for details.',
-                                            color: 'red'
-                                        });
-                                    }
-                                }}
+                                color="blue"
+                                leftSection={<IconDownload size={16} />}
+                                onClick={handleDownloadInvoice}
                             >
                                 Download Invoice
                             </Button>
