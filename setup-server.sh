@@ -5,179 +5,171 @@
 # Developed by | KKDES https://kkdes.co.ke/
 # =================================================================
 
-# Exit on any error
 set -e
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
 echo -e "${BLUE}====================================================${NC}"
-echo -e "${BLUE}   Norden Suits - Automated Installation Script     ${NC}"
+echo -e "${BLUE}   Norden Suits - Fresh Server Installation          ${NC}"
 echo -e "${BLUE}====================================================${NC}"
 
-# 1. Check for Root Privileges
+# --- Root check ---
 if [[ $EUID -ne 0 ]]; then
-   echo -e "${RED}This script must be run as root (use sudo)${NC}" 
+   echo -e "${RED}Run as root: sudo bash setup-server.sh${NC}"
    exit 1
 fi
 
-# 2. Gather Configuration
-echo -e "${GREEN}>>> Step 1: Gathering Configuration...${NC}"
+# ---------------------------------------------------------------
+# STEP 1: Configuration
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 1: Configuration...${NC}"
 SERVER_DOMAIN="nordensuites.com"
-echo -e "Using default domain: ${BLUE}$SERVER_DOMAIN${NC}"
-read -p "Enter a secure JWT Secret: " JWT_SECRET
-read -p "Enter Database Password for 'nordic_user': " DB_PASS
-read -p "Enter Email for SSL Notifications: " SSL_EMAIL
+APP_DIR="/var/www/nordensuits"
+GITHUB_REPO="https://github.com/Alee24/nordic.git"
 
-# 3. System Updates & Dependencies
-echo -e "${GREEN}>>> Step 2: Installing System Dependencies...${NC}"
+read -p "Enter JWT Secret (any long random string): " JWT_SECRET
+read -sp "Enter PostgreSQL password for 'nordic_user': " DB_PASS
+echo ""
+read -p "Enter your email for SSL certificate notifications: " SSL_EMAIL
 
-# Fix common APT issues on some VPS (Webmin GPG errors)
-echo "Acquire::AllowInsecureRepositories \"true\";" > /etc/apt/apt.conf.d/99allow-insecure
-echo "Acquire::AllowDowngradeToInsecureRepositories \"true\";" >> /etc/apt/apt.conf.d/99allow-insecure
+echo -e "${BLUE}Domain  : $SERVER_DOMAIN${NC}"
+echo -e "${BLUE}App Dir : $APP_DIR${NC}"
 
-apt update || true
-apt install -y curl git apache2 postgresql postgresql-contrib build-essential certbot python3-certbot-apache
+# ---------------------------------------------------------------
+# STEP 2: System dependencies
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 2: Installing system packages...${NC}"
 
-# Ensure Node.js 20 (Force upgrade if on 18)
-echo -e "${GREEN}>>> Ensuring Node.js 20+ is installed...${NC}"
+# Suppress APT GPG warnings from Webmin etc.
+echo 'Acquire::AllowInsecureRepositories "true";' > /etc/apt/apt.conf.d/99allow-insecure
+echo 'Acquire::AllowDowngradeToInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99allow-insecure
+
+apt-get update -qq || true
+apt-get install -y curl git rsync apache2 postgresql postgresql-contrib \
+    build-essential certbot python3-certbot-apache
+
+# Node.js 20
+echo -e "${GREEN}>>> Installing Node.js 20...${NC}"
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y nodejs
+apt-get install -y nodejs
 
-# Install PM2
+# PM2
 npm install -g pm2 --legacy-peer-deps
 
-# Enable Apache Modules
-a2enmod proxy
-a2enmod proxy_http
-a2enmod rewrite
-a2enmod headers
-a2enmod ssl
+# Apache modules
+a2enmod proxy proxy_http rewrite headers ssl
 
-# 4. Database Setup
-echo -e "${GREEN}>>> Step 3: Configuring PostgreSQL (Bulletproof Fresh Start)...${NC}"
-# Force drop with sudo to ensure no permission issues
+# ---------------------------------------------------------------
+# STEP 3: PostgreSQL fresh setup
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 3: Setting up PostgreSQL...${NC}"
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS nordic_db;" || true
 sudo -u postgres psql -c "DROP USER IF EXISTS nordic_user;" || true
-
-# Recreate with explicit ownership
 sudo -u postgres psql -c "CREATE USER nordic_user WITH PASSWORD '$DB_PASS';"
 sudo -u postgres psql -c "CREATE DATABASE nordic_db OWNER nordic_user;"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nordic_db TO nordic_user;"
+echo -e "${GREEN}Database ready.${NC}"
 
-# 5. Application Setup
-echo -e "${GREEN}>>> Step 4: Setting up Application...${NC}"
+# ---------------------------------------------------------------
+# STEP 4: Clone application fresh
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 4: Cloning application from GitHub...${NC}"
+rm -rf "$APP_DIR"
+git clone "$GITHUB_REPO" "$APP_DIR"
+cd "$APP_DIR"
+echo -e "${GREEN}Cloned to $APP_DIR${NC}"
 
-# Use a fixed, standard Linux path so the Apache config is always correct
-# This avoids the Windows path problem when the project is copied from a Windows machine
-APP_INSTALL_DIR="/var/www/nordensuites"
-echo -e "${GREEN}>>> Installing application to: ${BLUE}$APP_INSTALL_DIR${NC}"
+# ---------------------------------------------------------------
+# STEP 5: Write environment files
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 5: Writing environment files...${NC}"
 
-# Copy project to the standard location if not already there
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ "$SCRIPT_DIR" != "$APP_INSTALL_DIR" ]; then
-    mkdir -p "$APP_INSTALL_DIR"
-    echo -e "${GREEN}>>> Copying project files to $APP_INSTALL_DIR ...${NC}"
-    rsync -av --exclude='node_modules' --exclude='.git' --exclude='dist' "$SCRIPT_DIR/" "$APP_INSTALL_DIR/"
-fi
+ENCODED_PASS=$(node -e "process.stdout.write(encodeURIComponent('$DB_PASS'))")
+DB_URL="postgresql://nordic_user:${ENCODED_PASS}@localhost:5432/nordic_db?schema=public"
 
-PROJECT_ROOT="$APP_INSTALL_DIR"
+# Backend .env
+cat > "$APP_DIR/server/.env" << ENVEOF
+PORT=8123
+JWT_SECRET="$JWT_SECRET"
+FRONTEND_URL=https://$SERVER_DOMAIN
+DATABASE_URL="$DB_URL"
+ENVEOF
 
-# PRE-INSTALL PERMISSIONS: Ensure www-data can access but don't break logic yet
-echo -e "${GREEN}>>> Optimizing directory permissions...${NC}"
-chmod o+x /var/www || true
-chmod o+x /var/www/html || true
-chown -R www-data:www-data "$PROJECT_ROOT"
-# Apply 755 to directories and 644 to files, BUT EXCLUDE node_modules to keep binaries working
-find "$PROJECT_ROOT" -path "$PROJECT_ROOT/node_modules" -prune -o -type d -exec chmod 755 {} \;
-find "$PROJECT_ROOT" -path "$PROJECT_ROOT/node_modules" -prune -o -type f -exec chmod 644 {} \;
+# Frontend .env
+cat > "$APP_DIR/.env" << ENVEOF
+VITE_API_URL=https://$SERVER_DOMAIN/api
+ENVEOF
 
-# Install Backend Deps
-echo -e "${GREEN}>>> Installing backend dependencies...${NC}"
-cd "$PROJECT_ROOT/server"
+echo -e "${GREEN}Environment files written.${NC}"
+
+# ---------------------------------------------------------------
+# STEP 6: Install backend deps & run migrations
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 6: Installing backend dependencies & running migrations...${NC}"
+cd "$APP_DIR/server"
 npm install --no-audit --legacy-peer-deps
 chmod -R +x node_modules/.bin 2>/dev/null || true
-
-# Use Node.js to safely write the .env files (Avoids Bash escaping issues)
-echo -e "${GREEN}>>> Generating production environment files...${NC}"
-node -e "
-const fs = require('fs');
-const path = require('path');
-const pass = process.argv[1];
-const domain = process.argv[2];
-const secret = process.argv[3];
-const root = process.argv[4];
-
-const encodedPass = encodeURIComponent(pass);
-const dbUrl = 'postgresql://nordic_user:' + encodedPass + '@localhost:5432/nordic_db?schema=public';
-
-// Write Backend .env
-fs.writeFileSync(path.join(root, 'server', '.env'), 
-  'PORT=8123\n' +
-  'JWT_SECRET=\"' + secret + '\"\n' +
-  'FRONTEND_URL=https://' + domain + '\n' +
-  'DATABASE_URL=\"' + dbUrl + '\"\n'
-);
-
-// Write Frontend .env
-fs.writeFileSync(path.join(root, '.env'), 
-  'VITE_API_URL=https://' + domain + '/api\n'
-);
-" "$DB_PASS" "$SERVER_DOMAIN" "$JWT_SECRET" "$PROJECT_ROOT"
-
-# Run Migrations
-echo -e "${GREEN}>>> Running database migrations...${NC}"
-# Comprehensive fix for Prisma permissions (Engines and CLI)
-chmod -R +x node_modules/.bin/prisma 2>/dev/null || true
 chmod -R +x node_modules/@prisma/engines 2>/dev/null || true
 npx prisma migrate deploy
 npx prisma generate
+echo -e "${GREEN}Migrations complete.${NC}"
 
-# Frontend Environment
-echo -e "${GREEN}>>> Configuring Frontend...${NC}"
-cd "$PROJECT_ROOT"
-# (Wait, Frontend .env was already written by Node above)
-
-# Build Frontend
+# ---------------------------------------------------------------
+# STEP 7: Build frontend
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 7: Building frontend...${NC}"
+cd "$APP_DIR"
 npm install --legacy-peer-deps
-# Recursive fix for ALL frontend binaries (Vite, etc) - MUST BE AFTER INSTALL
 chmod -R +x node_modules/.bin 2>/dev/null || true
 npm run build
+echo -e "${GREEN}Frontend built → $APP_DIR/dist${NC}"
 
-# 6. Apache Configuration
-echo -e "${GREEN}>>> Step 5: Configuring Apache VirtualHost & SSL...${NC}"
+# ---------------------------------------------------------------
+# STEP 8: Fix permissions
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 8: Setting permissions...${NC}"
+chown -R www-data:www-data "$APP_DIR/dist"
+find "$APP_DIR/dist" -type d -exec chmod 755 {} \;
+find "$APP_DIR/dist" -type f -exec chmod 644 {} \;
+# Keep backend executable by root/pm2
+chown -R root:root "$APP_DIR/server"
+chmod -R 755 "$APP_DIR/server"
 
-# Use the absolute path for DocumentRoot
-REAL_DIST="$PROJECT_ROOT/dist"
-echo -e "Setting DocumentRoot to: ${BLUE}$REAL_DIST${NC}"
+# ---------------------------------------------------------------
+# STEP 9: Apache - temporary HTTP config for Certbot
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 9: Configuring Apache & SSL...${NC}"
 
-# First, create a temporary HTTP-only config to allow Certbot to verify
-cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
+cat > /etc/apache2/sites-available/nordensuites.conf << APACHEEOF
 <VirtualHost *:80>
     ServerName $SERVER_DOMAIN
     ServerAlias www.$SERVER_DOMAIN
-    DocumentRoot $REAL_DIST
-    <Directory "$REAL_DIST">
+    DocumentRoot $APP_DIR/dist
+    <Directory "$APP_DIR/dist">
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
 </VirtualHost>
-EOF
+APACHEEOF
 
-a2dissite 000-default.conf || true
+a2dissite 000-default.conf 2>/dev/null || true
 a2ensite nordensuites.conf
 systemctl reload apache2
 
-# Run Certbot to get the certificate
-echo -e "${BLUE}>>> Running Certbot for SSL generation...${NC}"
-certbot --apache -d $SERVER_DOMAIN -d www.$SERVER_DOMAIN --non-interactive --agree-tos -m $SSL_EMAIL --redirect --hsts || true
+# Run Certbot
+echo -e "${BLUE}>>> Running Certbot for SSL...${NC}"
+certbot --apache -d $SERVER_DOMAIN -d www.$SERVER_DOMAIN \
+    --non-interactive --agree-tos -m $SSL_EMAIL --redirect --hsts || {
+    echo -e "${YELLOW}WARNING: Certbot failed (SSL may already exist or DNS not pointing here). Continuing...${NC}"
+}
 
-# Now apply the final production config with SSL and Proxy
-cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
+# Final Apache config with SSL + SPA routing + API proxy
+cat > /etc/apache2/sites-available/nordensuites.conf << APACHEEOF
 <VirtualHost *:80>
     ServerName $SERVER_DOMAIN
     ServerAlias www.$SERVER_DOMAIN
@@ -190,10 +182,10 @@ cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
 <VirtualHost *:443>
     ServerName $SERVER_DOMAIN
     ServerAlias www.$SERVER_DOMAIN
-    
-    DocumentRoot $REAL_DIST
-    
-    <Directory "$REAL_DIST">
+
+    DocumentRoot $APP_DIR/dist
+
+    <Directory "$APP_DIR/dist">
         Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
@@ -217,22 +209,35 @@ cat > "/etc/apache2/sites-available/nordensuites.conf" <<EOF
     ErrorLog \${APACHE_LOG_DIR}/norden_error.log
     CustomLog \${APACHE_LOG_DIR}/norden_access.log combined
 </VirtualHost>
-EOF
+APACHEEOF
 
-systemctl restart apache2
+apache2ctl configtest && systemctl restart apache2
+echo -e "${GREEN}Apache configured and restarted.${NC}"
 
-# 7. Start Backend with PM2
-echo -e "${GREEN}>>> Step 6: Starting Backend Services...${NC}"
-cd "$PROJECT_ROOT/server"
-pm2 delete norden-backend || true
-pm2 start index.js --name norden-backend
-
-# Save PM2 state for reboots
+# ---------------------------------------------------------------
+# STEP 10: Start backend with PM2
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 10: Starting backend with PM2...${NC}"
+pm2 delete norden-backend 2>/dev/null || true
+pm2 start "$APP_DIR/server/index.js" --name norden-backend
 pm2 save
 pm2 startup | tail -n 1 | bash || true
 
+# ---------------------------------------------------------------
+# STEP 11: Health check
+# ---------------------------------------------------------------
+echo -e "${GREEN}>>> Step 11: Health check...${NC}"
+sleep 3
+HTTP_CODE=$(curl -sk -o /dev/null -w "%{http_code}" https://$SERVER_DOMAIN 2>/dev/null || echo "000")
+API_CODE=$(curl -sk -o /dev/null -w "%{http_code}" https://$SERVER_DOMAIN/api/health 2>/dev/null || echo "000")
+
+echo -e "Site HTTP status : ${BLUE}$HTTP_CODE${NC}"
+echo -e "API HTTP status  : ${BLUE}$API_CODE${NC}"
+
+pm2 list
+
 echo -e "${BLUE}====================================================${NC}"
-echo -e "${GREEN}   Production SSL Installation Complete!${NC}"
+echo -e "${GREEN}   Installation Complete!${NC}"
 echo -e "${GREEN}   URL: https://$SERVER_DOMAIN${NC}"
 echo -e "${BLUE}====================================================${NC}"
 echo -e "Developed by | KKDES https://kkdes.co.ke/"
