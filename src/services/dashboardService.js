@@ -224,5 +224,34 @@ export const dashboardService = {
         } catch (error) {
             return { success: false, error: error.response?.data?.message || 'Failed to fetch flight data' };
         }
-    }
+    },
+
+    // ── SMTP Settings ──────────────────────────────────────────────────────────
+    getSmtpSettings: async () => {
+        try {
+            const response = await api.get('/settings/smtp');
+            return { success: true, data: response.data.data };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Failed to load SMTP settings' };
+        }
+    },
+
+    saveSmtpSettings: async (data) => {
+        try {
+            const response = await api.put('/settings/smtp', data);
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Failed to save SMTP settings' };
+        }
+    },
+
+    testSmtpSettings: async (testEmail) => {
+        try {
+            const response = await api.post('/settings/smtp/test', { testEmail });
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'SMTP test failed' };
+        }
+    },
 };
+

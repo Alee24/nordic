@@ -20,6 +20,7 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const additionalRoutes = require('./routes/additionalRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -30,6 +31,7 @@ app.use('/api', bookingRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api', additionalRoutes);
 app.use('/api', uploadRoutes);
+app.use('/api', settingsRoutes);
 
 const PORT = process.env.PORT || 8123;
 app.listen(PORT, '0.0.0.0', () => {
