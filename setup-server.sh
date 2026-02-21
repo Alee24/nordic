@@ -70,7 +70,21 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nordic_db TO nordic_u
 
 # 5. Application Setup
 echo -e "${GREEN}>>> Step 4: Setting up Application...${NC}"
-PROJECT_ROOT=$(pwd)
+
+# Use a fixed, standard Linux path so the Apache config is always correct
+# This avoids the Windows path problem when the project is copied from a Windows machine
+APP_INSTALL_DIR="/var/www/nordensuites"
+echo -e "${GREEN}>>> Installing application to: ${BLUE}$APP_INSTALL_DIR${NC}"
+
+# Copy project to the standard location if not already there
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ "$SCRIPT_DIR" != "$APP_INSTALL_DIR" ]; then
+    mkdir -p "$APP_INSTALL_DIR"
+    echo -e "${GREEN}>>> Copying project files to $APP_INSTALL_DIR ...${NC}"
+    rsync -av --exclude='node_modules' --exclude='.git' --exclude='dist' "$SCRIPT_DIR/" "$APP_INSTALL_DIR/"
+fi
+
+PROJECT_ROOT="$APP_INSTALL_DIR"
 
 # PRE-INSTALL PERMISSIONS: Ensure www-data can access but don't break logic yet
 echo -e "${GREEN}>>> Optimizing directory permissions...${NC}"
