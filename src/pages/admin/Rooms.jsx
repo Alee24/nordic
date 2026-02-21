@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Paper, Text, Group, Button, Stack, SimpleGrid, Card, Image,
     Badge, ActionIcon, Loader, Center, TextInput, Select, Box, Divider, Modal,
-    NumberInput, Textarea, Switch
+    NumberInput, Textarea, Progress
 } from '@mantine/core';
 import {
-    IconPlus, IconSearch, IconBed, IconUsers, IconTrash, IconEdit,
-    IconAdjustmentsHorizontal, IconPhoto, IconWifi, IconCheck
+    IconPlus, IconSearch, IconBed, IconTrash, IconEdit,
+    IconAdjustmentsHorizontal, IconPhoto, IconCheck, IconUpload
 } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { dashboardService } from '../../services/dashboardService';
+import api from '../../services/api';
 
 const STATUS_COLORS = {
     available: 'green',
@@ -47,6 +48,7 @@ const emptyForm = {
 const Rooms = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [rooms, setRooms] = useState([]);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
@@ -54,6 +56,7 @@ const Rooms = () => {
     const [opened, { open, close }] = useDisclosure(false);
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState('name');
+    const fileInputRef = useRef(null);
 
     useEffect(() => { fetchRooms(); }, []);
 
@@ -92,6 +95,29 @@ const Rooms = () => {
             status: room.status || 'available',
         });
         open();
+    };
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadingImage(true);
+        try {
+            const form = new FormData();
+            form.append('image', file);
+            const token = localStorage.getItem('token');
+            const res = await api.post('/upload', form, {
+                headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+            });
+            if (res.data.success) {
+                setFormData(prev => ({ ...prev, imageUrl: res.data.data.url }));
+                notifications.show({ title: 'Image Uploaded', message: 'Image uploaded successfully', color: 'green', icon: <IconCheck size={16} /> });
+            }
+        } catch (err) {
+            notifications.show({ title: 'Upload Failed', message: err.response?.data?.message || err.message, color: 'red' });
+        } finally {
+            setUploadingImage(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -378,24 +404,58 @@ const Rooms = () => {
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
 
-                        <TextInput
-                            label="Image URL"
-                            placeholder="https://..."
-                            leftSection={<IconPhoto size={16} />}
-                            value={formData.imageUrl}
-                            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                        />
-
-                        {formData.imageUrl && (
-                            <Image
-                                src={formData.imageUrl}
-                                height={160}
-                                radius="md"
-                                alt="Preview"
-                                style={{ objectFit: 'cover' }}
-                                onError={(e) => { e.target.style.display = 'none'; }}
+                        <Stack gap="xs">
+                            <Text size="sm" fw={500}>Room Image</Text>
+                            <Group gap="sm">
+                                <Button
+                                    variant="light"
+                                    leftSection={uploadingImage ? <Loader size={14} /> : <IconUpload size={15} />}
+                                    disabled={uploadingImage}
+                                    onClick={() => fileInputRef.current?.click()}
+                                    size="sm"
+                                    radius="md"
+                                >
+                                    {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                                </Button>
+                                <Text size="xs" c="dimmed">or</Text>
+                                <TextInput
+                                    placeholder="Paste image URL..."
+                                    leftSection={<IconPhoto size={14} />}
+                                    style={{ flex: 1 }}
+                                    value={formData.imageUrl}
+                                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                                    size="sm"
+                                />
+                            </Group>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={handleImageUpload}
                             />
-                        )}
+                            {formData.imageUrl && (
+                                <Box style={{ position: 'relative' }}>
+                                    <Image
+                                        src={formData.imageUrl}
+                                        height={160}
+                                        radius="md"
+                                        alt="Preview"
+                                        style={{ objectFit: 'cover' }}
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                    />
+                                    <ActionIcon
+                                        style={{ position: 'absolute', top: 8, right: 8 }}
+                                        color="red"
+                                        variant="filled"
+                                        size="sm"
+                                        onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
+                                    >
+                                        <IconTrash size={12} />
+                                    </ActionIcon>
+                                </Box>
+                            )}
+                        </Stack>
 
                         <Group justify="flex-end" mt="sm">
                             <Button variant="default" radius="md" onClick={close} disabled={saving}>

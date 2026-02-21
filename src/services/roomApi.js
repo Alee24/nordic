@@ -17,7 +17,7 @@ export const roomApiService = {
      */
     getAllRooms: async () => {
         try {
-            const response = await api.get('/suites');
+            const response = await api.get('/rooms');
             return response.data;
         } catch (error) {
             handleError(error);

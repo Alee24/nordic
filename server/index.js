@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 require('dotenv').config();
 const cors = require('cors');
 const app = express();
@@ -18,12 +19,17 @@ const roomRoutes = require('./routes/roomRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const additionalRoutes = require('./routes/additionalRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+
+// Serve uploaded images statically
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api', roomRoutes);
 app.use('/api', bookingRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api', additionalRoutes);
+app.use('/api', uploadRoutes);
 
 const PORT = process.env.PORT || 8123;
 app.listen(PORT, '0.0.0.0', () => {

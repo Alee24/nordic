@@ -50,12 +50,13 @@ const useRoomBookingStore = create((set, get) => ({
      * Confirm selected room
      */
     confirmRoom: (room) => {
+        const pricePerNight = Number(room.price ?? room.price_per_night ?? 0);
         set((state) => ({
             activeBooking: {
                 ...state.activeBooking,
                 suite: room,
                 suite_id: room.id,
-                total_price: room.price_per_night * (state.activeBooking?.nights || 1)
+                total_price: pricePerNight * (state.activeBooking?.nights || 1)
             }
         }));
     },

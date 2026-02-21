@@ -162,14 +162,16 @@ const RoomBookingFunnel = ({ opened, onClose, preselectedRoom = null }) => {
                         </Box>
                     </Stepper.Step>
 
-                    <Stepper.Step label="Room" description="Select your suite" icon={<IconBed size={18} />}>
+                    <Stepper.Step label="Suite" description="Select your suite" icon={<IconBed size={18} />}>
                         <Box mt="xl">
                             {isLoading ? (
                                 <Text className="text-center py-10 text-white">Loading available rooms...</Text>
+                            ) : availableRooms.filter(r => r.status === 'available' || !r.status).length === 0 ? (
+                                <Text className="text-center py-10 text-white opacity-60">No rooms available at the moment.</Text>
                             ) : (
                                 <Grid>
                                     {availableRooms
-                                        .filter(room => room.capacity >= numGuests)
+                                        .filter(room => room.status === 'available' || !room.status)
                                         .map((room) => (
                                             <Grid.Col span={{ base: 12, md: 6, lg: 4 }} key={room.id}>
                                                 <div
