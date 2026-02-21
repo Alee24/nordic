@@ -80,55 +80,30 @@ const useBookingSystemStore = create((set, get) => ({
         }
     },
 
-    fetchPropertyRooms: async (propertyId, checkIn, checkOut) => {
+    fetchPropertyRooms: async () => {
         set({ isLoading: true, error: null });
         try {
-            console.log('Fetching rooms for:', propertyId, checkIn, checkOut);
+            // Fetch live rooms from admin-managed database
+            const response = await fetch('/api/rooms');
+            const json = await response.json();
+            const rawRooms = json.data || json.rooms || [];
 
-            // REDESIGN: Hardcoded 3 room types as requested by user
-            const staticRooms = [
-                {
-                    id: 1,
-                    name: 'Deluxe Suite',
-                    description: 'Elegant studio residence featuring luxury finishes, garden views, and a fully equipped kitchenette.',
-                    base_price: 12000,
-                    room_type: 'Deluxe',
-                    max_occupancy: 2,
-                    size_sqm: 45,
-                    photos: ['https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80'],
-                    amenities: ['King Bed', 'Kitchenette', 'High-speed WiFi', 'Garden View']
-                },
-                {
-                    id: 2,
-                    name: 'Executive Residence',
-                    description: 'Sophisticated 1-bedroom apartment with ergonomic workspace, separate living area, and premium amenities.',
-                    base_price: 20000,
-                    room_type: 'Executive',
-                    max_occupancy: 3,
-                    size_sqm: 65,
-                    photos: ['https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&q=80'],
-                    amenities: ['1 Bedroom', 'Ergonomic Desk', 'Living Area', 'City View', 'Full Kitchen']
-                },
-                {
-                    id: 3,
-                    name: 'Norden Penthouse',
-                    description: 'The pinnacle of coastal luxury. A expansive duplex penthouse with private terrace and panoramic ocean views.',
-                    base_price: 35000,
-                    room_type: 'Penthouse',
-                    max_occupancy: 4,
-                    size_sqm: 120,
-                    photos: ['https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80'],
-                    amenities: ['Duplex Living', 'Private Terrace', 'Ocean View', 'Meeting Area', 'Butler Service']
-                }
-            ];
+            // Map DB fields → fields expected by BookingFlowModal
+            const rooms = rawRooms
+                .filter(r => r.status === 'available')
+                .map(r => ({
+                    id: r.id,
+                    name: r.name,
+                    description: r.description || '',
+                    base_price: Number(r.price) || 0,
+                    room_type: r.type || 'Suite',
+                    max_occupancy: r.capacity || null,
+                    size_sqm: r.size_sqm || null,
+                    photos: r.imageUrl ? [r.imageUrl] : ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop'],
+                    amenities: r.amenities || [],
+                }));
 
-            console.log('Using hardcoded rooms:', staticRooms);
-
-            set({
-                propertyRooms: staticRooms,
-                isLoading: false
-            });
-
+            set({ propertyRooms: rooms, isLoading: false });
         } catch (error) {
             console.error('Error fetching rooms:', error);
             set({ error: error.message, isLoading: false, propertyRooms: [] });
@@ -139,6 +114,7 @@ const useBookingSystemStore = create((set, get) => ({
             });
         }
     },
+
 
     selectRoom: (room) => {
         set({ selectedRoom: room });
