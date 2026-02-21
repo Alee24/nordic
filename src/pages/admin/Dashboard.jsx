@@ -36,11 +36,8 @@ import {
 import DashboardOverview from './components/DashboardOverview';
 import Bookings from './Bookings';
 import Rooms from './Rooms';
-import CheckInManagement from './CheckInManagement';
-import Guests from './Guests';
 import Settings from './Settings';
 import PaymentSettingsPage from './PaymentSettingsPage';
-import FlightTracker from './FlightTracker';
 import Messages from './Messages';
 import useManagementStore from '../../store/useManagementStore';
 
@@ -89,12 +86,9 @@ const Dashboard = ({ onExit }) => {
 
     const links = [
         { icon: IconLayoutDashboard, label: 'Overview' },
-        { icon: IconDoorEnter, label: 'Check-in' },
         { icon: IconCalendarEvent, label: 'Bookings' },
         { icon: IconBed, label: 'Rooms' },
-        { icon: IconUser, label: 'Guests' },
         { icon: IconMessage, label: 'Messages' },
-        { icon: IconPlaneDeparture, label: 'Flights' },
         { icon: IconCurrencyDollar, label: 'Payments' },
         { icon: IconSettings, label: 'Settings' },
     ];
@@ -116,18 +110,12 @@ const Dashboard = ({ onExit }) => {
         switch (active) {
             case 'Overview':
                 return <DashboardOverview />;
-            case 'Check-in':
-                return <CheckInManagement />;
             case 'Bookings':
                 return <Bookings />;
             case 'Rooms':
                 return <Rooms />;
-            case 'Guests':
-                return <Guests />;
             case 'Messages':
                 return <Messages />;
-            case 'Flights':
-                return <FlightTracker />;
             case 'Payments':
                 return <PaymentSettingsPage />;
             case 'Settings':
