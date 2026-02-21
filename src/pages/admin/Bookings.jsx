@@ -308,7 +308,7 @@ const Bookings = () => {
                                 <Menu.Item leftSection={<IconCheck size={14} color="green" />} onClick={() => handleStatusUpdate(booking.id, 'confirmed')}>Confirm</Menu.Item>
                             )}
                             {booking.status === 'confirmed' && (
-                                <Menu.Item leftSection={<IconCheck size={14} color="blue" />} onClick={() => handleStatusUpdate(booking.id, 'checked_in')}>Check In</Menu.Item>
+                                <Menu.Item leftSection={<IconCheck size={14} color="blue" />} onClick={() => handleStatusUpdate(booking.id, 'checked_out')}>Check Out</Menu.Item>
                             )}
                             {booking.status !== 'cancelled' && (
                                 <Menu.Item leftSection={<IconX size={14} color="red" />} color="red" onClick={() => handleStatusUpdate(booking.id, 'cancelled')}>Cancel</Menu.Item>

@@ -183,7 +183,6 @@ const DashboardOverview = () => {
                             <Text fw={700} className="border-b border-gray-100 dark:border-gray-700" mb="md" pb="xs">Quick Actions</Text>
                             <SimpleGrid cols={2} spacing="sm">
                                 <Button variant="light" color="blue" radius="md" size="compact-sm">New Booking</Button>
-                                <Button variant="light" color="teal" radius="md" size="compact-sm">Check In</Button>
                                 <Button variant="light" color="orange" radius="md" size="compact-sm">Add Room</Button>
                                 <Button variant="light" color="grape" radius="md" size="compact-sm">System Logs</Button>
                             </SimpleGrid>
