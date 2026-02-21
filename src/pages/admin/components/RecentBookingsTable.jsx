@@ -1,20 +1,7 @@
 import React from 'react';
-import {
-    Paper,
-    Table,
-    Text,
-    Group,
-    Badge,
-    ActionIcon,
-    Avatar,
-    Menu
-} from '@mantine/core';
-import {
-    IconDots,
-    IconEye,
-    IconEdit,
-    IconTrash
-} from '@tabler/icons-react';
+import { Paper, Table, Text, Group, Badge, Avatar, Anchor, Stack } from '@mantine/core';
+import { IconCalendar } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 
 const statusColors = {
     confirmed: 'blue',
@@ -32,101 +19,78 @@ const paymentColors = {
 };
 
 export function RecentBookingsTable({ data }) {
+    const navigate = useNavigate();
+
     if (!data || data.length === 0) {
         return (
-            <Paper withBorder p="md" radius="md" className="h-[400px] flex items-center justify-center">
-                <Text c="dimmed">No recent bookings found.</Text>
+            <Paper withBorder p="xl" radius="lg">
+                <Group justify="space-between" mb="xl">
+                    <Box>
+                        <Text size="lg" fw={800}>Recent Bookings</Text>
+                        <Text size="xs" c="dimmed" tt="uppercase" style={{ letterSpacing: '0.08em' }}>Latest Activity</Text>
+                    </Box>
+                </Group>
+                <Stack align="center" py="xl" gap="sm">
+                    <IconCalendar size={40} opacity={0.3} />
+                    <Text c="dimmed" fz="sm">No bookings yet. They will appear here once guests start booking.</Text>
+                </Stack>
             </Paper>
         );
     }
 
-    const rows = data.map((booking) => (
-        <Table.Tr key={booking.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-            <Table.Td>
-                <Group gap="sm">
-                    <Avatar color="blue" radius="xl">
-                        {booking.guest_name ? booking.guest_name.charAt(0) : 'G'}
-                    </Avatar>
-                    <div>
-                        <Text fz="sm" fw={500}>
-                            {booking.guest_name || 'Guest'}
-                        </Text>
-                        <Text c="dimmed" fz="xs">
-                            {booking.guest_email || 'No email'}
-                        </Text>
-                    </div>
-                </Group>
-            </Table.Td>
-
-            <Table.Td>
-                <Text fz="sm">{booking.suite_name || 'Room'}</Text>
-            </Table.Td>
-
-            <Table.Td>
-                <Text fz="sm">{booking.check_in}</Text>
-                <Text c="dimmed" fz="xs">to {booking.check_out}</Text>
-            </Table.Td>
-
-            <Table.Td>
-                <Badge
-                    color={statusColors[booking.status] || 'gray'}
-                    variant="light"
-                >
-                    {booking.status}
-                </Badge>
-            </Table.Td>
-
-            <Table.Td>
-                <Badge
-                    color={paymentColors[booking.payment_status] || 'gray'}
-                    variant="dot"
-                >
-                    {booking.payment_status}
-                </Badge>
-            </Table.Td>
-
-            <Table.Td>
-                <Text fw={700} fz="sm">
-                    KES {Number(booking.total_price).toLocaleString()}
-                </Text>
-            </Table.Td>
-
-            <Table.Td>
-                <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom-end" withinPortal>
-                    <Menu.Target>
-                        <ActionIcon variant="subtle" color="gray">
-                            <IconDots style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                        </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                        <Menu.Item leftSection={<IconEye style={{ width: 14, height: 14 }} />}>
-                            View Details
-                        </Menu.Item>
-                        <Menu.Item leftSection={<IconEdit style={{ width: 14, height: 14 }} />}>
-                            Edit Booking
-                        </Menu.Item>
-                        <Menu.Item
-                            leftSection={<IconTrash style={{ width: 14, height: 14 }} />}
-                            color="red"
-                        >
-                            Cancel Booking
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>
-            </Table.Td>
-        </Table.Tr>
-    ));
+    const rows = data.map((booking) => {
+        const initials = (booking.guest_name || 'G').charAt(0).toUpperCase();
+        return (
+            <Table.Tr key={booking.id} style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/bookings')}>
+                <Table.Td>
+                    <Group gap="sm">
+                        <Avatar color="indigo" radius="xl" size="md">{initials}</Avatar>
+                        <div>
+                            <Text fz="sm" fw={600}>{booking.guest_name || 'Guest'}</Text>
+                            <Text c="dimmed" fz="xs">{booking.guest_email || '—'}</Text>
+                        </div>
+                    </Group>
+                </Table.Td>
+                <Table.Td>
+                    <Text fz="sm" fw={500}>{booking.suite_name || 'Room'}</Text>
+                    {booking.booking_reference && (
+                        <Text c="dimmed" fz="xs">#{booking.booking_reference}</Text>
+                    )}
+                </Table.Td>
+                <Table.Td>
+                    <Text fz="sm">{booking.check_in}</Text>
+                    <Text c="dimmed" fz="xs">→ {booking.check_out}</Text>
+                </Table.Td>
+                <Table.Td>
+                    <Badge color={statusColors[booking.status] || 'gray'} variant="light" radius="sm">
+                        {booking.status}
+                    </Badge>
+                </Table.Td>
+                <Table.Td>
+                    <Badge color={paymentColors[booking.payment_status] || 'gray'} variant="dot" radius="sm">
+                        {booking.payment_status || 'pending'}
+                    </Badge>
+                </Table.Td>
+                <Table.Td>
+                    <Text fw={700} fz="sm">KES {Number(booking.total_price || 0).toLocaleString('en-KE')}</Text>
+                </Table.Td>
+            </Table.Tr>
+        );
+    });
 
     return (
-        <Paper withBorder p="md" radius="md">
-            <Group justify="space-between" mb="md">
+        <Paper withBorder p="xl" radius="lg">
+            <Group justify="space-between" mb="xl">
                 <div>
-                    <Text size="lg" fw={700} className="text-gray-800 dark:text-gray-100">Recent Bookings</Text>
-                    <Text size="xs" c="dimmed" className="uppercase tracking-wider">Latest Activity</Text>
+                    <Text size="lg" fw={800}>Recent Bookings</Text>
+                    <Text size="xs" c="dimmed" tt="uppercase" style={{ letterSpacing: '0.08em' }}>Latest Activity</Text>
                 </div>
+                <Anchor fz="sm" fw={600} onClick={() => navigate('/admin/bookings')} style={{ cursor: 'pointer' }}>
+                    View all →
+                </Anchor>
             </Group>
 
-            <Table verticalSpacing="sm">
+            <Table verticalSpacing="md" highlightOnHover>
                 <Table.Thead>
                     <Table.Tr>
                         <Table.Th>Guest</Table.Th>
@@ -135,12 +99,9 @@ export function RecentBookingsTable({ data }) {
                         <Table.Th>Status</Table.Th>
                         <Table.Th>Payment</Table.Th>
                         <Table.Th>Amount</Table.Th>
-                        <Table.Th></Table.Th>
                     </Table.Tr>
                 </Table.Thead>
-                <Table.Tbody>
-                    {rows}
-                </Table.Tbody>
+                <Table.Tbody>{rows}</Table.Tbody>
             </Table>
         </Paper>
     );

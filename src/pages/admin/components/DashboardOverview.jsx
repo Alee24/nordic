@@ -1,7 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Grid, Stack, Loader, Center, Blockquote, Text, Group, Box, Button, SimpleGrid, Paper, ThemeIcon } from '@mantine/core';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+    Grid, Stack, Loader, Center, Text, Group, Box, Button, SimpleGrid,
+    Paper, ThemeIcon, Badge, ActionIcon, Tooltip
+} from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconInfoCircle, IconAlertCircle } from '@tabler/icons-react';
+import {
+    IconAlertCircle, IconRefresh, IconCalendarPlus, IconHomePlus,
+    IconPlaneDeparture, IconPlaneArrival, IconTool, IconBuildingSkyscraper
+} from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 
 import { dashboardService } from '../../../services/dashboardService';
 import { StatsGrid } from './StatsGrid';
@@ -9,92 +16,61 @@ import { RevenueChart } from './RevenueChart';
 import { RecentBookingsTable } from './RecentBookingsTable';
 
 const DashboardOverview = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [demoMode, setDemoMode] = useState(false); // Default to live
+    const [lastUpdated, setLastUpdated] = useState(null);
     const [data, setData] = useState({
         stats: null,
         recentBookings: [],
         revenue: [],
-        occupancy: []
     });
 
-    useEffect(() => {
-        fetchDashboardData();
-    }, [demoMode]);
-
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const [statsRes, bookingsRes, revenueRes, occupancyRes] = await Promise.allSettled([
-                dashboardService.getStatistics(demoMode),
-                dashboardService.getRecentBookings(10, demoMode),
+            const [statsRes, bookingsRes, revenueRes] = await Promise.allSettled([
+                dashboardService.getStatistics(),
+                dashboardService.getRecentBookings(8),
                 dashboardService.getMonthlyRevenue(12),
-                dashboardService.getOccupancyTrends(30)
             ]);
-
-            console.log("Dashboard Data Fetch Results:", { statsRes, bookingsRes, revenueRes, occupancyRes });
 
             const stats = statsRes.status === 'fulfilled' && statsRes.value.success ? statsRes.value.data : null;
             const bookings = bookingsRes.status === 'fulfilled' && bookingsRes.value.success ? bookingsRes.value.data : [];
             const revenue = revenueRes.status === 'fulfilled' && revenueRes.value.success ? revenueRes.value.data : [];
-            const occupancy = occupancyRes.status === 'fulfilled' && occupancyRes.value.success ? occupancyRes.value.data : [];
 
-            if (!stats && !demoMode) {
-                // If it's not demo mode and stats failed, don't throw - showing a message is better
-                console.warn('Crucial dashboard statistics missing from API.');
+            if (!stats) {
+                throw new Error('Could not load dashboard statistics from the server.');
             }
 
-            setData({
-                stats: stats || (demoMode ? {
-                    monthly_revenue: 124500,
-                    occupancy_rate: 85,
-                    revenue_per_room: 450,
-                    total_guests: 1240,
-                    today_checkins: 12,
-                    today_checkouts: 8,
-                    maintenance_alerts: 2
-                } : null),
-                recentBookings: bookings.length > 0 ? bookings : (demoMode ? [
-                    { id: '1', guest_name: 'John Doe', suite_name: 'Presidential Suite', check_in: '2024-02-11', status: 'Confirmed', total_price: 1200 },
-                    { id: '2', guest_name: 'Jane Smith', suite_name: 'Ocean View Deluxe', check_in: '2024-02-12', status: 'Pending', total_price: 850 }
-                ] : []),
-                revenue: revenue.length > 0 ? revenue : (demoMode ? [
-                    { month: 'Jan', revenue: 45000 },
-                    { month: 'Feb', revenue: 52000 },
-                    { month: 'Mar', revenue: 48000 }
-                ] : []),
-                occupancy: occupancy
-            });
-
-            if (!stats && demoMode) {
-                notifications.show({
-                    title: 'Offline Mode',
-                    message: 'Using simulated data as the live API is currently unreachable.',
-                    color: 'orange',
-                    icon: <IconInfoCircle />,
-                });
-            }
-
+            setData({ stats, recentBookings: bookings, revenue });
+            setLastUpdated(new Date());
         } catch (err) {
             console.error('Dashboard Load Error:', err);
             setError(err.message);
             notifications.show({
-                title: 'Connection Error',
-                message: 'Failed to reach the server. Please check your API/Apache configuration.',
+                title: 'Dashboard Error',
+                message: err.message || 'Failed to load dashboard data.',
                 color: 'red',
-                icon: <IconInfoCircle />,
+                icon: <IconAlertCircle />,
             });
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, [fetchDashboardData]);
 
     if (loading) {
         return (
             <Center h={400}>
-                <Loader size="xl" type="dots" />
+                <Stack align="center" gap="sm">
+                    <Loader size="lg" type="dots" color="indigo" />
+                    <Text c="dimmed" fz="sm">Loading live data…</Text>
+                </Stack>
             </Center>
         );
     }
@@ -106,92 +82,131 @@ const DashboardOverview = () => {
                     <ThemeIcon size={64} radius="xl" color="red" variant="light">
                         <IconAlertCircle size={32} />
                     </ThemeIcon>
-                    <Text fw={800} size="xl">Content Error</Text>
-                    <Text c="dimmed" maw={400} ta="center">{error}</Text>
-                    <Group mt="md">
-                        <Button variant="light" color="blue" onClick={fetchDashboardData}>Retry Connection</Button>
-                        <Button variant="filled" color="blue" onClick={() => {
-                            setDemoMode(true);
-                            setError(null);
-                        }}>Enter Demo Mode</Button>
-                    </Group>
+                    <Text fw={800} size="xl">Unable to load dashboard</Text>
+                    <Text c="dimmed" maw={420} ta="center">{error}</Text>
+                    <Button leftSection={<IconRefresh size={16} />} onClick={fetchDashboardData} color="indigo">
+                        Retry
+                    </Button>
                 </Stack>
             </Center>
         );
     }
 
+    const { stats, recentBookings, revenue } = data;
+
     return (
-        <Stack gap="lg">
-            <Group justify="space-between" align="end" className="mb-2">
+        <Stack gap="xl">
+            {/* Header */}
+            <Group justify="space-between" align="flex-start">
                 <Box>
-                    <Text size="xl" fw={800} className="text-gray-900 dark:text-white">Overview</Text>
-                    <Text size="sm" c="dimmed">Welcome back, here's what's happening at Norden today.</Text>
+                    <Text size="xl" fw={900} style={{ letterSpacing: '-0.02em' }}>Overview</Text>
+                    <Text size="sm" c="dimmed">Live data from Norden Suites</Text>
                 </Box>
-                <Paper shadow="xs" p={4} radius="xl" className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex">
-                    <button
-                        onClick={() => setDemoMode(false)}
-                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
-                    >
-                        LIVE
-                    </button>
-                    <button
-                        onClick={() => setDemoMode(true)}
-                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${demoMode ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
-                    >
-                        DEMO
-                    </button>
-                </Paper>
+                <Group gap="sm">
+                    {lastUpdated && (
+                        <Text fz="xs" c="dimmed">
+                            Updated {lastUpdated.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' })}
+                        </Text>
+                    )}
+                    <Tooltip label="Refresh data">
+                        <ActionIcon variant="light" color="gray" radius="xl" onClick={fetchDashboardData}>
+                            <IconRefresh size={16} />
+                        </ActionIcon>
+                    </Tooltip>
+                </Group>
             </Group>
 
-            <StatsGrid data={data.stats} />
+            {/* KPI Cards */}
+            <StatsGrid data={stats} />
 
+            {/* Revenue Chart + Today's Panel */}
             <Grid gutter="lg">
                 <Grid.Col span={{ base: 12, md: 8 }}>
-                    <RevenueChart data={data.revenue} />
+                    <RevenueChart data={revenue} />
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 4 }}>
-                    <Stack h="100%">
-                        <div className="flex-1 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white flex flex-col justify-between shadow-xl relative overflow-hidden">
-                            <div className="relative z-10">
-                                <Text fw={800} size="lg" mb="xs">Today's Operations</Text>
-                                <SimpleGrid cols={2} spacing="md" mt="xl">
+                    <Stack h="100%" gap="md">
+                        {/* Today's Operations */}
+                        <Paper
+                            radius="lg"
+                            p="xl"
+                            style={{
+                                flex: 1,
+                                background: 'linear-gradient(135deg, #3b5bdb 0%, #4c6ef5 40%, #228be6 100%)',
+                                color: 'white',
+                                position: 'relative',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+                            <div style={{ position: 'absolute', bottom: -30, left: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+                            <Box style={{ position: 'relative', zIndex: 1 }}>
+                                <Group gap="xs" mb="lg">
+                                    <IconBuildingSkyscraper size={18} style={{ opacity: 0.9 }} />
+                                    <Text fw={800} fz="md">Today's Operations</Text>
+                                </Group>
+                                <SimpleGrid cols={2} spacing="md">
                                     <Box>
-                                        <Text size="xs" className="opacity-70 uppercase font-bold tracking-wider">Arrivals</Text>
-                                        <Text size="xl" fw={900}>{data.stats?.today_checkins || 0}</Text>
+                                        <Group gap={4} mb={2}>
+                                            <IconPlaneArrival size={14} style={{ opacity: 0.7 }} />
+                                            <Text fz="xs" style={{ opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Arrivals</Text>
+                                        </Group>
+                                        <Text fz="2rem" fw={900}>{stats?.todayArrivals ?? 0}</Text>
                                     </Box>
                                     <Box>
-                                        <Text size="xs" className="opacity-70 uppercase font-bold tracking-wider">Departures</Text>
-                                        <Text size="xl" fw={900}>{data.stats?.today_checkouts ?? 0}</Text>
+                                        <Group gap={4} mb={2}>
+                                            <IconPlaneDeparture size={14} style={{ opacity: 0.7 }} />
+                                            <Text fz="xs" style={{ opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Departures</Text>
+                                        </Group>
+                                        <Text fz="2rem" fw={900}>{stats?.todayDepartures ?? 0}</Text>
                                     </Box>
                                     <Box>
-                                        <Text size="xs" className="opacity-70 uppercase font-bold tracking-wider">Cleaning</Text>
-                                        <Text size="xl" fw={900}>5</Text>
+                                        <Group gap={4} mb={2}>
+                                            <IconTool size={14} style={{ opacity: 0.7 }} />
+                                            <Text fz="xs" style={{ opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Maintenance</Text>
+                                        </Group>
+                                        <Text fz="2rem" fw={900}>{stats?.maintenanceRooms ?? 0}</Text>
                                     </Box>
                                     <Box>
-                                        <Text size="xs" className="opacity-70 uppercase font-bold tracking-wider">Maintenance</Text>
-                                        <Text size="xl" fw={900}>{data.stats?.maintenance_alerts || 0}</Text>
+                                        <Text fz="xs" style={{ opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, marginBottom: 2 }}>Available</Text>
+                                        <Text fz="2rem" fw={900}>{stats?.availableRooms ?? 0}</Text>
                                     </Box>
                                 </SimpleGrid>
-                            </div>
+                            </Box>
+                        </Paper>
 
-                            {/* Decorative elements */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-xl"></div>
-                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-400/20 rounded-full -ml-12 -mb-12 blur-xl"></div>
-                        </div>
-
-                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5 shadow-sm">
-                            <Text fw={700} className="border-b border-gray-100 dark:border-gray-700" mb="md" pb="xs">Quick Actions</Text>
-                            <SimpleGrid cols={2} spacing="sm">
-                                <Button variant="light" color="blue" radius="md" size="compact-sm">New Booking</Button>
-                                <Button variant="light" color="orange" radius="md" size="compact-sm">Add Room</Button>
-                                <Button variant="light" color="grape" radius="md" size="compact-sm">System Logs</Button>
-                            </SimpleGrid>
-                        </div>
+                        {/* Quick Actions */}
+                        <Paper withBorder radius="lg" p="xl">
+                            <Text fw={700} fz="md" mb="md">Quick Actions</Text>
+                            <Stack gap="sm">
+                                <Button
+                                    fullWidth
+                                    variant="light"
+                                    color="indigo"
+                                    radius="md"
+                                    leftSection={<IconCalendarPlus size={16} />}
+                                    onClick={() => navigate('/admin/bookings')}
+                                >
+                                    View Bookings
+                                </Button>
+                                <Button
+                                    fullWidth
+                                    variant="light"
+                                    color="teal"
+                                    radius="md"
+                                    leftSection={<IconHomePlus size={16} />}
+                                    onClick={() => navigate('/admin/rooms')}
+                                >
+                                    Manage Rooms
+                                </Button>
+                            </Stack>
+                        </Paper>
                     </Stack>
                 </Grid.Col>
             </Grid>
 
-            <RecentBookingsTable data={data.recentBookings} />
+            {/* Recent Bookings */}
+            <RecentBookingsTable data={recentBookings} />
         </Stack>
     );
 };

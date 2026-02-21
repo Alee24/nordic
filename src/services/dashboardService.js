@@ -46,11 +46,10 @@ export const dashboardService = {
 
     getMonthlyRevenue: async (months = 12) => {
         try {
-            // Fallback to statistics for now if not implemented
-            const response = await api.get('/dashboard/statistics');
-            return { success: true, data: [] };
+            const response = await api.get(`/dashboard/monthly-revenue?months=${months}`);
+            return { success: true, data: response.data.data };
         } catch (error) {
-            return { success: false, error: 'Not implemented' };
+            return { success: false, error: error.response?.data?.message || 'Failed to fetch revenue data' };
         }
     },
 
