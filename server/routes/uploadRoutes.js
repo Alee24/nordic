@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Upload directory - served statically by Apache
+// Upload directory - served statically by Express and proxied by Apache
 const UPLOAD_DIR = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(UPLOAD_DIR)) {
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -22,14 +22,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // Increased to 10MB
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
     fileFilter: (req, file, cb) => {
         const allowed = /jpeg|jpg|png|gif|webp/;
-        const ext = path.extname(file.originalname).toLowerCase();
-        if (allowed.test(ext)) {
+        // Strip leading dot from extension before testing
+        const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
+        const mime = file.mimetype;
+        if (allowed.test(ext) || allowed.test(mime)) {
             cb(null, true);
         } else {
-            cb(new Error('Only image files (jpg, png, webp, gif) are allowed'));
+            cb(new Error(`Only image files (jpg, png, webp, gif) are allowed. Got: ${ext}`));
         }
     }
 }).single('image');
@@ -51,10 +53,9 @@ router.post('/upload', authMiddleware, (req, res) => {
 
         console.log('Image uploaded successfully:', req.file.filename);
 
-        // Return the public URL - Apache serves /uploads/ from the project root
-        const baseUrl = process.env.SITE_URL || 'https://nordensuites.com';
-        const url = `${baseUrl}/uploads/${req.file.filename}`;
-        res.json({ success: true, data: { url, filename: req.file.filename } });
+        // Use a relative path so the image works on any domain (local + VPS)
+        const relativeUrl = `/uploads/${req.file.filename}`;
+        res.json({ success: true, data: { url: relativeUrl, filename: req.file.filename } });
     });
 });
 
