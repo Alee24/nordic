@@ -1,67 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import {
-    AppShell,
-    Burger,
-    Group,
-    Text,
-    Avatar,
-    UnstyledButton,
-    rem,
-    useMantineTheme,
-    NavLink,
-    LoadingOverlay,
-    ScrollArea,
-    Paper,
-    Stack,
-    Button
+    AppShell, Burger, Group, Text, Avatar, UnstyledButton,
+    NavLink, ScrollArea, Paper, Stack, Button, Badge
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
-    IconLayoutDashboard,
-    IconCalendarEvent,
-    IconUser,
-    IconBed,
-    IconSettings,
-    IconLogout,
-    IconBell,
-    IconSearch,
-    IconMenu2,
-    IconDoorEnter,
-    IconCurrencyDollar,
-    IconPlaneDeparture,
-    IconMessage
+    IconCalendarEvent, IconBed, IconSettings, IconLogout,
+    IconBell, IconCurrencyDollar, IconMessage
 } from '@tabler/icons-react';
-
-// Components (We will create these next)
-import DashboardOverview from './components/DashboardOverview';
+import { notifications } from '@mantine/notifications';
 import Bookings from './Bookings';
 import Rooms from './Rooms';
 import Settings from './Settings';
 import PaymentSettingsPage from './PaymentSettingsPage';
 import Messages from './Messages';
 import useManagementStore from '../../store/useManagementStore';
+import api from '../../services/api';
 
-// Local Error Boundary for Dashboard Content
+// Error Boundary
 class DashboardErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false, error: null };
-    }
-    static getDerivedStateFromError(error) {
-        return { hasError: true, error };
-    }
+    constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+    static getDerivedStateFromError(error) { return { hasError: true, error }; }
     render() {
         if (this.state.hasError) {
             return (
                 <Paper p="xl" withBorder radius="md" style={{ background: '#fff5f5' }}>
                     <Stack align="center" gap="md">
-                        <Text fw={900} size="xl" c="red">Sub-component Crash</Text>
-                        <Text size="sm" ta="center">One of the dashboard modules failed to load.</Text>
-                        <pre style={{ fontSize: '12px', color: '#e03131', background: '#fff', padding: '10px', borderRadius: '4px' }}>
-                            {this.state.error?.toString()}
-                        </pre>
+                        <Text fw={900} size="xl" c="red">Something went wrong</Text>
+                        <Text size="sm" ta="center">{this.state.error?.toString()}</Text>
                         <Button variant="light" color="red" onClick={() => this.setState({ hasError: false, error: null })}>
-                            Try Re-rendering
+                            Try Again
                         </Button>
                     </Stack>
                 </Paper>
@@ -72,12 +40,25 @@ class DashboardErrorBoundary extends React.Component {
 }
 
 const Dashboard = ({ onExit }) => {
-    const { user, logout, isAdmin } = useManagementStore();
+    const { user, logout } = useManagementStore();
     const [opened, { toggle }] = useDisclosure();
-    const theme = useMantineTheme();
-    const [active, setActive] = useState('Overview');
+    // Default to Bookings (Overview removed)
+    const [active, setActive] = useState('Bookings');
+    const [unreadMessages, setUnreadMessages] = useState(0);
 
-    console.log("Dashboard Rendering - Current Mode:", active, "IsAdmin:", isAdmin);
+    // Fetch unread message count for the badge
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const res = await api.get('/messages?status=unread');
+                const msgs = res.data?.data || [];
+                setUnreadMessages(Array.isArray(msgs) ? msgs.filter(m => m.status === 'unread').length : 0);
+            } catch (_) { /* silent */ }
+        };
+        fetchUnread();
+        const interval = setInterval(fetchUnread, 60000); // refresh every 60s
+        return () => clearInterval(interval);
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -85,127 +66,126 @@ const Dashboard = ({ onExit }) => {
     };
 
     const links = [
-        { icon: IconLayoutDashboard, label: 'Overview' },
         { icon: IconCalendarEvent, label: 'Bookings' },
         { icon: IconBed, label: 'Rooms' },
-        { icon: IconMessage, label: 'Messages' },
+        {
+            icon: IconMessage, label: 'Messages',
+            badge: unreadMessages > 0 ? unreadMessages : null
+        },
         { icon: IconCurrencyDollar, label: 'Payments' },
         { icon: IconSettings, label: 'Settings' },
     ];
 
-    const mainLinks = links.map((link) => (
-        <NavLink
-            key={link.label}
-            label={link.label}
-            leftSection={<link.icon size="1.2rem" stroke={1.5} />}
-            active={active === link.label}
-            onClick={() => setActive(link.label)}
-            variant="filled"
-            color="blue"
-            className="rounded-md my-1 font-medium transition-all duration-200"
-        />
-    ));
-
     const renderContent = () => {
         switch (active) {
-            case 'Overview':
-                return <DashboardOverview />;
-            case 'Bookings':
-                return <Bookings />;
-            case 'Rooms':
-                return <Rooms />;
-            case 'Messages':
-                return <Messages />;
-            case 'Payments':
-                return <PaymentSettingsPage />;
-            case 'Settings':
-                return <Settings />;
-            default:
-                console.log("Dashboard - Rendering default (Overview)");
-                return <DashboardOverview />;
+            case 'Bookings': return <Bookings />;
+            case 'Rooms': return <Rooms />;
+            case 'Messages': return <Messages onUnreadChange={setUnreadMessages} />;
+            case 'Payments': return <PaymentSettingsPage />;
+            case 'Settings': return <Settings />;
+            default: return <Bookings />;
         }
     };
 
     return (
         <AppShell
             header={{ height: 70 }}
-            navbar={{
-                width: 300,
-                breakpoint: 'sm',
-                collapsed: { mobile: !opened },
-            }}
+            navbar={{ width: 260, breakpoint: 'sm', collapsed: { mobile: !opened } }}
             padding="md"
-            className="bg-gray-50 dark:bg-gray-900"
+            styles={{ main: { background: '#f8fafc', minHeight: '100vh' } }}
         >
-            <AppShell.Header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+            {/* Header */}
+            <AppShell.Header style={{ borderBottom: '1px solid #e5e7eb', background: '#fff' }}>
                 <Group h="100%" px="md" justify="space-between">
                     <Group>
                         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
                         <Group gap="xs">
-                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
-                                N
-                            </div>
-                            <Text fw={900} size="xl" className="text-gray-900 dark:text-white tracking-tight">
-                                NORDEN<span className="text-blue-600">SUITES</span>
+                            <div style={{
+                                width: 36, height: 36, background: 'linear-gradient(135deg,#1e3a5f,#2563eb)',
+                                borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color: '#fff', fontWeight: 900, fontSize: 18
+                            }}>N</div>
+                            <Text fw={900} size="xl" style={{ letterSpacing: '-0.5px' }}>
+                                NORDEN<span style={{ color: '#2563eb' }}>SUITES</span>
                             </Text>
                         </Group>
                     </Group>
-
                     <Group>
-                        <UnstyledButton className="p-2 text-gray-500 hover:text-blue-600 transition-colors relative">
+                        <UnstyledButton style={{ position: 'relative', padding: 8, color: '#6b7280' }}>
                             <IconBell size={22} stroke={1.5} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                            {unreadMessages > 0 && (
+                                <span style={{
+                                    position: 'absolute', top: 6, right: 6, width: 8, height: 8,
+                                    background: '#ef4444', borderRadius: '50%'
+                                }} />
+                            )}
                         </UnstyledButton>
-
-                        <div className="h-8 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2"></div>
-
-                        <UnstyledButton
-                            className="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                        >
-                            <Avatar radius="xl" size="md" src={null} color="blue">
-                                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                        <div style={{ height: 32, width: 1, background: '#e5e7eb', margin: '0 8px' }} />
+                        <UnstyledButton style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 12px', borderRadius: 99 }}>
+                            <Avatar radius="xl" size="md" color="blue">
+                                {(user?.name || user?.email || 'A').charAt(0).toUpperCase()}
                             </Avatar>
-                            <div className="hidden sm:block text-left">
-                                <Text size="sm" fw={600} lh={1}>{user?.first_name} {user?.last_name}</Text>
-                                <Text size="xs" c="dimmed" lh={1} mt={2}>{user?.role}</Text>
+                            <div className="hidden sm:block" style={{ textAlign: 'left' }}>
+                                <Text size="sm" fw={600} style={{ lineHeight: 1 }}>{user?.name || 'Admin'}</Text>
+                                <Text size="xs" c="dimmed" style={{ lineHeight: 1, marginTop: 2 }}>{user?.role || 'admin'}</Text>
                             </div>
                         </UnstyledButton>
                     </Group>
                 </Group>
             </AppShell.Header>
 
-            <AppShell.Navbar p="md" className="border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+            {/* Sidebar */}
+            <AppShell.Navbar p="md" style={{ borderRight: '1px solid #e5e7eb', background: '#fff' }}>
                 <AppShell.Section grow component={ScrollArea}>
-                    <div className="mb-6">
-                        <Text size="xs" fw={700} c="dimmed" className="uppercase tracking-wider mb-3 px-3">
-                            Main Menu
-                        </Text>
-                        {mainLinks}
-                    </div>
+                    <Text size="xs" fw={700} c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, paddingLeft: 12 }}>
+                        Main Menu
+                    </Text>
+                    {links.map((link) => (
+                        <NavLink
+                            key={link.label}
+                            label={
+                                <Group gap="xs" justify="space-between" wrap="nowrap">
+                                    <span>{link.label}</span>
+                                    {link.badge && (
+                                        <Badge size="xs" color="red" variant="filled" circle>{link.badge}</Badge>
+                                    )}
+                                </Group>
+                            }
+                            leftSection={<link.icon size="1.2rem" stroke={1.5} />}
+                            active={active === link.label}
+                            onClick={() => setActive(link.label)}
+                            variant="filled"
+                            color="blue"
+                            style={{ borderRadius: 8, marginBottom: 4, fontWeight: 500 }}
+                        />
+                    ))}
                 </AppShell.Section>
 
-                <AppShell.Section className="border-t border-gray-200 dark:border-gray-800 pt-4">
+                <AppShell.Section style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16 }}>
                     <NavLink
                         label="Log Out & Return"
                         leftSection={<IconLogout size="1.2rem" stroke={1.5} />}
                         onClick={handleLogout}
                         variant="subtle"
                         color="red"
-                        className="rounded-md font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10"
+                        style={{ borderRadius: 8, fontWeight: 500 }}
                     />
-                    <Text size="xs" c="dimmed" className="text-center mt-4">
-                        Developed by <a href="https://www.kkdes.co.ke" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>KKDES</a>
+                    <Text size="xs" c="dimmed" ta="center" mt="md">
+                        Developed by{' '}
+                        <a href="https://kkdes.co.ke/" target="_blank" rel="noopener noreferrer"
+                            style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>KKDES</a>
                     </Text>
                 </AppShell.Section>
             </AppShell.Navbar>
 
-            <AppShell.Main className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+            {/* Main Content */}
+            <AppShell.Main>
                 <DashboardErrorBoundary>
                     {renderContent()}
                 </DashboardErrorBoundary>
             </AppShell.Main>
         </AppShell>
     );
-}
+};
 
 export default Dashboard;
