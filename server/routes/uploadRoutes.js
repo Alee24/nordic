@@ -22,26 +22,40 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    limits: { fileSize: 10 * 1024 * 1024 }, // Increased to 10MB
     fileFilter: (req, file, cb) => {
         const allowed = /jpeg|jpg|png|gif|webp/;
-        if (allowed.test(path.extname(file.originalname).toLowerCase())) {
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (allowed.test(ext)) {
             cb(null, true);
         } else {
-            cb(new Error('Only image files are allowed'));
+            cb(new Error('Only image files (jpg, png, webp, gif) are allowed'));
         }
     }
-});
+}).single('image');
 
 // POST /api/upload - upload a room image
-router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ success: false, message: 'No file uploaded' });
-    }
-    // Return the public URL - Apache serves /uploads/ from the project root
-    const baseUrl = process.env.SITE_URL || 'https://nordensuites.com';
-    const url = `${baseUrl}/uploads/${req.file.filename}`;
-    res.json({ success: true, data: { url, filename: req.file.filename } });
+router.post('/upload', authMiddleware, (req, res) => {
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            console.error('Multer Upload Error:', err);
+            return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+        } else if (err) {
+            console.error('General Upload Error:', err);
+            return res.status(500).json({ success: false, message: err.message });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+
+        console.log('Image uploaded successfully:', req.file.filename);
+
+        // Return the public URL - Apache serves /uploads/ from the project root
+        const baseUrl = process.env.SITE_URL || 'https://nordensuites.com';
+        const url = `${baseUrl}/uploads/${req.file.filename}`;
+        res.json({ success: true, data: { url, filename: req.file.filename } });
+    });
 });
 
 module.exports = router;
