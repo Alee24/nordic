@@ -38,7 +38,14 @@ const login = async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        // Give specific error messages for easier diagnosis
+        if (error.code === 'P1001' || error.message?.includes('ECONNREFUSED') || error.message?.includes('connect')) {
+            return res.status(500).json({ success: false, message: 'Database connection failed. Please contact support.' });
+        }
+        if (error.code === 'P1003') {
+            return res.status(500).json({ success: false, message: 'Database not found. Please contact support.' });
+        }
+        res.status(500).json({ success: false, message: error.message || 'Server error' });
     }
 };
 
