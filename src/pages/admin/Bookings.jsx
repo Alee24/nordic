@@ -10,7 +10,7 @@ import {
     IconDots, IconEye, IconSearch, IconDownload,
     IconCheck, IconX, IconCalendarEvent, IconUser,
     IconHome, IconCreditCard, IconClock, IconMail,
-    IconPhone, IconChevronRight, IconTrash
+    IconPhone, IconChevronRight, IconTrash, IconSend
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { dashboardService } from '../../services/dashboardService';
@@ -44,6 +44,7 @@ const Bookings = () => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [drawerOpened, setDrawerOpened] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [sending, setSending] = useState(false);
     const [filters, setFilters] = useState({ status: '', search: '', date_from: null });
 
     useEffect(() => { fetchBookings(); }, [filters]);
@@ -97,21 +98,53 @@ const Bookings = () => {
         }
     };
 
-    const handleDownloadInvoice = () => {
+    const handleDownloadInvoice = async () => {
         if (!selectedBooking) return;
         const apiBase = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
         const token = localStorage.getItem('admin_token') || localStorage.getItem('token') || '';
-        // Open invoice in new tab — the backend renders the full HTML invoice
-        const url = `${apiBase}/bookings/${selectedBooking.id}/invoice`;
-        // Pass token via query param since we're opening a new window (no headers)
-        const link = document.createElement('a');
-        link.href = url + `?token=${token}`;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        notifications.show({ title: 'Invoice Opened', message: 'Use browser Print → Save as PDF to download.', color: 'blue' });
+        const url = `${apiBase}/bookings/${selectedBooking.id}/invoice/pdf?token=${token}`;
+        notifications.show({ title: 'Generating PDF…', message: 'Please wait while we build your invoice.', color: 'blue', loading: true, id: 'invoice-dl' });
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({ message: 'PDF generation failed' }));
+                throw new Error(err.message);
+            }
+            const blob = await resp.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = `NordenSuites-Invoice-${selectedBooking.booking_reference || selectedBooking.id}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+            notifications.update({ id: 'invoice-dl', title: 'Invoice Downloaded', message: 'PDF saved to your downloads folder.', color: 'green', loading: false });
+        } catch (err) {
+            notifications.update({ id: 'invoice-dl', title: 'Download Failed', message: err.message, color: 'red', loading: false });
+        }
+    };
+
+    const handleSendInvoice = async () => {
+        if (!selectedBooking) return;
+        const guestEmail = selectedBooking.guest_email;
+        if (!guestEmail) {
+            notifications.show({ title: 'No Email', message: 'This guest has no email address on record.', color: 'orange' });
+            return;
+        }
+        setSending(true);
+        try {
+            const resp = await api.post(`/bookings/${selectedBooking.id}/invoice/send`);
+            if (resp.data?.success) {
+                notifications.show({ title: 'Invoice Sent ✉️', message: `Invoice emailed to ${guestEmail}`, color: 'green' });
+            } else {
+                throw new Error(resp.data?.message || 'Failed to send invoice');
+            }
+        } catch (err) {
+            notifications.show({ title: 'Send Failed', message: err.response?.data?.message || err.message, color: 'red' });
+        } finally {
+            setSending(false);
+        }
     };
 
     const stats = useMemo(() => {
@@ -402,9 +435,21 @@ const Bookings = () => {
                                 leftSection={<IconDownload size={16} />}
                                 onClick={handleDownloadInvoice}
                             >
-                                Download Invoice
+                                Download PDF
                             </Button>
                         </Group>
+                        <Button
+                            fullWidth
+                            variant="light"
+                            color="teal"
+                            leftSection={<IconSend size={16} />}
+                            loading={sending}
+                            onClick={handleSendInvoice}
+                            disabled={!selectedBooking?.guest_email}
+                            title={!selectedBooking?.guest_email ? 'No guest email on record' : `Send invoice to ${selectedBooking.guest_email}`}
+                        >
+                            {sending ? 'Sending…' : `Send Invoice to Guest${selectedBooking?.guest_email ? ` (${selectedBooking.guest_email})` : ''}`}
+                        </Button>
                     </Stack>
                 )}
             </Drawer>
