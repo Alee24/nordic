@@ -65,15 +65,6 @@ function App() {
       {/* Global Booking Modal — driven by useBookingModalStore */}
       <BookingFlowModal opened={isOpen} onClose={closeBooking} />
 
-      {/* Admin Access Button */}
-      <div className="fixed bottom-10 right-10 z-[100]">
-        <button
-          onClick={() => setView('staff')}
-          className="bg-norden-gold-500 hover:bg-norden-gold-400 text-norden-dark-900 px-6 py-3 rounded-full font-bold shadow-2xl hover:scale-105 transition-all active:scale-95"
-        >
-          {isAdmin ? 'DASHBOARD' : 'ADMIN LOGIN'}
-        </button>
-      </div>
     </div>
   );
 }
