@@ -29,11 +29,12 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Only logout if we're actually logged in and the token is rejected
+            // Token is invalid - clear it
             if (localStorage.getItem('admin_token')) {
                 localStorage.removeItem('admin_token');
-                window.location.href = '/login'; // Or handle via store
             }
+            // Note: We don't redirect here to avoid breaking the SPA state.
+            // The components/store will handle the missing token/isAdmin state.
         }
         return Promise.reject(error);
     }

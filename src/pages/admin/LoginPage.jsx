@@ -68,7 +68,7 @@ const LoginPage = () => {
                         <Stack gap="md">
                             <TextInput
                                 label="Administrator Email"
-                                placeholder="admin@nordensuits.com"
+                                placeholder="admin@nordensuites.com"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}

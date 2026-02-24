@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Admin imports
@@ -28,9 +28,13 @@ import useBookingModalStore from './store/useBookingModalStore';
 import useManagementStore from './store/useManagementStore';
 
 function App() {
-  const { currentView, isAdmin, setView } = useManagementStore();
+  const { currentView, isAdmin, setView, checkAuth } = useManagementStore();
   const { isOpen, closeBooking } = useBookingModalStore();
   const isStaff = currentView === 'staff';
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   console.log('🎯 App rendering - View:', currentView, 'IsAdmin:', isAdmin);
 

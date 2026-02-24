@@ -44,23 +44,28 @@ const useManagementStore = create((set, get) => ({
     },
 
     checkAuth: async () => {
+        const token = localStorage.getItem('admin_token');
+        if (!token) return;
+
         set({ loading: true });
         try {
             const response = await api.get('/auth/check', { timeout: 5000 });
             if (response.data.success) {
-                const userRole = response.data.data.user.role?.toLowerCase();
+                const user = response.data.data.user;
+                const isAdminRole = user.role?.toLowerCase() === 'admin';
                 set({
-                    isAdmin: userRole === 'admin',
-                    user: response.data.data.user
+                    isAdmin: isAdminRole,
+                    user: user,
+                    currentView: isAdminRole ? 'staff' : 'guest'
                 });
             } else {
                 localStorage.removeItem('admin_token');
-                set({ isAdmin: false, user: null });
+                set({ isAdmin: false, user: null, currentView: 'guest' });
             }
         } catch (error) {
             console.error('Auth verification failed:', error);
             localStorage.removeItem('admin_token');
-            set({ isAdmin: false, user: null });
+            set({ isAdmin: false, user: null, currentView: 'guest' });
         } finally {
             set({ loading: false });
         }
