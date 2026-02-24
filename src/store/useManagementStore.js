@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import api from '../services/api';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8123/api';
-
 const useManagementStore = create((set, get) => ({
     isAdmin: false,
     user: null,
@@ -17,13 +15,16 @@ const useManagementStore = create((set, get) => ({
             if (response.data.success) {
                 const { user, token } = response.data.data;
                 localStorage.setItem('admin_token', token);
+                // Role check is case-insensitive — DB stores 'ADMIN' (uppercase)
+                const isAdminRole = user.role?.toLowerCase() === 'admin';
                 set({
-                    isAdmin: user.role === 'admin',
+                    isAdmin: isAdminRole,
                     user: user,
-                    currentView: user.role === 'admin' ? 'staff' : 'guest'
+                    currentView: isAdminRole ? 'staff' : 'guest'
                 });
-                return { success: true };
+                return { success: true, isAdmin: isAdminRole };
             }
+            return { success: false, message: 'Login failed' };
         } catch (error) {
             return {
                 success: false,
@@ -47,8 +48,9 @@ const useManagementStore = create((set, get) => ({
         try {
             const response = await api.get('/auth/check', { timeout: 5000 });
             if (response.data.success) {
+                const userRole = response.data.data.user.role?.toLowerCase();
                 set({
-                    isAdmin: response.data.data.user.role === 'admin',
+                    isAdmin: userRole === 'admin',
                     user: response.data.data.user
                 });
             } else {
