@@ -12,6 +12,7 @@ import RoomsPage from './pages/RoomsPage';
 import ContactPage from './pages/ContactPage';
 import SuiteDetailsPage from './pages/SuiteDetailsPage';
 import CheckoutPage from './pages/CheckoutPage';
+import ExperiencesPage from './pages/ExperiencesPage';
 
 // UI Components
 import Navigation from './components/ui/Navigation';
@@ -55,6 +56,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/suite/:id" element={<SuiteDetailsPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/experiences" element={<ExperiencesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
