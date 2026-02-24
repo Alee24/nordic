@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8123/api';
+// Use relative URL so it works on both localhost and production (VPS via Apache proxy)
+// Apache proxies /api → http://127.0.0.1:8123/api on the server
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
