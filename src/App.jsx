@@ -19,11 +19,16 @@ import Footer from './components/layout/Footer';
 import SocialProof from './components/ui/SocialProof';
 import ScrollToTop from './utils/ScrollToTop';
 
+// Global booking modal
+import BookingFlowModal from './components/booking/BookingFlowModal';
+import useBookingModalStore from './store/useBookingModalStore';
+
 // Store
 import useManagementStore from './store/useManagementStore';
 
 function App() {
   const { currentView, isAdmin, setView } = useManagementStore();
+  const { isOpen, closeBooking } = useBookingModalStore();
   const isStaff = currentView === 'staff';
 
   console.log('🎯 App rendering - View:', currentView, 'IsAdmin:', isAdmin);
@@ -56,6 +61,9 @@ function App() {
 
       <Footer />
       <SocialProof />
+
+      {/* Global Booking Modal — driven by useBookingModalStore */}
+      <BookingFlowModal opened={isOpen} onClose={closeBooking} />
 
       {/* Admin Access Button */}
       <div className="fixed bottom-10 right-10 z-[100]">

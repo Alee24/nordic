@@ -17,12 +17,12 @@ import {
 } from 'lucide-react';
 import { Menu, Button, Group, Text, Box, Indicator, ActionIcon } from '@mantine/core';
 import ThemeToggle from './ThemeToggle';
-import BookingFlowModal from '../booking/BookingFlowModal';
+import useBookingModalStore from '../../store/useBookingModalStore';
 
 const Navigation = () => {
     const [scrolled, setScrolled] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [inquiryOpened, setInquiryOpened] = useState(false);
+    const openBooking = useBookingModalStore(s => s.openBooking);
     const location = useLocation();
 
     useEffect(() => {
@@ -102,7 +102,7 @@ const Navigation = () => {
                         <Button
                             className="bg-norden-gold-500 text-norden-dark-900 font-bold px-8 rounded-full hover:scale-105 transition-transform uppercase text-xs tracking-widest"
                             size="md"
-                            onClick={() => setInquiryOpened(true)}
+                            onClick={() => openBooking()}
                         >
                             Book Now
                         </Button>
@@ -145,7 +145,7 @@ const Navigation = () => {
                                 size="xl"
                                 className="bg-norden-gold-500 text-norden-dark-900 font-bold rounded-full mt-auto"
                                 onClick={() => {
-                                    setInquiryOpened(true);
+                                    openBooking();
                                     setIsOpen(false);
                                 }}
                             >
@@ -156,7 +156,6 @@ const Navigation = () => {
                 </AnimatePresence>
             </div>
 
-            <BookingFlowModal opened={inquiryOpened} onClose={() => setInquiryOpened(false)} />
         </nav>
     );
 };

@@ -1,39 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Button from '../components/ui/Button';
 import Section from '../components/ui/Section';
 import BookingWidget from '../components/ui/BookingWidget';
 import RoomCard from '../components/ui/RoomCard';
-import { Star, MapPin, ArrowRight, Utensils, Sparkles, Briefcase, Wifi, Coffee, Key, Headset, Clock, LogIn, Home as HomeIcon } from 'lucide-react';
+import { Star, MapPin, ArrowRight, Utensils, Sparkles, Briefcase, Wifi, Coffee, Key, Headset, Clock, LogIn, Home as HomeIcon, CalendarCheck } from 'lucide-react';
 import { Group, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import BookingFlowModal from '../components/booking/BookingFlowModal';
+import { suites } from '../data/suites';
+import useBookingModalStore from '../store/useBookingModalStore';
 
 const Home = () => {
-    const [inquiryOpened, setInquiryOpened] = useState(false);
-    const rooms = [
-        {
-            id: 1,
-            name: 'Executive Residence',
-            description: 'Full 1-bedroom apartment with ergonomic workspace and kitchen.',
-            price: 250,
-            image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop'
-        },
-        {
-            id: 2,
-            name: 'Norden Penthouse',
-            description: 'Duplex apartment with private terrace and meeting area.',
-            price: 450,
-            image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=2574&auto=format&fit=crop'
-        },
-        {
-            id: 3,
-            name: 'Studio Loft',
-            description: 'Efficient luxury for the solo business traveler.',
-            price: 180,
-            image: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=2670&auto=format&fit=crop'
-        },
-    ];
+    const openBooking = useBookingModalStore(s => s.openBooking);
+    // Use first 3 real suites from the 2026 Rate Card
+    const rooms = suites.slice(0, 3);
 
     return (
         <div className="bg-theme-bg min-h-screen transition-colors duration-300">
@@ -83,9 +63,9 @@ const Home = () => {
                             <Button
                                 variant="outline"
                                 className="text-white border-white/40 hover:bg-white hover:text-norden-dark-900"
-                                onClick={() => setInquiryOpened(true)}
+                                onClick={() => openBooking()}
                             >
-                                Long Stay Rates
+                                <CalendarCheck size={16} className="mr-2" /> Book Now
                             </Button>
                         </div>
                     </motion.div>
@@ -231,7 +211,7 @@ const Home = () => {
                         <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Residencies</span>
                         <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-2">Executive Living</h2>
                     </div>
-                    <Button variant="outline" className="hidden md:block">View All Apartments</Button>
+                    <Button variant="outline" className="hidden md:block" onClick={() => openBooking()}>Book a Suite</Button>
                 </div>
 
                 <motion.div
@@ -257,7 +237,7 @@ const Home = () => {
                 </motion.div>
 
                 <div className="flex justify-center md:hidden">
-                    <Button variant="outline">View All Apartments</Button>
+                    <Button variant="outline" onClick={() => openBooking()}>Book a Suite</Button>
                 </div>
             </Section>
 
@@ -306,7 +286,6 @@ const Home = () => {
                 </div>
             </Section>
 
-            <BookingFlowModal opened={inquiryOpened} onClose={() => setInquiryOpened(false)} />
         </div>
     );
 };
