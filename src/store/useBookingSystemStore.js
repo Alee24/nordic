@@ -80,11 +80,16 @@ const useBookingSystemStore = create((set, get) => ({
         }
     },
 
-    fetchPropertyRooms: async () => {
+    fetchPropertyRooms: async (propertyId, checkIn, checkOut) => {
         set({ isLoading: true, error: null });
         try {
-            // Fetch live rooms from admin-managed database
-            const response = await fetch('/api/rooms');
+            // Build query params for availability filtering
+            const params = new URLSearchParams();
+            if (checkIn) params.set('checkIn', checkIn);
+            if (checkOut) params.set('checkOut', checkOut);
+
+            const url = `/api/rooms${params.toString() ? '?' + params.toString() : ''}`;
+            const response = await fetch(url);
             const json = await response.json();
             const rawRooms = json.data || json.rooms || [];
 
@@ -96,8 +101,8 @@ const useBookingSystemStore = create((set, get) => ({
                     name: r.name,
                     description: r.description || '',
                     base_price: Number(r.price) || 0,
-                    room_type: r.type || 'Suite',
-                    max_occupancy: r.capacity || null,
+                    room_type: r.type || 'Luxury Suite',
+                    max_occupancy: r.capacity || 4,
                     size_sqm: r.size_sqm || null,
                     photos: r.imageUrl ? [r.imageUrl] : ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop'],
                     amenities: r.amenities || [],

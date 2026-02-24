@@ -3,7 +3,37 @@ const prisma = new PrismaClient();
 
 const getRooms = async (req, res) => {
     try {
-        const rooms = await prisma.room.findMany({ orderBy: { createdAt: 'desc' } });
+        const { checkIn, checkOut } = req.query;
+
+        // Build the availability filter if dates provided
+        let availabilityFilter = {};
+        if (checkIn && checkOut) {
+            const checkInDate = new Date(checkIn);
+            const checkOutDate = new Date(checkOut);
+
+            // Get IDs of rooms that are already booked for overlapping dates
+            const bookedRooms = await prisma.booking.findMany({
+                where: {
+                    status: { notIn: ['cancelled'] },
+                    OR: [
+                        { checkIn: { lt: checkOutDate }, checkOut: { gt: checkInDate } }
+                    ]
+                },
+                select: { roomId: true }
+            });
+
+            const bookedRoomIds = bookedRooms.map(b => b.roomId);
+            availabilityFilter = { id: { notIn: bookedRoomIds } };
+        }
+
+        const rooms = await prisma.room.findMany({
+            where: {
+                status: 'available',
+                ...availabilityFilter
+            },
+            orderBy: { price: 'asc' }
+        });
+
         res.json({ success: true, data: rooms });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
