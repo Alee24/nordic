@@ -23,7 +23,7 @@ const Home = () => {
                 {/* Background Image / Video */}
                 <div className="absolute inset-0">
                     <img
-                        src="/images/EMS 5.png"
+                        src="/images/IMG_7071.jpg"
                         alt="Norden Suites - Ocean View"
                         className="w-full h-full object-cover"
                     />
