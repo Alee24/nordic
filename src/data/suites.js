@@ -40,7 +40,8 @@ export const suites = [
         images: [
             '/images/living13.jpg',
             '/images/bed1.jpg',
-            '/images/kitchen1.png'
+            '/images/kitchen1.png',
+            '/images/street1.png'
         ],
         capacity: 2,
         size: '65 sqm',
@@ -64,7 +65,8 @@ export const suites = [
         images: [
             '/images/sitting2.jpg',
             '/images/bed2.jpg',
-            '/images/kitchen5.jpg'
+            '/images/kitchen5.jpg',
+            '/images/street2.jpg'
         ],
         capacity: 4,
         size: '95 sqm',
@@ -88,7 +90,8 @@ export const suites = [
         images: [
             '/images/bedview.jpeg',
             '/images/sitting7.jpg',
-            '/images/bath1.png'
+            '/images/bath1.png',
+            '/images/b11.jpg'
         ],
         capacity: 2,
         size: '70 sqm',
@@ -112,7 +115,8 @@ export const suites = [
         images: [
             '/images/b11.jpg',
             '/images/bed3.jpg',
-            '/images/dining5.jpg'
+            '/images/dining5.jpg',
+            '/images/door2.jpg'
         ],
         capacity: 4,
         size: '110 sqm',
@@ -136,7 +140,8 @@ export const suites = [
         images: [
             '/images/living67.jpg',
             '/images/dining1.jpg',
-            '/images/bed33.jpg'
+            '/images/bed33.jpg',
+            '/images/b12.jpg'
         ],
         capacity: 2,
         size: '150 sqm',

@@ -46,7 +46,7 @@ const SuiteDetailsPage = () => {
                     className="w-full h-full object-cover"
                     style={{ filter: 'brightness(0.5)' }}
                     onError={e => {
-                        e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop';
+                        e.target.src = '/images/ent1.jpg';
                     }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-theme-bg" />
@@ -113,15 +113,15 @@ const SuiteDetailsPage = () => {
                         </motion.div>
 
                         {/* Image Gallery */}
-                        <motion.div {...fadeIn(0, 0.15)} className="grid grid-cols-2 gap-4">
-                            {suite.images.slice(1).map((img, idx) => (
+                        <motion.div {...fadeIn(0, 0.15)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {suite.images.map((img, idx) => (
                                 <div key={idx} className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl">
                                     <img
                                         src={img}
-                                        alt={`${suite.name} — view ${idx + 2}`}
+                                        alt={`${suite.name} — view ${idx + 1}`}
                                         className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                                         onError={e => {
-                                            e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop';
+                                            e.target.src = '/images/sitting1.jpg';
                                         }}
                                     />
                                 </div>

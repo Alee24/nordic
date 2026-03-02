@@ -7,7 +7,7 @@ import {
     CheckCircle2, ArrowRight, Utensils, Droplets, Wind, Star,
     ChevronDown, BedDouble, Eye, PhoneCall, Building2, CalendarCheck
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import useBookingModalStore from '../store/useBookingModalStore';
 
@@ -43,8 +43,8 @@ const rateRows = suites.map(s => ({
 /* ══════════════════════════════════════════════════ */
 const SuitesPage = () => {
     const [activeId, setActiveId] = useState(null);
-    const [expandedAmenities, setExpandedAmenities] = useState(false);
     const openBooking = useBookingModalStore(s => s.openBooking);
+    const navigate = useNavigate();
 
     const activeSuite = suites.find(s => s.id === activeId) || suites[0];
 
@@ -64,15 +64,9 @@ const SuitesPage = () => {
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-10">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
-                        <div className="flex items-center justify-center gap-4 mb-5">
-                            <span className="h-[1px] w-16 bg-norden-gold-500" />
-                            <span className="text-norden-gold-400 uppercase tracking-[0.4em] text-xs font-extrabold">
-                                Nyali Beach · Mombasa
-                            </span>
-                            <span className="h-[1px] w-16 bg-norden-gold-500" />
-                        </div>
+
                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-6 leading-tight">
-                            Luxury <span className="italic text-norden-gold-400">Residences</span>
+                            <br />
                         </h1>
                         <p className="text-gray-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-8 leading-relaxed">
                             Fully serviced luxury suites designed for extraordinary living — where every detail celebrates comfort and elegance.
@@ -122,7 +116,7 @@ const SuitesPage = () => {
                                     <motion.div
                                         key={row.id}
                                         whileHover={{ x: 6 }}
-                                        onClick={() => setActiveId(isActive ? null : row.id)}
+                                        onClick={() => navigate(`/suite/${suite.id}`)}
                                         className={`grid grid-cols-2 cursor-pointer transition-all duration-300 border-b border-theme-border last:border-b-0 group
                                             ${idx % 2 === 0 ? 'bg-theme-bg' : 'bg-theme-surface'}
                                             ${isActive ? 'ring-2 ring-inset ring-norden-gold-500 bg-norden-gold-500/5' : 'hover:bg-theme-surface/80'}`}
