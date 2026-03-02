@@ -13,7 +13,8 @@ import {
     MessageSquare,
     User,
     Calendar,
-    Sparkles
+    Sparkles,
+    LayoutGrid
 } from 'lucide-react';
 import { Menu, Button, Group, Text, Box, Indicator, ActionIcon } from '@mantine/core';
 import ThemeToggle from './ThemeToggle';
@@ -79,6 +80,16 @@ const Navigation = () => {
                     <Button
                         variant="subtle"
                         component={Link}
+                        to="/rooms"
+                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/rooms') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
+                            }`}
+                    >
+                        Our Rooms
+                    </Button>
+
+                    <Button
+                        variant="subtle"
+                        component={Link}
                         to="/experiences"
                         className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/experiences') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
@@ -135,6 +146,7 @@ const Navigation = () => {
                                 <Stack gap="md">
                                     <Link to="/" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Home</Link>
                                     <Link to="/suites" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Residences</Link>
+                                    <Link to="/rooms" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><LayoutGrid /> Our Rooms</Link>
                                     <Link to="/experiences" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Compass /> Experience</Link>
                                     <Link to="/contact" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><MessageSquare /> Contact</Link>
                                 </Stack>

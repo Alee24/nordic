@@ -125,8 +125,8 @@ const Home = () => {
                     >
                         <div className="aspect-[4/5] overflow-hidden rounded-lg">
                             <img
-                                src="https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2070&auto=format&fit=crop"
-                                /* src="/images/home.jpg" */
+                                /* src="at&fit=crop" */
+                                src="/images/IMG_6922.jpg"
                                 alt="Coastal Apartment Interior"
                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                             />
