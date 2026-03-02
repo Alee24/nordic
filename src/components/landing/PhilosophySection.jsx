@@ -46,7 +46,7 @@ const PhilosophySection = () => {
                                 className="z-10 relative rounded-2xl overflow-hidden aspect-[4/5] shadow-2xl"
                             >
                                 <Image
-                                    src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1974&auto=format&fit=crop"
+                                    src="/images/living67.jpg"
                                     alt="Luxury Interior Details"
                                     className="w-full h-full object-cover"
                                 />

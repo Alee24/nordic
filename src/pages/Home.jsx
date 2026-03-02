@@ -126,7 +126,7 @@ const Home = () => {
                         <div className="aspect-[4/5] overflow-hidden rounded-lg">
                             <img
                                 /* src="at&fit=crop" */
-                                src="/images/IMG_6922.jpg"
+                                src="/images/street1.png"
                                 alt="Coastal Apartment Interior"
                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                             />
@@ -246,7 +246,7 @@ const Home = () => {
                     {/* Laundry */}
                     <Link to="/laundry" className="group relative h-[600px] overflow-hidden rounded-xl block">
                         <img
-                            src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?q=80&w=2671&auto=format&fit=crop"
+                            src="/images/b12.jpg"
                             alt="Laundry Services"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
@@ -266,7 +266,7 @@ const Home = () => {
                     {/* Residences */}
                     <Link to="/suites" className="group relative h-[600px] overflow-hidden rounded-xl block">
                         <img
-                            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop"
+                            src="/images/living.jpg"
                             alt="Residences"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />

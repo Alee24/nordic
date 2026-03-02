@@ -24,7 +24,7 @@ const HeroDiscovery = () => {
                         className="w-full h-full"
                     >
                         <img
-                            src="https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?q=80&w=2071&auto=format&fit=crop"
+                            src="/images/bed1.jpg"
                             alt="Luxury Apartment"
                             className="w-full h-full object-cover"
                         />

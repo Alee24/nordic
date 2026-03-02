@@ -54,7 +54,7 @@ const SuitesPage = () => {
             {/* ── HERO ──────────────────────────────────────── */}
             <div className="relative h-[70vh] min-h-[500px] overflow-hidden">
                 <img
-                    src="https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2025&auto=format&fit=crop"
+                    src="/images/door1.png"
                     alt="Norden Suites — Luxury Residences"
                     className="w-full h-full object-cover scale-105"
                     style={{ filter: 'brightness(0.55)' }}
@@ -203,7 +203,7 @@ const SuitesPage = () => {
                                         alt={suite.name}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         onError={e => {
-                                            e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop';
+                                            e.target.src = '/images/bed2.jpg';
                                         }}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-norden-dark-900/95 via-norden-dark-900/40 to-transparent" />
@@ -431,7 +431,7 @@ const SuitesPage = () => {
             {/* ── CTA BANNER ───────────────────────────────── */}
             <div className="relative overflow-hidden">
                 <img
-                    src="https://images.unsplash.com/photo-1629794226066-349748040fb7?q=80&w=2070&auto=format&fit=crop"
+                    src="/images/IMG_7071.jpg"
                     alt="Norden Suites"
                     className="w-full h-[400px] object-cover"
                     style={{ filter: 'brightness(0.35)' }}

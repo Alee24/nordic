@@ -44,7 +44,7 @@ const LaundryPage = () => {
             <div className="relative h-[400px] w-full overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1545173168-9f1947eebb7f?q=80&w=2671&auto=format&fit=crop"
+                        src="/images/sitting1.jpg"
                         alt="Norden Suits Laundry Services"
                         className="w-full h-full object-cover"
                     />
@@ -145,7 +145,7 @@ const LaundryPage = () => {
 
                     <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
                         <img
-                            src="https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?q=80&w=2670&auto=format&fit=crop"
+                            src="/images/kitchen1.png"
                             alt="Laundry Facility"
                             className="w-full h-full object-cover"
                         />

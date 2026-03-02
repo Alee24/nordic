@@ -104,7 +104,7 @@ const DiningPage = () => {
                     >
                         <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl relative">
                             <img
-                                src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop"
+                                src="/images/kitchen5.jpg"
                                 alt="Luxury Kitchen Detail"
                                 className="w-full h-full object-cover"
                             />
@@ -184,7 +184,7 @@ const DiningPage = () => {
                         </div>
                         <div className="relative h-[500px] lg:h-auto overflow-hidden">
                             <img
-                                src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2574&auto=format&fit=crop"
+                                src="/images/dining5.jpg"
                                 alt="Fine Dining"
                                 className="w-full h-full object-cover scale-110 hover:scale-100 transition-transform duration-[10s]"
                             />

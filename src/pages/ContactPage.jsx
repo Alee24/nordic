@@ -72,7 +72,7 @@ const ContactPage = () => {
             <div className="relative h-[500px] w-full overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=2680&auto=format&fit=crop"
+                        src="/images/front1.jpg"
                         alt="Norden Suits Concierge"
                         className="w-full h-full object-cover"
                     />
