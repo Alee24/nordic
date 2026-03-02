@@ -36,11 +36,11 @@ export const suites = [
         longDescription: 'Immerse yourself in the vibrant energy of the city from the comfort of your luxury suite. The 1 Bedroom City View Luxury Suite is designed for the discerning traveler, offering a fully equipped kitchen, a spacious living area, and premium QLED television. Floor-to-ceiling windows frame breathtaking city vistas, making every moment an unforgettable experience.',
         price: 12000,
         currency: 'KES',
-        image: '/images/roomai1.jpg',
+        image: '/images/living13.jpg',
         images: [
-            '/images/roomai1.jpg',
-            '/images/liningc.jpg',
-            '/images/room.jpg'
+            '/images/living13.jpg',
+            '/images/bed1.jpg',
+            '/images/kitchen1.png'
         ],
         capacity: 2,
         size: '65 sqm',
@@ -60,11 +60,11 @@ export const suites = [
         longDescription: 'The 2 Bedrooms City View Luxury Suite is the ideal residence for families or business travelers requiring extra space. Two beautifully appointed bedrooms, a full living and dining area, and a fully equipped kitchen ensure every comfort is met. Enjoy sweeping views of the city skyline from your private sanctuary.',
         price: 15000,
         currency: 'KES',
-        image: '/images/liningc.jpg',
+        image: '/images/sitting2.jpg',
         images: [
-            '/images/liningc.jpg',
-            '/images/roomai1.jpg',
-            '/images/room.jpg'
+            '/images/sitting2.jpg',
+            '/images/bed2.jpg',
+            '/images/kitchen5.jpg'
         ],
         capacity: 4,
         size: '95 sqm',
@@ -84,11 +84,11 @@ export const suites = [
         longDescription: 'Fall asleep to the rhythm of the Indian Ocean and wake up to unobstructed sea views from your private 1 Bedroom Sea View Luxury Suite. Every detail has been curated for an exceptional coastal living experience — from the fully equipped kitchen to the premium QLED display, and complimentary teas and coffee to start your day right.',
         price: 13000,
         currency: 'KES',
-        image: '/images/room.jpg',
+        image: '/images/bedview.jpeg',
         images: [
-            '/images/room.jpg',
-            '/images/roomai1.jpg',
-            '/images/liningc.jpg'
+            '/images/bedview.jpeg',
+            '/images/sitting7.jpg',
+            '/images/bath1.png'
         ],
         capacity: 2,
         size: '70 sqm',
@@ -108,11 +108,11 @@ export const suites = [
         longDescription: 'The 2 Bedrooms Sea View Luxury Suite is the ultimate coastal escape. Two spacious bedrooms, a grand open-plan living area, and a fully equipped kitchen combine to create a true home away from home. The sweeping ocean panorama visible from every room elevates this suite to one of the finest offerings along the Nyali coast.',
         price: 16000,
         currency: 'KES',
-        image: '/images/home.jpg',
+        image: '/images/b11.jpg',
         images: [
-            '/images/home.jpg',
-            '/images/room.jpg',
-            '/images/liningc.jpg'
+            '/images/b11.jpg',
+            '/images/bed3.jpg',
+            '/images/dining5.jpg'
         ],
         capacity: 4,
         size: '110 sqm',
@@ -132,11 +132,11 @@ export const suites = [
         longDescription: 'The Penthouse Luxury Suite is the crown jewel of Norden Suites. Perched at the top of the building, it offers unrivaled 360° panoramic views of both the city and the Indian Ocean. With bespoke interiors, a fully equipped designer kitchen, and every premium amenity at your disposal, the Penthouse redefines the meaning of luxury residence living.',
         price: 14000,
         currency: 'KES',
-        image: '/images/business1.jpg',
+        image: '/images/living67.jpg',
         images: [
-            '/images/business1.jpg',
-            '/images/home.jpg',
-            '/images/room.jpg'
+            '/images/living67.jpg',
+            '/images/dining1.jpg',
+            '/images/bed33.jpg'
         ],
         capacity: 2,
         size: '150 sqm',
