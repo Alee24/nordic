@@ -36,6 +36,11 @@ echo -e "\n${YELLOW}[3/6] Building frontend...${NC}"
 npm run build
 ok "Frontend built"
 
+# ── 3.5. Seed database rooms ───────────────────────────────────────────────
+echo -e "\n${YELLOW}[3.5/6] Seeding database rooms...${NC}"
+node "$APP_DIR/server/prisma/seed.js"
+ok "Database seeded"
+
 # ── 4. Fix Apache config ───────────────────────────────────────────────────
 echo -e "\n${YELLOW}[4/6] Updating Apache configuration...${NC}"
 cp "$APP_DIR/nordensuites.conf" "$APACHE_CONF"

@@ -134,7 +134,9 @@ const useBookingSystemStore = create((set, get) => ({
             console.log('Booking response:', response);
 
             // Extract booking data from response.data.data (Node.js API structure)
-            const booking = response?.data?.data || response?.data || {};
+            const raw = response?.data?.data || response?.data || {};
+            // Schema uses 'reference', UI expects 'booking_reference' — normalise both
+            const booking = { ...raw, booking_reference: raw.booking_reference || raw.reference };
 
             set({
                 currentBooking: booking,
