@@ -20,7 +20,7 @@ const Footer = () => {
                             Redefining coastal luxury with the perfect blend of 5-star service and private residence living in Mombasa.
                         </p>
                         <div className="flex gap-4">
-                            <a href="#" className="text-theme-muted hover:text-norden-gold-500 transition-colors"><Instagram size={20} /></a>
+                            <a href="https://www.instagram.com/nordensuites/" target="_blank" rel="noopener noreferrer" className="text-theme-muted hover:text-norden-gold-500 transition-colors"><Instagram size={20} /></a>
                             <a href="#" className="text-theme-muted hover:text-norden-gold-500 transition-colors"><Twitter size={20} /></a>
                             <a href="#" className="text-theme-muted hover:text-norden-gold-500 transition-colors"><Facebook size={20} /></a>
                         </div>
