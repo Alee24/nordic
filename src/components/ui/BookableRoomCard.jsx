@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Button from './Button';
 import { ArrowRight, Wifi, Sparkles, Tv, Wind, Coffee, Users } from 'lucide-react';
+import useCurrencyStore from '../../store/useCurrencyStore';
 
 const BookableRoomCard = ({ room, onBookNow }) => {
     // Normalize fields: support both DB fields (name/price/imageUrl) and legacy (title/price_per_night/image_url)
@@ -11,6 +12,7 @@ const BookableRoomCard = ({ room, onBookNow }) => {
     const type = room.type || 'Suite';
     const description = room.description || '';
     const status = room.status || 'available';
+    const { formatPrice } = useCurrencyStore();
 
     const isAvailable = status === 'available';
 
@@ -58,7 +60,7 @@ const BookableRoomCard = ({ room, onBookNow }) => {
                 {/* Price & Book */}
                 <div className="flex justify-between items-center transition-all duration-300 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
                     <span className="text-xl font-bold text-theme-text">
-                        KES {price.toLocaleString()} <span className="text-sm font-normal text-theme-muted">/ night</span>
+                        {formatPrice(price)} <span className="text-sm font-normal text-theme-muted">/ night</span>
                     </span>
                     {isAvailable && (
                         <Button

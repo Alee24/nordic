@@ -10,6 +10,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import useBookingModalStore from '../store/useBookingModalStore';
+import useCurrencyStore from '../store/useCurrencyStore';
 
 /* ── animation helpers ─────────────────────────── */
 const fadeUp = {
@@ -45,6 +46,7 @@ const SuitesPage = () => {
     const [activeId, setActiveId] = useState(null);
     const openBooking = useBookingModalStore(s => s.openBooking);
     const navigate = useNavigate();
+    const { formatPrice } = useCurrencyStore();
 
     const activeSuite = suites.find(s => s.id === activeId) || suites[0];
 
@@ -153,9 +155,8 @@ const SuitesPage = () => {
                                         </div>
                                         <div className="px-8 py-6 flex items-center justify-end">
                                             <div className="text-right">
-                                                <p className={`text-lg font-bold font-serif transition-colors duration-200
-                                                    ${isActive ? 'text-norden-gold-500' : 'text-theme-text group-hover:text-norden-gold-500'}`}>
-                                                    KES {row.price.toLocaleString()}
+                                                <p className={`text-lg font-bold font-serif transition-colors duration-200 ${isActive ? 'text-norden-gold-500' : 'text-theme-text group-hover:text-norden-gold-500'}`}>
+                                                    {formatPrice(row.price)}
                                                 </p>
                                                 <p className="text-xs text-theme-muted mt-0.5">per night · incl. VAT</p>
                                             </div>
@@ -169,10 +170,10 @@ const SuitesPage = () => {
                         </p>
                     </motion.div>
                 </motion.div>
-            </Section>
+            </Section >
 
             {/* ── SUITE CARDS GRID ─────────────────────────── */}
-            <Section className="py-10 pt-0">
+            < Section className="py-10 pt-0" >
                 <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                     <motion.div variants={fadeUp} className="text-center mb-14">
                         <span className="text-norden-gold-500 uppercase tracking-[0.35em] text-xs font-black block mb-3">Our Collection</span>
@@ -244,7 +245,7 @@ const SuitesPage = () => {
                                         <div>
                                             <p className="text-xs text-gray-400 mb-0.5">From</p>
                                             <p className="text-xl font-bold text-white font-serif">
-                                                KES {suite.price.toLocaleString()}
+                                                {formatPrice(suite.price)}
                                                 <span className="text-xs font-normal text-gray-300 ml-1">/ night</span>
                                             </p>
                                         </div>
@@ -260,10 +261,10 @@ const SuitesPage = () => {
                         ))}
                     </div>
                 </motion.div>
-            </Section>
+            </Section >
 
             {/* ── GUEST AMENITIES ──────────────────────────── */}
-            <Section className="py-20 bg-theme-surface/40">
+            < Section className="py-20 bg-theme-surface/40" >
                 <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                     <motion.div variants={fadeUp} className="text-center mb-14">
                         <span className="text-norden-gold-500 uppercase tracking-[0.35em] text-xs font-black block mb-3">
@@ -318,10 +319,10 @@ const SuitesPage = () => {
                         ))}
                     </motion.div>
                 </motion.div>
-            </Section>
+            </Section >
 
             {/* ── BOOKING PROCEDURES ───────────────────────── */}
-            <Section className="py-20">
+            < Section className="py-20" >
                 <motion.div
                     variants={stagger}
                     initial="hidden"
@@ -420,10 +421,10 @@ const SuitesPage = () => {
                         </motion.div>
                     </div>
                 </motion.div>
-            </Section>
+            </Section >
 
             {/* ── CTA BANNER ───────────────────────────────── */}
-            <div className="relative overflow-hidden">
+            < div className="relative overflow-hidden" >
                 <img
                     src="/images/IMG_7071.jpg"
                     alt="Norden Suites"
@@ -462,9 +463,9 @@ const SuitesPage = () => {
                         </div>
                     </motion.div>
                 </div>
-            </div>
+            </div >
 
-        </div>
+        </div >
     );
 };
 

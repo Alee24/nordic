@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 import Button from './Button';
 import { ArrowRight, Wifi, Coffee, Tv } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import useCurrencyStore from '../../store/useCurrencyStore';
 
 const RoomCard = ({ room }) => {
     const navigate = useNavigate();
+    const { formatPrice } = useCurrencyStore();
 
     return (
         <motion.div
@@ -54,7 +56,7 @@ const RoomCard = ({ room }) => {
 
                 <div className="flex justify-between items-center transition-all duration-300 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
                     <span className="text-xl font-bold text-white drop-shadow-md">
-                        KES {(room.price || 0).toLocaleString()}
+                        {formatPrice(room.price || 0)}
                         <span className="text-sm font-normal text-gray-300 ml-1">/ night</span>
                     </span>
                     <Link to={`/suite/${room.id}`} onClick={e => e.stopPropagation()}>

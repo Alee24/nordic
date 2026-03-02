@@ -19,11 +19,13 @@ import {
 import { Menu, Button, Group, Text, Box, Indicator, ActionIcon } from '@mantine/core';
 import ThemeToggle from './ThemeToggle';
 import useBookingModalStore from '../../store/useBookingModalStore';
+import useCurrencyStore from '../../store/useCurrencyStore';
 
 const Navigation = () => {
     const [scrolled, setScrolled] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const openBooking = useBookingModalStore(s => s.openBooking);
+    const { currency, toggleCurrency } = useCurrencyStore();
     const location = useLocation();
 
     useEffect(() => {
@@ -109,6 +111,13 @@ const Navigation = () => {
                     </Button>
 
                     <Box className="ml-6 flex items-center gap-4">
+                        <Button
+                            variant="subtle"
+                            onClick={toggleCurrency}
+                            className={`uppercase text-[11px] tracking-widest font-extrabold px-3 hover:bg-transparent transition-colors duration-300 ${scrolled ? 'text-theme-text' : 'text-white drop-shadow-md'}`}
+                        >
+                            {currency}
+                        </Button>
                         <ThemeToggle />
                         <Button
                             className="bg-norden-gold-500 text-norden-dark-900 font-bold px-8 rounded-full hover:scale-105 transition-transform uppercase text-xs tracking-widest"
@@ -122,6 +131,13 @@ const Navigation = () => {
 
                 {/* Mobile Controls */}
                 <div className="flex lg:hidden items-center gap-4">
+                    <Button
+                        variant="subtle"
+                        onClick={toggleCurrency}
+                        className={`uppercase text-[11px] tracking-widest font-extrabold px-1 hover:bg-transparent transition-colors duration-300 ${scrolled ? 'text-theme-text' : 'text-white'}`}
+                    >
+                        {currency}
+                    </Button>
                     <ThemeToggle />
                     <ActionIcon
                         variant="transparent"

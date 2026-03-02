@@ -9,6 +9,7 @@ import {
     BedDouble, Eye, PhoneCall, Diamond, CalendarCheck
 } from 'lucide-react';
 import useBookingModalStore from '../store/useBookingModalStore';
+import useCurrencyStore from '../store/useCurrencyStore';
 
 const fadeIn = (dir = 0, delay = 0) => ({
     initial: { opacity: 0, x: dir, y: dir === 0 ? 20 : 0 },
@@ -19,6 +20,7 @@ const SuiteDetailsPage = () => {
     const { id } = useParams();
     const suite = suites.find(s => s.id === parseInt(id) || s.slug === id);
     const openBooking = useBookingModalStore(s => s.openBooking);
+    const { formatPrice } = useCurrencyStore();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -184,7 +186,7 @@ const SuiteDetailsPage = () => {
                         <motion.div {...fadeIn(20, 0)} className="p-8 rounded-2xl bg-theme-surface border border-theme-border shadow-2xl">
                             <p className="text-xs text-theme-muted uppercase tracking-widest font-bold mb-1">2026 Rate</p>
                             <p className="text-4xl font-serif text-norden-gold-500 font-bold mb-1">
-                                KES {suite.price.toLocaleString()}
+                                {formatPrice(suite.price)}
                             </p>
                             <p className="text-sm text-theme-muted mb-2">per room, per night · incl. VAT</p>
                             <div className="h-[1px] bg-theme-border my-5" />

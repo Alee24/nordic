@@ -17,6 +17,7 @@ import { notifications } from '@mantine/notifications';
 import { motion, AnimatePresence } from 'framer-motion';
 import useBookingSystemStore from '../../store/useBookingSystemStore';
 import CustomDateInput from './CustomDateInput';
+import useCurrencyStore from '../../store/useCurrencyStore';
 
 const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initialGuests = 1 }) => {
     const {
@@ -25,6 +26,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
         createBooking,
         isLoading
     } = useBookingSystemStore();
+    const { formatPrice } = useCurrencyStore();
 
     const [active, setActive] = useState(0);
     const [dates, setDates] = useState(initialDates);
@@ -371,7 +373,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                                                 <Box>
                                                                     <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Per Night</Text>
                                                                     <Text fw={800} size="lg" c="gold.8">
-                                                                        KES {room.base_price?.toLocaleString()}
+                                                                        {formatPrice(room.base_price)}
                                                                     </Text>
                                                                 </Box>
                                                                 <Box ta="right">
@@ -379,7 +381,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                                                         Total ({numberOfNights} {numberOfNights === 1 ? 'night' : 'nights'})
                                                                     </Text>
                                                                     <Text fw={900} size="xl" c="gold.8">
-                                                                        KES {(room.base_price * numberOfNights)?.toLocaleString()}
+                                                                        {formatPrice(room.base_price * numberOfNights)}
                                                                     </Text>
                                                                 </Box>
                                                             </Group>
@@ -570,7 +572,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                             <Stack gap="xs">
                                                 <Group justify="space-between">
                                                     <Text fw={500}>Rate per night:</Text>
-                                                    <Text fw={600}>KES {selectedRoom?.base_price?.toLocaleString()}</Text>
+                                                    <Text fw={600}>{formatPrice(selectedRoom?.base_price)}</Text>
                                                 </Group>
                                                 <Group justify="space-between">
                                                     <Text fw={500}>Number of nights:</Text>
@@ -579,7 +581,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                                 <Divider my="xs" />
                                                 <Group justify="space-between">
                                                     <Text fw={800} size="lg">Total Amount:</Text>
-                                                    <Text fw={900} size="xl" c="gold.8">KES {totalPrice?.toLocaleString()}</Text>
+                                                    <Text fw={900} size="xl" c="gold.8">{formatPrice(totalPrice)}</Text>
                                                 </Group>
                                             </Stack>
                                         </Box>
@@ -677,7 +679,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                     <Group justify="space-between" align="center">
                                         <Box>
                                             <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Total Amount</Text>
-                                            <Text fw={900} size="xl" c="gold.8">KES {totalPrice?.toLocaleString()}</Text>
+                                            <Text fw={900} size="xl" c="gold.8">{formatPrice(totalPrice)}</Text>
                                         </Box>
                                         <Button
                                             size="lg"
