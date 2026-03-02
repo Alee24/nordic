@@ -242,8 +242,8 @@ const BookingLookupPage = () => {
                     <Paper p="md" className="bg-theme-surface/50 border border-theme-border">
                         <Text size="sm" c="dimmed" ta="center">
                             <strong>Need help?</strong> Contact our concierge team at{' '}
-                            <a href="mailto:concierge@nordensuits.com" className="text-norden-gold-500 hover:underline">
-                                concierge@nordensuits.com
+                            <a href="mailto:welcome@nordensuites.com" className="text-norden-gold-500 hover:underline">
+                                welcome@nordensuites.com
                             </a>
                         </Text>
                     </Paper>

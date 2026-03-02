@@ -138,7 +138,7 @@ const ContactPage = () => {
                                         </ThemeIcon>
                                         <Box>
                                             <Text fw={700} className="text-theme-text">24/7 Concierge</Text>
-                                            <Text size="sm" c="dimmed">+254 700 000 000</Text>
+                                            <Text size="sm" c="dimmed">+254 704 055 869</Text>
                                         </Box>
                                     </Group>
 
@@ -148,7 +148,7 @@ const ContactPage = () => {
                                         </ThemeIcon>
                                         <Box>
                                             <Text fw={700} className="text-theme-text">Email Inquiries</Text>
-                                            <Text size="sm" c="dimmed">concierge@nordensuits.com</Text>
+                                            <Text size="sm" c="dimmed">welcome@nordensuites.com</Text>
                                         </Box>
                                     </Group>
                                 </Stack>
