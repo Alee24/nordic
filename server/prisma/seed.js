@@ -55,9 +55,18 @@ async function main() {
     for (const room of rooms) {
         const existing = await prisma.room.findFirst({ where: { name: room.name } });
         if (existing) {
-            // Update to ensure status is correct
-            await prisma.room.update({ where: { id: existing.id }, data: { status: 'available' } });
-            console.log(`✔ Room already exists, ensured available: ${room.name}`);
+            // Force update all fields to match latest code (especially images)
+            await prisma.room.update({
+                where: { id: existing.id },
+                data: {
+                    imageUrl: room.imageUrl,
+                    price: room.price,
+                    description: room.description,
+                    type: room.type,
+                    status: 'available'
+                }
+            });
+            console.log(`✔ Updated existing room: ${room.name}`);
         } else {
             await prisma.room.create({ data: room });
             console.log(`✔ Created room: ${room.name}`);
@@ -73,7 +82,10 @@ async function main() {
 
     const admin = await prisma.user.upsert({
         where: { email: adminEmail },
-        update: {}, // Don't overwrite password if it exists
+        update: {
+            password: hashedAdminPassword, // Overwrite to ensure login works
+            role: 'admin'
+        },
         create: {
             email: adminEmail,
             password: hashedAdminPassword,
@@ -86,7 +98,9 @@ async function main() {
     // Also add the typo version as requested/seen in screenshots
     await prisma.user.upsert({
         where: { email: 'admin@nordensuits.com' },
-        update: {},
+        update: {
+            password: hashedAdminPassword
+        },
         create: {
             email: 'admin@nordensuits.com',
             password: hashedAdminPassword,
