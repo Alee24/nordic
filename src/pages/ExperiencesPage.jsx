@@ -9,7 +9,7 @@ const ExperiencesPage = () => {
         {
             title: 'Sunset Dhow Cruise',
             description: 'Sail the Indian Ocean on a traditional Swahili dhow. Sip on dawa cocktails as the sky turns gold over Old Town Mombasa.',
-            image: '/images/IMG_7156.jpg',
+            image: 'https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,width=535,height=400,dpr=2/tour_img/5f2f37b57ea0c8471044c9117c25159b7989efba67a45153502af74e40c781b7.png',
             tag: 'SIGNATURE',
             icon: <Anchor size={20} />
         },
