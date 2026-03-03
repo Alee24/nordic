@@ -26,8 +26,16 @@ cd "$APP_DIR"
 git pull origin master
 ok "Code updated"
 
-# ── 2. Install dependencies ────────────────────────────────────────────────
-echo -e "\n${YELLOW}[2/6] Installing Node dependencies...${NC}"
+# ── 2. Install system & Node dependencies ──────────────────────────────────
+echo -e "\n${YELLOW}[2/6] Installing dependencies...${NC}"
+
+# Install Chromium/Puppeteer system dependencies on Ubuntu if missing
+if command -v apt-get &> /dev/null; then
+    warn "Ensuring Chromium dependencies are installed..."
+    apt-get update -y
+    apt-get install -y chromium-browser libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libgbm1 libasound2 libpango-1.0-0 libcairo2 || true
+fi
+
 npm install --legacy-peer-deps
 ok "Dependencies installed"
 

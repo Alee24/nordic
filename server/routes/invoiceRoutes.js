@@ -11,134 +11,204 @@ const fmt = (n) => Number(n || 0).toLocaleString('en-KE', { minimumFractionDigit
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-KE', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
 
+const fs = require('fs');
+const path = require('path');
+
 const buildInvoiceHTML = (booking) => {
-  const guestName =
-    booking.guestName ||
-    (booking.user ? `${booking.user.firstName || ''} ${booking.user.lastName || ''}`.trim() : 'Guest') ||
-    'Guest';
+  const guestName = booking.guestName || (booking.user ? `${booking.user.name || 'Guest User'}` : 'Guest');
   const guestEmail = booking.guestEmail || booking.user?.email || '';
   const guestPhone = booking.guestPhone || booking.user?.phone || 'Not provided';
-  const roomName = booking.room?.name || 'Suite';
+  const roomName = booking.room?.name || 'Luxury Suite';
   const checkIn = fmtDate(booking.checkIn);
   const checkOut = fmtDate(booking.checkOut);
-  const nights =
-    booking.checkIn && booking.checkOut
-      ? Math.max(1, Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24)))
-      : 1;
+  const nights = booking.checkIn && booking.checkOut
+    ? Math.max(1, Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24)))
+    : 1;
   const perNight = Number(booking.room?.price || 0);
   const total = Number(booking.totalPrice || 0);
-  const ref = booking.bookingReference || booking.reference || booking.id;
+  const ref = booking.bookingReference || booking.reference || `BK-${booking.id}`;
   const issued = new Date().toLocaleDateString('en-KE', { day: '2-digit', month: 'long', year: 'numeric' });
   const year = new Date().getFullYear();
-  const statusClass =
-    booking.status === 'confirmed' || booking.status === 'checked_out'
-      ? 'badge-green'
-      : booking.status === 'pending'
-        ? 'badge-yellow'
-        : 'badge-red';
+
+  // Load and base64 encode logo
+  let logoBase64 = '';
+  try {
+    const logoPath = path.join(__dirname, '../../public/images/mlogo.png');
+    if (fs.existsSync(logoPath)) {
+      const bitmap = fs.readFileSync(logoPath);
+      logoBase64 = `data:image/png;base64,${bitmap.toString('base64')}`;
+    }
+  } catch (e) {
+    console.warn('Logo loading failed:', e.message);
+  }
+
+  const statusClass = booking.status === 'confirmed' || booking.status === 'checked_out' ? 'badge-green' : 'badge-yellow';
   const payClass = booking.paymentStatus === 'paid' ? 'badge-green' : 'badge-yellow';
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invoice ${ref} – Norden Suites</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1a2e;padding:40px}
-  .page{max-width:760px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 40px rgba(0,0,0,.08)}
-  .header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:40px;display:flex;justify-content:space-between;align-items:center}
-  .brand{font-size:26px;font-weight:900;letter-spacing:-0.5px}
-  .brand-sub{font-size:12px;opacity:.7;margin-top:4px;letter-spacing:.06em;text-transform:uppercase}
-  .inv-label{text-align:right}
-  .inv-label h2{font-size:22px;font-weight:900}
-  .inv-label p{font-size:12px;opacity:.75;margin-top:4px}
-  .body{padding:40px}
-  .ref-badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:20px;padding:4px 16px;font-size:12px;font-weight:700;margin-bottom:24px;letter-spacing:.06em}
-  .section{margin-bottom:28px}
-  .section h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #f0f0f0}
-  .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .row .label{font-size:13px;color:#6b7280}
-  .row .value{font-size:13px;font-weight:600;color:#111827}
-  table{width:100%;border-collapse:collapse;margin-top:8px}
-  th{background:#f9fafb;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;padding:10px 14px;text-align:left;border-bottom:2px solid #e5e7eb}
-  td{padding:14px;font-size:13px;border-bottom:1px solid #f3f4f6;color:#374151}
-  .total-row td{font-weight:700;font-size:15px;color:#1e3a5f;border-bottom:none;border-top:2px solid #e5e7eb}
-  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-  .badge-green{background:#dcfce7;color:#166534}
-  .badge-yellow{background:#fef9c3;color:#92400e}
-  .badge-red{background:#fee2e2;color:#991b1b}
-  .footer{background:#f9fafb;border-top:1px solid #e5e7eb;padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
-  .footer-brand{font-size:12px;color:#9ca3af}
-  .footer-brand a{color:#2563eb;text-decoration:none;font-weight:600}
-  .print-btn{display:block;margin:24px auto 0;background:#2563eb;color:#fff;border:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
-  @media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.no-print{display:none}}
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap');
+  
+  :root {
+    --nordic-gold: #D4AF37;
+    --nordic-dark: #1A1B1E;
+    --nordic-gray: #4A4A4A;
+    --nordic-light: #F8F9FA;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Inter', sans-serif; background: #fff; color: var(--nordic-dark); font-size: 14px; line-height: 1.5; }
+  
+  .invoice-container { max-width: 850px; margin: 0 auto; padding: 50px; }
+  
+  /* Header Section */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px; border-bottom: 4px solid var(--nordic-gold); padding-bottom: 30px; }
+  .logo-container { width: 180px; }
+  .logo-container img { width: 100%; height: auto; }
+  
+  .company-info { text-align: right; }
+  .company-name { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--nordic-dark); margin-bottom: 5px; }
+  .company-details { color: var(--nordic-gray); font-size: 12px; }
+  
+  /* Invoice Meta */
+  .invoice-meta { display: flex; justify-content: space-between; margin-bottom: 40px; }
+  .billed-to h3, .invoice-details h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--nordic-gold); font-weight: 700; margin-bottom: 15px; }
+  .billed-to p { font-size: 15px; font-weight: 600; margin-bottom: 5px; }
+  .billed-to span { color: var(--nordic-gray); font-size: 13px; }
+  
+  .invoice-details table { border-spacing: 0; }
+  .invoice-details td { padding: 3px 0; font-size: 13px; }
+  .invoice-details td.label { font-weight: 600; padding-right: 20px; color: var(--nordic-gray); }
+  .invoice-details td.value { text-align: right; font-weight: 700; }
+
+  /* Items Table */
+  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+  .items-table th { background: var(--nordic-dark); color: #fff; text-align: left; padding: 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .items-table td { padding: 20px 15px; border-bottom: 1px solid #EDEDED; vertical-align: middle; }
+  .items-table .item-name { font-weight: 700; font-size: 15px; display: block; }
+  .items-table .item-desc { font-size: 12px; color: var(--nordic-gray); }
+  
+  /* Summary Section */
+  .summary { display: flex; justify-content: flex-end; }
+  .summary-table { width: 300px; border-spacing: 0; }
+  .summary-table td { padding: 10px 0; border-bottom: 1px solid #EDEDED; }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table .label { font-size: 13px; color: var(--nordic-gray); }
+  .summary-table .value { text-align: right; font-weight: 600; }
+  .summary-table .total-row td { padding-top: 20px; font-size: 20px; font-weight: 800; color: var(--nordic-dark); }
+  .summary-table .total-row .value { color: var(--nordic-gold); }
+
+  /* Status Badges */
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; }
+  .badge-green { background: #E6F4EA; color: #1E8E3E; }
+  .badge-yellow { background: #FEF7E0; color: #F9AB00; }
+
+  /* Footer */
+  .footer { margin-top: 80px; padding-top: 30px; border-top: 1px solid #EDEDED; display: flex; justify-content: space-between; align-items: center; }
+  .footer-left { font-size: 11px; color: var(--nordic-gray); max-width: 400px; }
+  .footer-right { text-align: right; font-size: 11px; color: var(--nordic-gray); }
+  .footer-right a { color: var(--nordic-dark); font-weight: 700; text-decoration: none; }
+  
+  .print-btn { display: block; margin: 40px auto; background: var(--nordic-dark); color: #fff; border: none; padding: 15px 40px; border-radius: 5px; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+
+  @media print {
+    .print-btn { display: none; }
+    body { background: #fff; }
+    .invoice-container { padding: 20px; }
+  }
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="header">
-    <div>
-      <div class="brand">NORDEN SUITES</div>
-      <div class="brand-sub">Coastal Luxury Accommodation</div>
+  <div class="invoice-container">
+    <div class="header">
+      <div class="logo-container">
+        ${logoBase64 ? `<img src="${logoBase64}" alt="Norden Suites Logo">` : '<div class="company-name">NORDEN SUITES</div>'}
+      </div>
+      <div class="company-info">
+        <div class="company-name">Norden Suites</div>
+        <div class="company-details">
+          Nyali Beach, Mombasa, Kenya<br>
+          info@nordensuites.com<br>
+          +254 700 000 000
+        </div>
+      </div>
     </div>
-    <div class="inv-label">
-      <h2>INVOICE</h2>
-      <p>Issued: ${issued}</p>
-    </div>
-  </div>
-  <div class="body">
-    <div class="ref-badge">REF: ${ref}</div>
-    <div style="display:flex;gap:40px;margin-bottom:30px">
-      <div class="section" style="flex:1">
+
+    <div class="invoice-meta">
+      <div class="billed-to">
         <h3>Billed To</h3>
-        <div class="row"><span class="label">Name</span><span class="value">${guestName}</span></div>
-        <div class="row"><span class="label">Email</span><span class="value">${guestEmail || '—'}</span></div>
-        <div class="row"><span class="label">Phone</span><span class="value">${guestPhone}</span></div>
+        <p>${guestName}</p>
+        <span>${guestEmail}</span><br>
+        <span>${guestPhone}</span>
       </div>
-      <div class="section" style="flex:1">
-        <h3>Booking Status</h3>
-        <div class="row"><span class="label">Status</span>
-          <span class="badge ${statusClass}">${(booking.status || 'pending').replace('_', ' ').toUpperCase()}</span>
-        </div>
-        <div class="row"><span class="label">Payment</span>
-          <span class="badge ${payClass}">${(booking.paymentStatus || 'pending').toUpperCase()}</span>
-        </div>
+      <div class="invoice-details">
+        <h3>Invoice Details</h3>
+        <table>
+          <tr><td class="label">Invoice No:</td><td class="value">${ref}</td></tr>
+          <tr><td class="label">Date:</td><td class="value">${issued}</td></tr>
+          <tr><td class="label">Booking Status:</td><td class="value"><span class="badge ${statusClass}">${(booking.status || 'pending').replace('_', ' ').toUpperCase()}</span></td></tr>
+          <tr><td class="label">Payment Status:</td><td class="value"><span class="badge ${payClass}">${(booking.paymentStatus || 'pending').toUpperCase()}</span></td></tr>
+        </table>
       </div>
     </div>
-    <div class="section">
-      <h3>Reservation Details</h3>
-      <table>
-        <thead><tr><th>Suite / Room</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th>Rate/night</th><th>Total</th></tr></thead>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th style="text-align: center">Nights</th>
+                <th style="text-align: right">Rate</th>
+                <th style="text-align: right">Amount</th>
+            </tr>
+        </thead>
         <tbody>
-          <tr>
-            <td>${roomName}</td>
-            <td>${checkIn}</td>
-            <td>${checkOut}</td>
-            <td>${nights}</td>
-            <td>KES ${fmt(perNight)}</td>
-            <td>KES ${fmt(perNight * nights)}</td>
-          </tr>
-          <tr class="total-row">
-            <td colspan="5" style="text-align:right">TOTAL AMOUNT</td>
-            <td>KES ${fmt(total)}</td>
-          </tr>
+            <tr>
+                <td>
+                    <span class="item-name">${roomName}</span>
+                    <span class="item-desc">Reservation for ${checkIn} to ${checkOut}</span>
+                </td>
+                <td style="text-align: center">${nights}</td>
+                <td style="text-align: right">KES ${fmt(perNight)}</td>
+                <td style="text-align: right">KES ${fmt(perNight * nights)}</td>
+            </tr>
         </tbody>
-      </table>
+    </table>
+
+    <div class="summary">
+        <table class="summary-table">
+            <tr>
+                <td class="label">Subtotal</td>
+                <td class="value">KES ${fmt(perNight * nights)}</td>
+            </tr>
+            <tr>
+                <td class="label">Service Fee (0%)</td>
+                <td class="value">KES 0.00</td>
+            </tr>
+            <tr class="total-row">
+                <td class="label">Total Amount</td>
+                <td class="value">KES ${fmt(total)}</td>
+            </tr>
+        </table>
     </div>
-    <div style="background:#f0f9ff;border-radius:12px;padding:20px;margin-top:20px">
-      <p style="font-size:12px;color:#0369a1;line-height:1.6">Thank you for choosing Norden Suites. For any queries regarding this invoice, please contact us at <a href="mailto:info@nordensuites.com">info@nordensuites.com</a></p>
+
+    <div class="footer">
+      <div class="footer-left">
+        <strong>Terms & Conditions:</strong><br>
+        Check-in: 2:00 PM | Check-out: 11:00 AM. Cancellations must be made 48 hours in advance for a full refund. Thank you for staying with us.
+      </div>
+      <div class="footer-right">
+        Norden Suites &copy; ${year}<br>
+        Developed by | <a href="https://kkdes.co.ke/" target="_blank">KKDES</a>
+      </div>
     </div>
-    <div class="no-print">
-      <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
-    </div>
+    
+    <button class="print-btn" onclick="window.print()">Print Invoice</button>
   </div>
-  <div class="footer">
-    <div class="footer-brand">Norden Suites &copy; ${year}</div>
-    <div class="footer-brand">Developed by <a href="https://kkdes.co.ke/" target="_blank">KKDES</a></div>
-  </div>
-</div>
 </body>
 </html>`;
 };
@@ -181,17 +251,31 @@ router.get('/:id/invoice/pdf', authMiddleware, async (req, res) => {
     let browser;
     if (chromium) {
       browser = await puppeteer.launch({
-        args: chromium.args,
+        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
         headless: chromium.headless,
       });
     } else {
-      // Fallback: try to find local Chrome
-      const executablePath =
-        process.env.CHROME_PATH ||
-        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-      browser = await puppeteer.launch({ executablePath, headless: true, args: ['--no-sandbox'] });
+      // Fallback: try common Linux and Windows paths
+      const paths = [
+        process.env.CHROME_PATH,
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/google-chrome',
+        '/usr/bin/chromium'
+      ];
+      const executablePath = paths.find(p => p && fs.existsSync(p));
+
+      if (!executablePath) {
+        throw new Error('Chromium/Chrome binary not found on server. Please install chromium-browser or set CHROME_PATH.');
+      }
+
+      browser = await puppeteer.launch({
+        executablePath,
+        headless: "new",
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+      });
     }
 
     const page = await browser.newPage();
