@@ -50,27 +50,6 @@ const Footer = () => {
                                 />
                             </div>
                         </Link>
-                        <p className="text-gray-400 text-lg leading-relaxed mb-10 font-light max-w-sm">
-                            Redefining coastal luxury with the perfect blend of 5-star service and private residence living. Experience the soul of the Swahili coast in Nyali's most exclusive boutique residence.
-                        </p>
-                        <div className="flex gap-6">
-                            {[
-                                { icon: <Instagram size={24} />, url: "https://www.instagram.com/nordensuites/" },
-                                { icon: <TikTokIcon size={24} />, url: "https://www.tiktok.com/@nordensuites?lang=en" },
-                                { icon: <Youtube size={24} />, url: "https://www.youtube.com/@nordensuites" },
-                                { icon: <Facebook size={24} />, url: "https://www.facebook.com/profile.php?id=61588263853770&sk=about" }
-                            ].map((social, i) => (
-                                <a
-                                    key={i}
-                                    href={social.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-gray-500 hover:text-norden-gold-500 transition-all duration-300 transform hover:scale-110"
-                                >
-                                    {social.icon}
-                                </a>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Navigation - Right Side (8 cols) */}
@@ -148,6 +127,28 @@ const Footer = () => {
                     </div>
                 </div>
 
+                {/* Social Media Row - Centered below main content */}
+                <div className="flex flex-col items-center justify-center mb-16 pt-8 border-t border-white/5">
+                    <div className="flex gap-10">
+                        {[
+                            { icon: <Instagram size={28} />, url: "https://www.instagram.com/nordensuites/" },
+                            { icon: <TikTokIcon size={28} />, url: "https://www.tiktok.com/@nordensuites?lang=en" },
+                            { icon: <Youtube size={28} />, url: "https://www.youtube.com/@nordensuites" },
+                            { icon: <Facebook size={28} />, url: "https://www.facebook.com/profile.php?id=61588263853770&sk=about" }
+                        ].map((social, i) => (
+                            <a
+                                key={i}
+                                href={social.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-500 hover:text-norden-gold-500 transition-all duration-500 transform hover:scale-125 hover:drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]"
+                            >
+                                {social.icon}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Bottom Bar */}
                 <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="flex flex-col items-center md:items-start gap-1 opacity-60">
@@ -161,19 +162,23 @@ const Footer = () => {
                     </div>
 
                     <div className="flex flex-wrap items-center justify-center gap-8">
-                        <div className="flex gap-8">
-                            <Link to="/privacy" className="text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-semibold">Privacy Policy</Link>
-                            <Link to="/terms" className="text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-semibold">Terms of Service</Link>
+                        <div className="flex gap-6">
+                            <Link to="/privacy" className="px-5 py-2 rounded-full border border-norden-gold-500/30 text-norden-gold-500 hover:bg-norden-gold-500 hover:text-norden-dark-900 transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transform hover:-translate-y-1">
+                                Privacy Policy
+                            </Link>
+                            <Link to="/terms" className="px-5 py-2 rounded-full border border-norden-gold-500/30 text-norden-gold-500 hover:bg-norden-gold-500 hover:text-norden-dark-900 transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transform hover:-translate-y-1">
+                                Terms of Service
+                            </Link>
                         </div>
 
-                        <div className="w-[1px] h-6 bg-white/10 hidden sm:block" />
+                        <div className="w-[1px] h-6 bg-white/10 hidden lg:block" />
 
                         <button
                             onClick={() => setView('staff')}
-                            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-gray-400 hover:text-norden-gold-500 transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-bold"
+                            className="flex items-center gap-2 px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-gray-400 hover:text-norden-gold-500 transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-bold shadow-lg"
                         >
                             <Shield size={12} />
-                            {isAdmin ? 'Management Console' : 'Partner Access'}
+                            {isAdmin ? 'Management Console' : 'Staff Login'}
                         </button>
                     </div>
                 </div>
