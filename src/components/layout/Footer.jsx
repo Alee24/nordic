@@ -1,7 +1,15 @@
 import React from 'react';
-import { ArrowRight, Instagram, Twitter, Facebook, Mail, Phone, MapPin, Shield } from 'lucide-react';
+import { ArrowRight, Instagram, Youtube, Mail, Phone, MapPin, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import useManagementStore from '../../store/useManagementStore';
+
+// TikTok icon (not in lucide-react)
+const TikTokIcon = ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.89 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.35 6.35 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.73a8.13 8.13 0 004.76 1.52V6.81a4.85 4.85 0 01-.99-.12z" />
+    </svg>
+);
+
 
 const Footer = () => {
     const { setView, isAdmin } = useManagementStore();
@@ -20,9 +28,15 @@ const Footer = () => {
                             Redefining coastal luxury with the perfect blend of 5-star service and private residence living in Mombasa.
                         </p>
                         <div className="flex gap-4">
-                            <a href="https://www.instagram.com/nordensuites/" target="_blank" rel="noopener noreferrer" className="text-theme-muted hover:text-norden-gold-500 transition-colors"><Instagram size={20} /></a>
-                            <a href="#" className="text-theme-muted hover:text-norden-gold-500 transition-colors"><Twitter size={20} /></a>
-                            <a href="#" className="text-theme-muted hover:text-norden-gold-500 transition-colors"><Facebook size={20} /></a>
+                            <a href="https://www.instagram.com/nordensuites/" target="_blank" rel="noopener noreferrer" className="text-theme-muted hover:text-norden-gold-500 transition-colors" title="Instagram">
+                                <Instagram size={20} />
+                            </a>
+                            <a href="https://www.tiktok.com/@nordensuites?lang=en" target="_blank" rel="noopener noreferrer" className="text-theme-muted hover:text-norden-gold-500 transition-colors" title="TikTok">
+                                <TikTokIcon size={20} />
+                            </a>
+                            <a href="https://www.youtube.com/@nordensuites" target="_blank" rel="noopener noreferrer" className="text-theme-muted hover:text-norden-gold-500 transition-colors" title="YouTube">
+                                <Youtube size={20} />
+                            </a>
                         </div>
                     </div>
 
