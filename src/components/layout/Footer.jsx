@@ -16,9 +16,20 @@ const Footer = () => {
 
     return (
         <footer className="bg-[#0A0B0D] text-white pt-24 pb-12 relative overflow-hidden">
+            {/* Background Texture with door.jpg */}
+            <div
+                className="absolute inset-0 z-0 opacity-30 grayscale pointer-events-none"
+                style={{
+                    backgroundImage: 'url("/images/door.jpg")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    filter: 'blur(10px) brightness(0.3)'
+                }}
+            />
+
             {/* Subtle Gradient Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-norden-gold-500/50 to-transparent" />
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-norden-gold-500/5 blur-[120px] rounded-full" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-norden-gold-500/50 to-transparent z-10" />
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-norden-gold-500/5 blur-[120px] rounded-full z-10" />
 
             <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 mb-20">
