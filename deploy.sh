@@ -34,24 +34,27 @@ if ! command -v google-chrome &> /dev/null; then
     warn "Installing Google Chrome for PDF generation..."
     apt-get update -y && apt-get install -y wget gnupg curl
     
-    # Check if we are on Ubuntu 24.04 (noble) or newer
-    IS_NOBLE=$(lsb_release -cs | grep -E "noble|oracular" || true)
+    # Modern keyring setup for Chrome (prevents legacy warnings)
+    curl -fSsL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | tee /usr/share/keyrings/google-chrome.gpg > /dev/null
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
     
-    if [ -n "$IS_NOBLE" ]; then
-        # Modern approach for Noble (24.04+)
-        curl -fSsL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | tee /usr/share/keyrings/google-chrome.gpg > /dev/null
-        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
-        ASOUND_PKG="libasound2t64"
+    apt-get update -y
+    
+    # Determine which sound package to use (Ubuntu 24.04+ uses t64)
+    if apt-cache show libasound2t64 >/dev/null 2>&1; then
+        ASOUND="libasound2t64"
+        ATK="libatk1.0-0t64"
+        ATK_BR="libatk-bridge2.0-0t64"
+        CUPS="libcups2t64"
     else
-        # Legacy approach
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
-        ASOUND_PKG="libasound2"
+        ASOUND="libasound2"
+        ATK="libatk1.0-0"
+        ATK_BR="libatk-bridge2.0-0"
+        CUPS="libcups2"
     fi
 
-    apt-get update -y
-    apt-get install -y google-chrome-stable libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libgbm1 $ASOUND_PKG libpango-1.0-0 libcairo2 || \
-    apt-get install -y google-chrome-stable libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libgbm1 libasound2 libpango-1.0-0 libcairo2
+    warn "Installing Chrome dependencies: $ASOUND $ATK $ATK_BR $CUPS"
+    apt-get install -y google-chrome-stable libnss3 $ATK $ATK_BR $CUPS libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libgbm1 $ASOUND libpango-1.0-0 libcairo2
     
     ok "Google Chrome installed"
 fi
