@@ -21,7 +21,7 @@ const rooms = [
         price: 15000,
         status: 'available',
         description: 'Spacious two-bedroom suite with sweeping city views, ideal for families or colleagues traveling together.',
-        imageUrl: '/images/bed2.jpg',
+        imageUrl: '/images/b14.jpg',
     },
     {
         name: '1 Bedroom Sea View',
@@ -29,7 +29,7 @@ const rooms = [
         price: 13000,
         status: 'available',
         description: 'A breathtaking one-bedroom suite with unobstructed ocean views, waking up to the sound of waves every morning.',
-        imageUrl: '/images/bedview.jpeg',
+        imageUrl: '/images/b15.jpg',
     },
     {
         name: '2 Bedrooms Sea View',
@@ -37,7 +37,7 @@ const rooms = [
         price: 16000,
         status: 'available',
         description: 'A grand two-bedroom sea-view suite with premium coastal finishes and expansive living space for an unmatched stay.',
-        imageUrl: '/images/b11.jpg',
+        imageUrl: '/images/b16.jpg',
     },
     {
         name: 'Penthouse',

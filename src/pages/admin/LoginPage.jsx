@@ -33,7 +33,7 @@ const LoginPage = ({ onExit }) => {
         <Box
             className="min-h-screen bg-theme-bg flex items-center justify-center p-6"
             style={{
-                backgroundImage: 'url(https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2070&auto=format&fit=crop)',
+                backgroundImage: 'url(/images/bed3.jpg)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
             }}

@@ -13,7 +13,7 @@ const suites = [
         title: 'Norden Sky Penthouse',
         price: 450,
         description: 'A panoramic sanctuary with floor-to-ceiling glass walls overlooking the city lights.',
-        images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop'],
+        images: ['/images/b16.jpg'],
         capacity: 2,
         features: ['wifi', 'coffee', 'concierge']
     },
@@ -22,7 +22,7 @@ const suites = [
         title: 'Frost Haven Studio',
         price: 280,
         description: 'Minimalist Scandi-luxury with a private sauna and bespoke timber finishes.',
-        images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop'],
+        images: ['/images/b17.jpg'],
         capacity: 2,
         features: ['wifi', 'coffee']
     }

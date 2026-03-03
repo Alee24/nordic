@@ -7,15 +7,15 @@ import { Sparkles, Waves, Heart, Leaf } from 'lucide-react';
 const WellnessPage = () => {
     const beachImages = [
         {
-            url: "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=2574&auto=format&fit=crop",
+            url: "/images/b11.jpg",
             caption: "Sunrise Yoga on Nyali Beach"
         },
         {
-            url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop",
+            url: "/images/b12.jpg",
             caption: "Relaxing in the Tropical Breeze"
         },
         {
-            url: "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=2070&auto=format&fit=crop",
+            url: "/images/b13.jpg",
             caption: "Sunset Meditation by the Indian Ocean"
         }
     ];

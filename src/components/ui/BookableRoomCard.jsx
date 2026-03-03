@@ -8,7 +8,7 @@ const BookableRoomCard = ({ room, onBookNow }) => {
     // Normalize fields: support both DB fields (name/price/imageUrl) and legacy (title/price_per_night/image_url)
     const name = room.name || room.title || 'Luxury Suite';
     const price = Number(room.price ?? room.price_per_night ?? 0);
-    const image = room.imageUrl || room.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop';
+    const image = room.imageUrl || room.image_url || '/images/b11.jpg';
     const type = room.type || 'Suite';
     const description = room.description || '';
     const status = room.status || 'available';
@@ -31,7 +31,7 @@ const BookableRoomCard = ({ room, onBookNow }) => {
                     alt={name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop';
+                        e.target.src = '/images/b11.jpg';
                     }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-theme-bg via-theme-bg/40 to-transparent z-1" />

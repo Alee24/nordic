@@ -24,7 +24,7 @@ const RoomCard = ({ room }) => {
                     alt={room.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     onError={e => {
-                        e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop';
+                        e.target.src = '/images/b11.jpg';
                     }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-norden-dark-900/90 via-norden-dark-900/40 to-transparent" />

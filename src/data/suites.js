@@ -61,7 +61,7 @@ export const suites = [
         longDescription: 'The 2 Bedrooms City View Luxury Suite is the ideal residence for families or business travelers requiring extra space. Two beautifully appointed bedrooms, a full living and dining area, and a fully equipped kitchen ensure every comfort is met. Enjoy sweeping views of the city skyline from your private sanctuary.',
         price: 15000,
         currency: 'KES',
-        image: '/images/sitting2.jpg',
+        image: '/images/b14.jpg',
         images: [
             '/images/sitting2.jpg',
             '/images/bed2.jpg',
@@ -86,7 +86,7 @@ export const suites = [
         longDescription: 'Fall asleep to the rhythm of the Indian Ocean and wake up to unobstructed sea views from your private 1 Bedroom Sea View Luxury Suite. Every detail has been curated for an exceptional coastal living experience — from the fully equipped kitchen to the premium QLED display, and complimentary teas and coffee to start your day right.',
         price: 13000,
         currency: 'KES',
-        image: '/images/bedview.jpeg',
+        image: '/images/b15.jpg',
         images: [
             '/images/bedview.jpeg',
             '/images/sitting7.jpg',
@@ -111,7 +111,7 @@ export const suites = [
         longDescription: 'The 2 Bedrooms Sea View Luxury Suite is the ultimate coastal escape. Two spacious bedrooms, a grand open-plan living area, and a fully equipped kitchen combine to create a true home away from home. The sweeping ocean panorama visible from every room elevates this suite to one of the finest offerings along the Nyali coast.',
         price: 16000,
         currency: 'KES',
-        image: '/images/b11.jpg',
+        image: '/images/b16.jpg',
         images: [
             '/images/b11.jpg',
             '/images/bed3.jpg',

@@ -9,28 +9,28 @@ const ExperiencesPage = () => {
         {
             title: 'Sunset Dhow Cruise',
             description: 'Sail the Indian Ocean on a traditional Swahili dhow. Sip on dawa cocktails as the sky turns gold over Old Town Mombasa.',
-            image: 'http://sharemykenya.com/images/African_dhow.jpg',
+            image: '/images/IMG_7071.jpg',
             tag: 'SIGNATURE',
             icon: <Anchor size={20} />
         },
         {
             title: 'Nyali Beach Camels',
             description: 'A timeless coastal tradition. Enjoy a peaceful ride along the white sands of Nyali at sunrise or sunset.',
-            image: 'https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=center,quality=60,width=450,height=450,dpr=2/tour_img/13af3dd10337bbce9a774cdb8ec9a3f9e525c53913f8e9b3b754b7eb6b8c8c68.jpeg',
+            image: '/images/IMG_7153.jpg',
             tag: 'FAMILY',
             icon: <Sun size={20} />
         },
         {
             title: 'Marine Park Snorkeling',
             description: 'Dive into the protected warm waters of the Mombasa Marine National Park. Swim alongside turtles and vibrant coral reefs.',
-            image: 'https://media.tacdn.com/media/attractions-splice-spp-674x446/15/b7/8f/7d.jpg',
+            image: '/images/IMG_7210.jpg',
             tag: 'ADVENTURE',
             icon: <Compass size={20} />
         },
         {
             title: 'Tsavo East Day Safari',
             description: 'Witness the "Red Elephants" of Tsavo. A dawn-to-dusk adventure into Kenya\'s largest national park, just a short drive away.',
-            image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=2070&auto=format&fit=crop',
+            image: '/images/IMG_7183.jpg',
             tag: 'WILDLIFE',
             icon: <Map size={20} />
         }

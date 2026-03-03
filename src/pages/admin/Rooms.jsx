@@ -29,7 +29,7 @@ const STATUS_OPTIONS = [
     { value: 'maintenance', label: 'Maintenance' }, { value: 'cleaning', label: 'Cleaning' },
 ];
 
-const FALLBACK = 'https://images.unsplash.com/photo-1522770179533-24471fcdba45?q=80&w=800';
+const FALLBACK = '/images/b11.jpg';
 
 /**
  * Always returns a usable src for <img>.

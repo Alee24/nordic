@@ -31,8 +31,8 @@ import GlassCard from '../common/GlassCard';
 import { notifications } from '@mantine/notifications';
 
 const vehicles = [
-    { id: 'suv', name: 'Premium SUV', type: 'Range Rover Sport', image: 'https://images.unsplash.com/photo-1606611013016-969c19ba27bb?q=80&w=1974&auto=format&fit=crop', seats: 4 },
-    { id: 'sedan', name: 'Luxury Sedan', type: 'Mercedes S-Class', image: 'https://images.unsplash.com/photo-1563720223185-11003d516905?q=80&w=2070&auto=format&fit=crop', seats: 3 },
+    { id: 'suv', name: 'Premium SUV', type: 'Range Rover Sport', image: '/images/parking1.jpg', seats: 4 },
+    { id: 'sedan', name: 'Luxury Sedan', type: 'Mercedes S-Class', image: '/images/parking2.jpg', seats: 3 },
 ];
 
 const GuestConcierge = () => {

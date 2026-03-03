@@ -255,7 +255,7 @@ const Home = () => {
                             <HomeIcon size={48} className="text-norden-gold-500 mb-6" />
                             <h3 className="text-4xl font-serif text-theme-text mb-4">Your Perfect Home</h3>
                             <p className="text-theme-muted mb-8 max-w-sm">
-                                Not just a hotel, but a true home away from home. Our apartments are designed for living,
+                                We are not a hotel, but a true home away from home. Our apartments are designed for living,
                                 offering the space and comfort you need to relax, work, and thrive.
                             </p>
                             <Button

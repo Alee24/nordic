@@ -353,7 +353,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                                 >
                                                     <Group wrap="nowrap" align="flex-start" gap="lg">
                                                         <Image
-                                                            src={room.photos?.[0] || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400'}
+                                                            src={room.photos?.[0] || '/images/b12.jpg'}
                                                             h={120}
                                                             w={160}
                                                             radius="md"

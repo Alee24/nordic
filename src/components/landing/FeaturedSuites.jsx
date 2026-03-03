@@ -11,7 +11,7 @@ const featuredSuites = [
         title: 'Norden Sky Penthouse',
         price: 450,
         description: 'Experience the pinnacle of Arctic living with a 360-degree view of the aurora.',
-        images: ['https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?q=80&w=2071&auto=format&fit=crop'],
+        images: ['/images/b14.jpg'],
         capacity: 2,
         features: ['wifi', 'coffee', 'concierge']
     },
@@ -20,7 +20,7 @@ const featuredSuites = [
         title: 'Midnight Slate Suite',
         price: 320,
         description: 'A moody, textured escape designed for rejuvenation and creative focus.',
-        images: ['https://images.unsplash.com/photo-1560448204-61dc36dc98c8?q=80&w=2070&auto=format&fit=crop'],
+        images: ['/images/b15.jpg'],
         capacity: 2,
         features: ['wifi', 'coffee', 'concierge']
     }

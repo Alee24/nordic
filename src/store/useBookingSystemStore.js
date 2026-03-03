@@ -103,7 +103,7 @@ const useBookingSystemStore = create((set, get) => ({
                     room_type: r.type || 'Luxury Suite',
                     max_occupancy: r.capacity || 4,
                     size_sqm: r.size_sqm || null,
-                    photos: r.imageUrl ? [r.imageUrl] : ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop'],
+                    photos: r.imageUrl ? [r.imageUrl] : ['/images/b11.jpg'],
                     amenities: r.amenities || [],
                 }));
 
