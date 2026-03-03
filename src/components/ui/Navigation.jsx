@@ -47,14 +47,14 @@ const Navigation = () => {
         >
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
                 {/* Logo */}
-                <Link to="/" className="group flex items-center gap-3 z-50">
-                    <div className="w-10 h-10 bg-norden-gold-500 rounded-lg flex items-center justify-center rotate-3 group-hover:rotate-0 transition-transform shadow-lg shadow-norden-gold-500/20">
-                        <span className="text-norden-dark-900 font-bold text-xl">N</span>
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none drop-shadow-sm transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDEN</span>
-                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none drop-shadow-sm transition-colors duration-500 ${scrolled ? 'text-norden-gold-500' : 'text-norden-gold-500'}`}>SUITES</span>
-                    </div>
+                <Link to="/" className="group z-50 flex items-center">
+                    <img
+                        src="/images/mainlogo.png"
+                        alt="Norden Suites"
+                        className={`h-12 w-auto object-contain transition-all duration-500 drop-shadow-lg ${scrolled ? 'brightness-100' : 'brightness-0 invert'
+                            }`}
+                        onError={e => { e.target.style.display = 'none'; }}
+                    />
                 </Link>
 
                 {/* Desktop Nav */}

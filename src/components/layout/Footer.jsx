@@ -21,8 +21,15 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="col-span-1 md:col-span-1">
                         <Link to="/" className="block mb-6">
-                            <span className="text-3xl font-serif font-bold text-theme-text tracking-wider">NORDEN</span>
-                            <span className="block text-xs text-norden-gold-500 uppercase tracking-[0.2em] mt-1">Suits & Apartments</span>
+                            <img
+                                src="/images/mainlogo.png"
+                                alt="Norden Suites"
+                                className="h-14 w-auto object-contain"
+                                onError={e => {
+                                    e.target.style.display = 'none';
+                                    e.target.insertAdjacentHTML('afterend', '<span class="text-3xl font-serif font-bold text-theme-text tracking-wider">NORDEN<span class="block text-xs text-norden-gold-500 uppercase tracking-[0.2em] mt-1">Suits &amp; Apartments</span></span>');
+                                }}
+                            />
                         </Link>
                         <p className="text-theme-muted text-sm leading-relaxed mb-8 max-w-xs">
                             Redefining coastal luxury with the perfect blend of 5-star service and private residence living in Mombasa.
