@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import {
     Container, Paper, Title, Text, TextInput,
     PasswordInput, Button, Stack, Center, Box,
-    Image, Alert, ThemeIcon, Divider
+    Image, Alert, ThemeIcon, Divider, ActionIcon
 } from '@mantine/core';
-import { IconLock, IconAlertCircle, IconArrowRight } from '@tabler/icons-react';
+import { IconLock, IconAlertCircle, IconArrowRight, IconX } from '@tabler/icons-react';
 import useManagementStore from '../../store/useManagementStore';
 import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
+const LoginPage = ({ onExit }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -41,7 +41,18 @@ const LoginPage = () => {
             <Box className="absolute inset-0 bg-norden-dark-900/80 backdrop-blur-sm" />
 
             <Container size="xs" className="relative z-10 w-full">
-                <Paper radius="md" p="xl" withBorder className="bg-theme-bg shadow-2xl border-norden-gold-500/20">
+                <Paper radius="md" p="xl" withBorder className="bg-theme-bg shadow-2xl border-norden-gold-500/20 relative">
+                    {/* Close button */}
+                    <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        className="absolute top-4 right-4"
+                        onClick={onExit}
+                        size="lg"
+                    >
+                        <IconX size={20} />
+                    </ActionIcon>
+
                     <Stack align="center" gap="md" mb="xl">
                         <Box className="w-16 h-16 bg-norden-gold-500 rounded-full flex items-center justify-center shadow-lg mb-2">
                             <IconLock size={32} className="text-norden-dark-900" />
@@ -107,7 +118,7 @@ const LoginPage = () => {
                 </Paper>
 
                 <Box mt="md" ta="center">
-                    <Button variant="subtle" color="gray" size="xs" onClick={() => navigate('/')}>
+                    <Button variant="subtle" color="gray" size="xs" onClick={onExit}>
                         Return to Public Site
                     </Button>
                 </Box>
