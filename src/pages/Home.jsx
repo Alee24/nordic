@@ -23,8 +23,8 @@ const Home = () => {
                 {/* Background Image / Video */}
                 <div className="absolute inset-0">
                     <img
-                        src="/images/sitting 3.jpg"
-                        alt="Norden Suites - Luxury Living"
+                        src="/images/living13.jpg"
+                        alt="Norden Suites — Luxury Lifestyle"
                         className="w-full h-full object-cover"
                     />
                     {/* Darker overall overlay to ensure text visibility regardless of theme */}
@@ -57,7 +57,7 @@ const Home = () => {
 
                         <div className="flex flex-col md:flex-row gap-6 justify-center">
                             <Link to="/suites">
-                                <Button className="bg-norden-gold-500 text-norden-dark-900">View Apartments</Button>
+                                <Button className="bg-norden-gold-500 text-norden-dark-900">View Residences</Button>
                             </Link>
                             <Button
                                 variant="outline"
@@ -86,15 +86,15 @@ const Home = () => {
                         transition={{ duration: 0.8 }}
                     >
                         <div className="flex items-center gap-2 mb-4 text-norden-gold-500">
-                            <Briefcase size={20} />
-                            <span className="uppercase tracking-widest text-sm font-bold">Work & Rest</span>
+                            <Sparkles size={20} />
+                            <span className="uppercase tracking-widest text-sm font-bold">The Norden Lifestyle</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-serif text-theme-text mb-6">
                             Experience Freedom. <br /> <span className="text-gradient-gold italic">Hotel Soul.</span>
                         </h2>
                         <p className="text-theme-muted mb-6 leading-relaxed">
-                            We’ve combined the best of both worlds. Every NORDEN SUITES apartment is a fully-equipped home,
-                            featuring a chef-grade kitchenette and a custom-designed ergonomic workspace,
+                            We’ve combined the best of both worlds. Every NORDEN SUITES residence is a fully-equipped home,
+                            featuring a chef-grade kitchenette and premium designer finishes,
                             all supported by our signature 24/7 concierge and housekeeping.
                         </p>
 
@@ -152,10 +152,10 @@ const Home = () => {
                     className="grid grid-cols-1 md:grid-cols-4 gap-8"
                 >
                     {[
-                        { icon: <Utensils size={32} />, title: "Designer Kitchen", desc: "Full Bosch appliance suite with marble countertops." },
-                        { icon: <Briefcase size={32} />, title: "Executive Office", desc: "Herman Miller seating and 4K thunderbolt displays." },
-                        { icon: <Sparkles size={32} />, title: "Daily Housekeeping", desc: "Immaculate maintenance while you attend to business." },
-                        { icon: <Coffee size={32} />, title: "Resident Lounge", desc: "Private networking space with curated breakfast buffet." }
+                        { icon: <Utensils size={32} />, title: "Fully Furnished", desc: "Every suite is equipped with a premium chef-grade kitchen and designer furniture for a true home feel." },
+                        { icon: <Sparkles size={32} />, title: "Daily Housekeeping", desc: "Immaculate maintenance while you relax and enjoy your stay in pristine conditions." },
+                        { icon: <Star size={32} />, title: "Ultimate Comfort", desc: "Experience the warmth of a home with the luxury service and comfort of a five-star hotel." },
+                        { icon: <MapPin size={32} />, title: "Total Convenience", desc: "Prime location near top dining, malls, and essentials for a seamless and convenient stay." }
                     ].map((feature, idx) => (
                         <motion.div
                             key={idx}
@@ -208,7 +208,7 @@ const Home = () => {
                 <div className="flex justify-between items-end mb-16">
                     <div>
                         <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Residences</span>
-                        <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-2">Executive Apartments</h2>
+                        <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-2">Executive Residences</h2>
                     </div>
                     <Button variant="outline" className="hidden md:block" onClick={() => openBooking()}>Book a Suite</Button>
                 </div>

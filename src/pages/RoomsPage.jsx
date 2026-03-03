@@ -318,10 +318,10 @@ const RoomsPage = () => {
                             Norden Suites • Nyali Beach
                         </span>
                         <h1 className="text-5xl md:text-7xl font-serif text-white mt-4 mb-6 drop-shadow-2xl">
-                            Inside Our <span className="italic text-norden-gold-500">Apartments</span>
+                            Inside Our <span className="italic text-norden-gold-500">Residences</span>
                         </h1>
                         <p className="text-white/70 max-w-xl mx-auto text-lg mb-8">
-                            Every corner crafted for comfort — explore our fully-furnished apartments room by room.
+                            Every corner crafted for comfort — explore our fully-furnished residences room by room.
                         </p>
                         <button
                             onClick={() => openBooking()}
