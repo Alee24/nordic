@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import * as bookingApi from '../services/bookingApi';
+import api from '../services/api';
 import { notifications } from '@mantine/notifications';
 
 const useBookingSystemStore = create((set, get) => ({
@@ -84,14 +85,12 @@ const useBookingSystemStore = create((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             // Build query params for availability filtering
-            const params = new URLSearchParams();
-            if (checkIn) params.set('checkIn', checkIn);
-            if (checkOut) params.set('checkOut', checkOut);
+            const params = {};
+            if (checkIn) params.checkIn = checkIn;
+            if (checkOut) params.checkOut = checkOut;
 
-            const url = `/api/rooms${params.toString() ? '?' + params.toString() : ''}`;
-            const response = await fetch(url);
-            const json = await response.json();
-            const rawRooms = json.data || json.rooms || [];
+            const response = await api.get('/rooms', { params });
+            const rawRooms = response?.data?.data || response?.data?.rooms || response?.data || [];
 
             // Map DB fields → fields expected by BookingFlowModal
             const rooms = rawRooms

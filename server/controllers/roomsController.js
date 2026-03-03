@@ -23,7 +23,9 @@ const getRooms = async (req, res) => {
             });
 
             const bookedRoomIds = bookedRooms.map(b => b.roomId);
-            availabilityFilter = { id: { notIn: bookedRoomIds } };
+            if (bookedRoomIds.length > 0) {
+                availabilityFilter = { id: { notIn: bookedRoomIds } };
+            }
         }
 
         const rooms = await prisma.room.findMany({

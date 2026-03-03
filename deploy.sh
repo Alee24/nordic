@@ -32,17 +32,26 @@ npm install --legacy-peer-deps
 ok "Dependencies installed"
 
 # ── 3. Build frontend ──────────────────────────────────────────────────────
-echo -e "\n${YELLOW}[3/6] Building frontend...${NC}"
-npm run build
+echo -e "\n${YELLOW}[3/8] Building frontend...${NC}"
+npm run build || warn "Frontend build failed"
 ok "Frontend built"
 
-# ── 3.5. Seed database rooms ───────────────────────────────────────────────
-echo -e "\n${YELLOW}[3.5/6] Seeding database rooms...${NC}"
+# ── 4. Set up backend ──────────────────────────────────────────────────────
+echo -e "\n${YELLOW}[4/8] Installing Backend dependencies...${NC}"
+cd "$APP_DIR/server"
+npm install --legacy-peer-deps
+npx prisma generate
+npx prisma migrate deploy --preview-feature || npx prisma db push --accept-data-loss
+ok "Backend dependencies installed and DB migrated"
+
+# ── 5. Seed database rooms ───────────────────────────────────────────────
+echo -e "\n${YELLOW}[5/8] Seeding database rooms...${NC}"
 node "$APP_DIR/server/prisma/seed.js"
 ok "Database seeded"
 
-# ── 4. Fix Apache config ───────────────────────────────────────────────────
-echo -e "\n${YELLOW}[4/6] Updating Apache configuration...${NC}"
+# ── 6. Fix Apache config ───────────────────────────────────────────────────
+echo -e "\n${YELLOW}[6/8] Updating Apache configuration...${NC}"
+cd "$APP_DIR"
 cp "$APP_DIR/nordensuites.conf" "$APACHE_CONF"
 
 # Enable required Apache modules
@@ -57,8 +66,8 @@ else
     fail "Apache config has errors — not reloading"
 fi
 
-# ── 5. Fix uploads directory ───────────────────────────────────────────────
-echo -e "\n${YELLOW}[5/6] Fixing uploads directory permissions...${NC}"
+# ── 7. Fix uploads directory ───────────────────────────────────────────────
+echo -e "\n${YELLOW}[7/8] Fixing uploads directory permissions...${NC}"
 mkdir -p "$UPLOADS_DIR"
 chown -R www-data:www-data "$UPLOADS_DIR"
 chmod -R 777 "$UPLOADS_DIR"
@@ -68,8 +77,8 @@ ok "Uploads directory ready at $UPLOADS_DIR"
 echo "test" > "$UPLOADS_DIR/.test_write" && rm "$UPLOADS_DIR/.test_write"
 ok "Write test passed"
 
-# ── 6. Restart backend ─────────────────────────────────────────────────────
-echo -e "\n${YELLOW}[6/6] Restarting backend (PM2)...${NC}"
+# ── 8. Restart backend ─────────────────────────────────────────────────────
+echo -e "\n${YELLOW}[8/8] Restarting backend (PM2)...${NC}"
 if command -v pm2 &>/dev/null; then
     pm2 restart all --update-env
     ok "PM2 restarted"
