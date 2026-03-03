@@ -261,8 +261,9 @@ router.get('/:id/invoice/pdf', authMiddleware, async (req, res) => {
         process.env.CHROME_PATH,
         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-        '/usr/bin/chromium-browser',
+        '/usr/bin/google-chrome-stable',
         '/usr/bin/google-chrome',
+        '/usr/bin/chromium-browser',
         '/usr/bin/chromium',
         '/usr/bin/chrome'
       ];
@@ -322,8 +323,9 @@ const generatePDFBuffer = async (html) => {
         process.env.CHROME_PATH,
         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-        '/usr/bin/chromium-browser',
+        '/usr/bin/google-chrome-stable',
         '/usr/bin/google-chrome',
+        '/usr/bin/chromium-browser',
         '/usr/bin/chromium'
       ];
       executablePath = paths.find(p => p && fs.existsSync(p));

@@ -29,11 +29,14 @@ ok "Code updated"
 # ── 2. Install system & Node dependencies ──────────────────────────────────
 echo -e "\n${YELLOW}[2/6] Installing dependencies...${NC}"
 
-# Install Chromium/Puppeteer system dependencies on Ubuntu if missing
-if command -v apt-get &> /dev/null; then
-    warn "Ensuring Chromium dependencies are installed..."
+# Install Google Chrome for Puppeteer if missing
+if ! command -v google-chrome &> /dev/null; then
+    warn "Installing Google Chrome for PDF generation..."
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
     apt-get update -y
-    apt-get install -y chromium-browser libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libgbm1 libasound2 libpango-1.0-0 libcairo2 || true
+    apt-get install -y google-chrome-stable libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libgbm1 libasound2 libpango-1.0-0 libcairo2
+    ok "Google Chrome installed"
 fi
 
 npm install --legacy-peer-deps
