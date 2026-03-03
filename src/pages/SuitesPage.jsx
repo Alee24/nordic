@@ -101,11 +101,14 @@ const SuitesPage = () => {
                     <motion.div variants={fadeUp} className="max-w-3xl mx-auto">
                         <div className="rounded-2xl overflow-hidden border border-theme-border shadow-2xl">
                             {/* Table Head */}
-                            <div className="grid grid-cols-2 bg-norden-gold-500 text-norden-dark-900">
-                                <div className="px-8 py-5 font-black uppercase tracking-widest text-sm">
+                            <div className="grid grid-cols-[100px_1fr_150px] md:grid-cols-[140px_1fr_200px] bg-norden-gold-500 text-norden-dark-900 items-center">
+                                <div className="px-4 py-5 font-black uppercase tracking-widest text-[10px] md:text-xs">
+                                    Preview
+                                </div>
+                                <div className="px-4 py-5 font-black uppercase tracking-widest text-[10px] md:text-xs">
                                     Apartment Type
                                 </div>
-                                <div className="px-8 py-5 font-black uppercase tracking-widest text-sm text-right">
+                                <div className="px-6 py-5 font-black uppercase tracking-widest text-[10px] md:text-xs text-right">
                                     Rate / Night
                                 </div>
                             </div>
@@ -119,46 +122,39 @@ const SuitesPage = () => {
                                         key={row.id}
                                         whileHover={{ x: 6 }}
                                         onClick={() => navigate(`/suite/${suite.id}`)}
-                                        className={`grid grid-cols-2 cursor-pointer transition-all duration-300 border-b border-theme-border last:border-b-0 group
+                                        className={`grid grid-cols-[100px_1fr_150px] md:grid-cols-[140px_1fr_200px] cursor-pointer transition-all duration-300 border-b border-theme-border last:border-b-0 group items-center
                                             ${idx % 2 === 0 ? 'bg-theme-bg' : 'bg-theme-surface'}
                                             ${isActive ? 'ring-2 ring-inset ring-norden-gold-500 bg-norden-gold-500/5' : 'hover:bg-theme-surface/80'}`}
                                     >
-                                        <div className="px-8 py-6">
-                                            <p className={`font-semibold text-base transition-colors duration-200 ${isActive ? 'text-norden-gold-500' : 'text-theme-text group-hover:text-norden-gold-500'}`}>
+                                        <div className="p-2 md:p-3">
+                                            <div className="aspect-square rounded-lg overflow-hidden border border-theme-border/50 group-hover:border-norden-gold-500/50 transition-colors">
+                                                <img
+                                                    src={suite.image}
+                                                    alt={suite.name}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="px-4 py-6">
+                                            <p className={`font-semibold text-sm md:text-base transition-colors duration-200 ${isActive ? 'text-norden-gold-500' : 'text-theme-text group-hover:text-norden-gold-500'}`}>
                                                 {row.name}
                                             </p>
-                                            <p className="text-theme-muted text-sm font-medium mt-0.5">{row.subtitle}</p>
-                                            {isActive && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, height: 0 }}
-                                                    animate={{ opacity: 1, height: 'auto' }}
-                                                    className="mt-3 flex items-center gap-3 flex-wrap"
-                                                >
-                                                    <span className="inline-flex items-center gap-1 text-xs text-norden-gold-500 bg-norden-gold-500/10 border border-norden-gold-500/20 rounded-full px-3 py-1">
-                                                        <BedDouble size={11} /> {suite.bedrooms} BR
-                                                    </span>
-                                                    <span className="inline-flex items-center gap-1 text-xs text-theme-muted bg-theme-surface border border-theme-border rounded-full px-3 py-1">
-                                                        <Eye size={11} /> {suite.view}
-                                                    </span>
-                                                    <span className="inline-flex items-center gap-1 text-xs text-theme-muted bg-theme-surface border border-theme-border rounded-full px-3 py-1">
-                                                        <Users size={11} /> Up to {suite.capacity}
-                                                    </span>
-                                                    <Link
-                                                        to={`/suite/${suite.id}`}
-                                                        onClick={e => e.stopPropagation()}
-                                                        className="inline-flex items-center gap-1 text-xs text-norden-gold-500 hover:text-norden-gold-400 font-semibold mt-1"
-                                                    >
-                                                        View Details <ArrowRight size={11} />
-                                                    </Link>
-                                                </motion.div>
-                                            )}
+                                            <p className="text-theme-muted text-[10px] md:text-sm font-medium mt-0.5">{row.subtitle}</p>
+                                            <div className="mt-2 hidden md:flex items-center gap-3">
+                                                <span className="inline-flex items-center gap-1 text-[10px] text-theme-muted">
+                                                    <BedDouble size={12} /> {suite.bedrooms} BR
+                                                </span>
+                                                <span className="inline-flex items-center gap-1 text-[10px] text-theme-muted">
+                                                    <Users size={12} /> max {suite.capacity}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="px-8 py-6 flex items-center justify-end">
+                                        <div className="px-6 py-6 flex items-center justify-end">
                                             <div className="text-right">
-                                                <p className={`text-lg font-bold font-serif transition-colors duration-200 ${isActive ? 'text-norden-gold-500' : 'text-theme-text group-hover:text-norden-gold-500'}`}>
+                                                <p className={`text-base md:text-xl font-bold font-serif transition-colors duration-200 ${isActive ? 'text-norden-gold-500' : 'text-theme-text group-hover:text-norden-gold-500'}`}>
                                                     {formatPrice(row.price)}
                                                 </p>
-                                                <p className="text-xs text-theme-muted mt-0.5">per night · incl. VAT</p>
+                                                <p className="text-[10px] text-theme-muted mt-0.5">per night · incl. VAT</p>
                                             </div>
                                         </div>
                                     </motion.div>

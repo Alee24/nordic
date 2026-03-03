@@ -34,80 +34,121 @@ const BookingInquiryModal = ({ opened, onClose, context = "" }) => {
             opened={opened}
             onClose={onClose}
             title={
-                <Box>
-                    <Text fw={700} size="xl" className="font-serif">Reservation Inquiry</Text>
-                    <Text size="xs" c="dimmed" tt="uppercase" tracking={1}>Bespoke Coastal Living</Text>
+                <Box py="sm">
+                    <Text fw={900} size="2xl" className="font-serif tracking-tight text-norden-dark-900 dark:text-white">Reservation Enquiry</Text>
+                    <Group gap={6} mt={2}>
+                        <Box w={20} h={1} bg="norden-gold.5" />
+                        <Text size="xs" c="norden-gold.6" fw={800} tt="uppercase" tracking={2}>Bespoke Coastal Living</Text>
+                    </Group>
                 </Box>
             }
             size="lg"
-            radius="md"
+            radius="xl"
+            padding="xl"
             overlayProps={{
-                backgroundOpacity: 0.55,
-                blur: 3,
+                backgroundOpacity: 0.7,
+                blur: 8,
+            }}
+            styles={{
+                header: { background: 'transparent' },
+                content: { overflow: 'hidden' }
             }}
         >
+            <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                <IconSend size={120} />
+            </div>
+
             <form onSubmit={handleSubmit}>
-                <Stack gap="md">
-                    <Text size="sm" c="dimmed" mb="sm">
-                        Please provide your details below. Our dedicated concierge team will review your request
-                        and contact you with availability and personalized rates.
-                    </Text>
+                <Stack gap="xl">
+                    <Box>
+                        <Text size="sm" c="dimmed" lh={1.6} fw={500}>
+                            Experience the freedom of a private high-end apartment with the security and convenience
+                            of a professional concierge. Please share your preferences below.
+                        </Text>
+                    </Box>
 
                     {context && (
-                        <Box p="sm" className="bg-norden-gold-500/10 border-l-4 border-norden-gold-500 rounded-r-md">
-                            <Text size="xs" fw={700} tt="uppercase" c="gold.8">Inquiry Context</Text>
-                            <Text size="sm">{context}</Text>
+                        <Box
+                            p="md"
+                            className="bg-norden-gold-500/5 border border-norden-gold-500/20 rounded-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-1 h-full bg-norden-gold-500" />
+                            <Text size="xs" fw={900} tt="uppercase" c="norden-gold.7" tracking={1.5} mb={4}>Selected Suite</Text>
+                            <Text size="md" fw={700} className="font-serif">{context}</Text>
                         </Box>
                     )}
 
-                    <SimpleGrid cols={{ base: 1, sm: 2 }}>
-                        <TextInput
-                            label="Guest Name"
-                            placeholder="John Doe"
-                            required
-                            leftSection={<IconUser size={16} />}
-                        />
-                        <TextInput
-                            label="Email Address"
-                            placeholder="john@example.com"
-                            required
-                            leftSection={<IconMail size={16} />}
-                        />
-                    </SimpleGrid>
+                    <div className="space-y-6">
+                        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+                            <TextInput
+                                label="Guest Name"
+                                placeholder="Your full name"
+                                required
+                                size="md"
+                                radius="md"
+                                leftSection={<IconUser size={18} className="text-norden-gold-500" />}
+                                styles={{ input: { backgroundColor: 'transparent' } }}
+                            />
+                            <TextInput
+                                label="Email Address"
+                                placeholder="your@email.com"
+                                required
+                                size="md"
+                                radius="md"
+                                leftSection={<IconMail size={18} className="text-norden-gold-500" />}
+                                styles={{ input: { backgroundColor: 'transparent' } }}
+                            />
+                        </SimpleGrid>
 
-                    <SimpleGrid cols={{ base: 1, sm: 2 }}>
-                        <TextInput
-                            label="Phone Number"
-                            placeholder="+254 ..."
-                            leftSection={<IconPhone size={16} />}
-                        />
-                        <DatePickerInput
-                            type="range"
-                            label="Preferred Dates"
-                            placeholder="Pick arrival & departure"
-                            value={dates}
-                            onChange={setDates}
-                            leftSection={<IconCalendar size={16} />}
-                        />
-                    </SimpleGrid>
+                        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+                            <TextInput
+                                label="Phone Number"
+                                placeholder="+254 ..."
+                                size="md"
+                                radius="md"
+                                leftSection={<IconPhone size={18} className="text-norden-gold-500" />}
+                                styles={{ input: { backgroundColor: 'transparent' } }}
+                            />
+                            <DatePickerInput
+                                type="range"
+                                label="Event Dates"
+                                placeholder="Pick stay dates"
+                                value={dates}
+                                onChange={setDates}
+                                size="md"
+                                radius="md"
+                                leftSection={<IconCalendar size={18} className="text-norden-gold-500" />}
+                                styles={{ input: { backgroundColor: 'transparent' } }}
+                            />
+                        </SimpleGrid>
 
-                    <Textarea
-                        label="Special Requirements"
-                        placeholder="Tell us about your needs (e.g., number of residents, airport transfer, private chef)..."
-                        minRows={4}
-                        leftSection={<IconMessage2 size={16} />}
-                    />
+                        <Textarea
+                            label="Special Requests"
+                            placeholder="Airport transfers, private chef, room preferences..."
+                            minRows={3}
+                            size="md"
+                            radius="md"
+                            leftSection={<IconMessage2 size={18} className="text-norden-gold-500" style={{ marginTop: '12px' }} />}
+                            styles={{ input: { backgroundColor: 'transparent' } }}
+                        />
+                    </div>
 
-                    <Button
-                        type="submit"
-                        fullWidth
-                        size="lg"
-                        mt="md"
-                        loading={loading}
-                        className="bg-norden-gold-500 hover:bg-norden-gold-400 text-norden-dark-900"
-                    >
-                        Send Inquiry to Concierge
-                    </Button>
+                    <Box pt="md">
+                        <Button
+                            type="submit"
+                            fullWidth
+                            size="xl"
+                            radius="xl"
+                            loading={loading}
+                            className="bg-norden-gold-500 hover:bg-norden-gold-600 text-norden-dark-900 font-bold uppercase tracking-widest shadow-xl shadow-norden-gold-500/20"
+                            leftSection={<IconSend size={20} />}
+                        >
+                            Send Enquiry
+                        </Button>
+                        <Text size="xs" c="dimmed" ta="center" mt="md" fw={600} tracking={0.5}>
+                            Our reservations team will respond within 2 hours.
+                        </Text>
+                    </Box>
                 </Stack>
             </form>
         </Modal>
