@@ -34,38 +34,38 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 mb-20">
 
-                    {/* Brand Section - Expressing the Logo */}
-                    <div className="col-span-1 md:col-span-4 bg-white/5 p-8 rounded-2xl border border-white/5 backdrop-blur-sm">
-                        <Link to="/" className="block mb-8 group w-full">
+                    {/* Brand Section - Prominent Logo at the far left */}
+                    <div className="col-span-1 md:col-span-4 flex flex-col items-start">
+                        <Link to="/" className="block mb-10 group w-full -ml-2">
                             <div className="relative w-full">
-                                <div className="absolute -inset-4 bg-norden-gold-500/10 blur-xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-700" />
+                                <div className="absolute -inset-10 bg-norden-gold-500/5 blur-3xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000" />
                                 <img
                                     src="/images/mlogo.png"
                                     alt="Norden Suites"
-                                    className="w-full h-auto object-contain brightness-110 relative z-10 transition-transform duration-500 group-hover:scale-105"
+                                    className="w-[280px] md:w-full h-auto object-contain brightness-110 relative z-10 transition-transform duration-700 group-hover:scale-[1.02] origin-left"
                                     onError={e => {
                                         e.target.style.display = 'none';
-                                        e.target.insertAdjacentHTML('afterend', '<span class="text-4xl font-serif font-bold text-white tracking-wider">NORDEN<span class="block text-xs text-norden-gold-500 uppercase tracking-[0.3em] mt-1 font-bold">Suites &amp; Apartments</span></span>');
+                                        e.target.insertAdjacentHTML('afterend', '<span class="text-5xl font-serif font-bold text-white tracking-wider">NORDEN<span class="block text-sm text-norden-gold-500 uppercase tracking-[0.4em] mt-2 font-bold">Suites &amp; Apartments</span></span>');
                                     }}
                                 />
                             </div>
                         </Link>
-                        <p className="text-gray-400 text-base leading-relaxed mb-8 font-light">
+                        <p className="text-gray-400 text-lg leading-relaxed mb-10 font-light max-w-sm">
                             Redefining coastal luxury with the perfect blend of 5-star service and private residence living. Experience the soul of the Swahili coast in Nyali's most exclusive boutique residence.
                         </p>
-                        <div className="flex gap-5">
+                        <div className="flex gap-6">
                             {[
-                                { icon: <Instagram size={20} />, url: "https://www.instagram.com/nordensuites/" },
-                                { icon: <TikTokIcon size={20} />, url: "https://www.tiktok.com/@nordensuites?lang=en" },
-                                { icon: <Youtube size={20} />, url: "https://www.youtube.com/@nordensuites" },
-                                { icon: <Facebook size={20} />, url: "https://www.facebook.com/profile.php?id=61588263853770&sk=about" }
+                                { icon: <Instagram size={24} />, url: "https://www.instagram.com/nordensuites/" },
+                                { icon: <TikTokIcon size={24} />, url: "https://www.tiktok.com/@nordensuites?lang=en" },
+                                { icon: <Youtube size={24} />, url: "https://www.youtube.com/@nordensuites" },
+                                { icon: <Facebook size={24} />, url: "https://www.facebook.com/profile.php?id=61588263853770&sk=about" }
                             ].map((social, i) => (
                                 <a
                                     key={i}
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-norden-gold-500 hover:bg-norden-gold-500/10 transition-all duration-300"
+                                    className="text-gray-500 hover:text-norden-gold-500 transition-all duration-300 transform hover:scale-110"
                                 >
                                     {social.icon}
                                 </a>
