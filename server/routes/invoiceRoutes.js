@@ -44,13 +44,15 @@ const buildInvoiceHTML = (booking) => {
 
   const statusClass = booking.status === 'confirmed' || booking.status === 'checked_out' ? 'badge-green' : 'badge-yellow';
   const payClass = booking.paymentStatus === 'paid' ? 'badge-green' : 'badge-yellow';
+  const isPaid = booking.paymentStatus === 'paid';
+  const docType = isPaid ? 'Receipt' : 'Invoice';
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice ${ref} – Norden Suites</title>
+<title>${docType} ${ref} – Norden Suites</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap');
   
@@ -64,8 +66,11 @@ const buildInvoiceHTML = (booking) => {
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: 'Inter', sans-serif; background: #fff; color: var(--nordic-dark); font-size: 14px; line-height: 1.5; }
   
-  .invoice-container { max-width: 850px; margin: 0 auto; padding: 50px; }
+  .invoice-container { max-width: 850px; margin: 0 auto; padding: 50px; position: relative; }
   
+  /* Watermark for Receipts */
+  .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 120px; font-weight: 900; color: rgba(30, 142, 62, 0.05); text-transform: uppercase; white-space: nowrap; pointer-events: none; z-index: 0; }
+
   /* Header Section */
   .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px; border-bottom: 4px solid var(--nordic-gold); padding-bottom: 30px; }
   .logo-container { width: 180px; }
@@ -76,7 +81,7 @@ const buildInvoiceHTML = (booking) => {
   .company-details { color: var(--nordic-gray); font-size: 12px; }
   
   /* Invoice Meta */
-  .invoice-meta { display: flex; justify-content: space-between; margin-bottom: 40px; }
+  .invoice-meta { display: flex; justify-content: space-between; margin-bottom: 40px; position: relative; z-index: 1; }
   .billed-to h3, .invoice-details h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--nordic-gold); font-weight: 700; margin-bottom: 15px; }
   .billed-to p { font-size: 15px; font-weight: 600; margin-bottom: 5px; }
   .billed-to span { color: var(--nordic-gray); font-size: 13px; }
@@ -87,14 +92,14 @@ const buildInvoiceHTML = (booking) => {
   .invoice-details td.value { text-align: right; font-weight: 700; }
 
   /* Items Table */
-  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; position: relative; z-index: 1; }
   .items-table th { background: var(--nordic-dark); color: #fff; text-align: left; padding: 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
   .items-table td { padding: 20px 15px; border-bottom: 1px solid #EDEDED; vertical-align: middle; }
   .items-table .item-name { font-weight: 700; font-size: 15px; display: block; }
   .items-table .item-desc { font-size: 12px; color: var(--nordic-gray); }
   
   /* Summary Section */
-  .summary { display: flex; justify-content: flex-end; }
+  .summary { display: flex; justify-content: flex-end; position: relative; z-index: 1; }
   .summary-table { width: 300px; border-spacing: 0; }
   .summary-table td { padding: 10px 0; border-bottom: 1px solid #EDEDED; }
   .summary-table tr:last-child td { border-bottom: none; }
@@ -109,7 +114,7 @@ const buildInvoiceHTML = (booking) => {
   .badge-yellow { background: #FEF7E0; color: #F9AB00; }
 
   /* Footer */
-  .footer { margin-top: 80px; padding-top: 30px; border-top: 1px solid #EDEDED; display: flex; justify-content: space-between; align-items: center; }
+  .footer { margin-top: 80px; padding-top: 30px; border-top: 1px solid #EDEDED; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
   .footer-left { font-size: 11px; color: var(--nordic-gray); max-width: 400px; }
   .footer-right { text-align: right; font-size: 11px; color: var(--nordic-gray); }
   .footer-right a { color: var(--nordic-dark); font-weight: 700; text-decoration: none; }
@@ -125,6 +130,7 @@ const buildInvoiceHTML = (booking) => {
 </head>
 <body>
   <div class="invoice-container">
+    ${isPaid ? '<div class="watermark">PAID</div>' : ''}
     <div class="header">
       <div class="logo-container">
         ${logoBase64 ? `<img src="${logoBase64}" alt="Norden Suites Logo">` : '<div class="company-name">NORDEN SUITES</div>'}
@@ -147,9 +153,9 @@ const buildInvoiceHTML = (booking) => {
         <span>${guestPhone}</span>
       </div>
       <div class="invoice-details">
-        <h3>Invoice Details</h3>
+        <h3>${docType} Details</h3>
         <table>
-          <tr><td class="label">Invoice No:</td><td class="value">${ref}</td></tr>
+          <tr><td class="label">${docType} No:</td><td class="value">${ref}</td></tr>
           <tr><td class="label">Date:</td><td class="value">${issued}</td></tr>
           <tr><td class="label">Booking Status:</td><td class="value"><span class="badge ${statusClass}">${(booking.status || 'pending').replace('_', ' ').toUpperCase()}</span></td></tr>
           <tr><td class="label">Payment Status:</td><td class="value"><span class="badge ${payClass}">${(booking.paymentStatus || 'pending').toUpperCase()}</span></td></tr>
