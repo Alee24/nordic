@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useBookingSystemStore from '../../store/useBookingSystemStore';
 import CustomDateInput from './CustomDateInput';
 import useCurrencyStore from '../../store/useCurrencyStore';
+import useBookingModalStore from '../../store/useBookingModalStore';
 
 const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initialGuests = 1 }) => {
     const {
@@ -27,6 +28,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
         isLoading
     } = useBookingSystemStore();
     const { formatPrice } = useCurrencyStore();
+    const preselectedSuite = useBookingModalStore(s => s.preselectedSuite);
 
     const [active, setActive] = useState(0);
     const [dates, setDates] = useState(initialDates);
@@ -85,6 +87,17 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
             fetchPropertyRooms('nordic-main', checkIn, checkOut);
         }
     }, [opened, active]);
+
+    // Auto-select room if it was preselected from the details page
+    useEffect(() => {
+        if (active === 1 && propertyRooms.length > 0 && preselectedSuite && !selectedRoom) {
+            const match = propertyRooms.find(r =>
+                r.id === preselectedSuite.id ||
+                r.name.toLowerCase() === preselectedSuite.name.toLowerCase()
+            );
+            if (match) setSelectedRoom(match);
+        }
+    }, [active, propertyRooms, preselectedSuite]);
 
     const nextStep = () => {
         if (active === 0 && !validateDates()) return;
