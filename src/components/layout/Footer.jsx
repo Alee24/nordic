@@ -25,13 +25,13 @@ const Footer = () => {
 
                     {/* Brand Section - Expressing the Logo */}
                     <div className="col-span-1 md:col-span-4 bg-white/5 p-8 rounded-2xl border border-white/5 backdrop-blur-sm">
-                        <Link to="/" className="inline-block mb-8 group">
-                            <div className="relative">
+                        <Link to="/" className="block mb-8 group w-full">
+                            <div className="relative w-full">
                                 <div className="absolute -inset-4 bg-norden-gold-500/10 blur-xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-700" />
                                 <img
                                     src="/images/mlogo.png"
                                     alt="Norden Suites"
-                                    className="h-32 w-auto object-contain brightness-110 relative z-10 transition-transform duration-500 group-hover:scale-105"
+                                    className="w-full h-auto object-contain brightness-110 relative z-10 transition-transform duration-500 group-hover:scale-105"
                                     onError={e => {
                                         e.target.style.display = 'none';
                                         e.target.insertAdjacentHTML('afterend', '<span class="text-4xl font-serif font-bold text-white tracking-wider">NORDEN<span class="block text-xs text-norden-gold-500 uppercase tracking-[0.3em] mt-1 font-bold">Suites &amp; Apartments</span></span>');
