@@ -64,6 +64,25 @@ async function main() {
         }
     }
 
+    // ── Create Admin User ────────────────────────────────────────────────
+    console.log('\n👤 Ensuring admin user exists...');
+    const adminEmail = 'admin@nordensuites.com';
+    const adminPassword = 'password123';
+    const bcrypt = require('bcryptjs');
+    const hashedAdminPassword = await bcrypt.hash(adminPassword, 10);
+
+    const admin = await prisma.user.upsert({
+        where: { email: adminEmail },
+        update: {}, // Don't overwrite password if it exists
+        create: {
+            email: adminEmail,
+            password: hashedAdminPassword,
+            name: 'Norden Admin',
+            role: 'admin'
+        }
+    });
+    console.log(`✔ Admin user ready: ${admin.email}`);
+
     const count = await prisma.room.count({ where: { status: 'available' } });
     console.log(`\n✅ Done. ${count} available rooms in the database.`);
 }
