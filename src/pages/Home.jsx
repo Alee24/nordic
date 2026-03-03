@@ -101,15 +101,15 @@ const Home = () => {
                         <div className="grid grid-cols-2 gap-6 mb-8">
                             <div className="flex items-center gap-3">
                                 <div className="bg-norden-gold-500/10 p-2 rounded-full">
-                                    <Wifi size={18} className="text-norden-gold-500" />
+                                    <Building2 size={18} className="text-norden-gold-500" />
                                 </div>
-                                <span className="text-sm">Gbps Fiber Internet</span>
+                                <span className="text-sm">Near Malls & Dining</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="bg-norden-gold-500/10 p-2 rounded-full">
-                                    <Sparkles size={18} className="text-norden-gold-500" />
+                                    <ParkingCircle size={18} className="text-norden-gold-500" />
                                 </div>
-                                <span className="text-sm">On-site Laundry Service</span>
+                                <span className="text-sm">Secure Ample Parking</span>
                             </div>
                         </div>
 
@@ -187,7 +187,7 @@ const Home = () => {
                     <div className="hidden md:block absolute top-1/4 left-1/4 right-1/4 h-[1px] bg-theme-border z-0"></div>
 
                     {[
-                        { icon: <Key size={32} />, title: "1. Keyless Arrival", desc: "Digital check-in and mobile keys ready before you land." },
+                        { icon: <MapPin size={32} />, title: "1. Fine Living", desc: "Prime city location near luxury malls and amenities with secure, ample on-site parking." },
                         { icon: <Headset size={32} />, title: "2. Personal Concierge", desc: "Your dedicated point of contact for bookings and bespoke needs." },
                         { icon: <Clock size={32} />, title: "3. 24/7 Security", desc: "Professional on-site security for total peace of mind." }
                     ].map((item, idx) => (
