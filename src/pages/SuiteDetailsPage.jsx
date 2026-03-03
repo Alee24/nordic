@@ -116,7 +116,7 @@ const SuiteDetailsPage = () => {
 
                         {/* Image Gallery */}
                         <motion.div {...fadeIn(0, 0.15)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {suite.images.map((img, idx) => (
+                            {suite.images.slice(0, 2).map((img, idx) => (
                                 <div key={idx} className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl">
                                     <img
                                         src={img}
