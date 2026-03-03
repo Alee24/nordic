@@ -240,55 +240,7 @@ const Home = () => {
                 </div>
             </Section>
 
-            {/* Essential Services Teaser */}
-            <Section>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Your Perfect Home */}
-                    <div className="group relative h-[600px] overflow-hidden rounded-xl block cursor-default">
-                        <img
-                            src="/images/adt2.jpg"
-                            alt="Your Perfect Home"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-theme-bg/40 group-hover:bg-theme-bg/50 transition-colors duration-500" />
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                            <HomeIcon size={48} className="text-norden-gold-500 mb-6" />
-                            <h3 className="text-4xl font-serif text-theme-text mb-4">Your Perfect Home</h3>
-                            <p className="text-theme-muted mb-8 max-w-sm">
-                                We are not a hotel, but a true home away from home. Our apartments are designed for living,
-                                offering the space and comfort you need to relax, work, and thrive.
-                            </p>
-                            <Button
-                                variant="outline"
-                                className="text-theme-text border-theme-border hover:bg-theme-text hover:text-theme-bg"
-                                onClick={() => openBooking()}
-                            >
-                                Book Your Stay
-                            </Button>
-                        </div>
-                    </div>
 
-                    {/* Residences */}
-                    <Link to="/suites" className="group relative h-[600px] overflow-hidden rounded-xl block">
-                        <img
-                            src="/images/living.jpg"
-                            alt="Residences"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-theme-bg/40 group-hover:bg-theme-bg/60 transition-colors duration-500" />
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                            <HomeIcon size={48} className="text-norden-gold-500 mb-6" />
-                            <h2 className="text-4xl font-serif text-theme-text mb-4">Premium Apartments</h2>
-                            <p className="text-theme-muted mb-8 max-w-xs">
-                                Discover our collection of fully-furnished luxury apartments for a superior residential experience.
-                            </p>
-                            <Button variant="outline" className="text-theme-text border-theme-border hover:bg-theme-text hover:text-theme-bg" component={Link} to="/suites">
-                                Explore Apartments
-                            </Button>
-                        </div>
-                    </Link>
-                </div>
-            </Section>
 
         </div>
     );
