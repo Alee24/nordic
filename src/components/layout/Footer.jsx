@@ -22,7 +22,7 @@ const Footer = () => {
                     <div className="col-span-1 md:col-span-1">
                         <Link to="/" className="block mb-6">
                             <img
-                                src="/images/mainlogo.png"
+                                src="/images/mlogo.png"
                                 alt="Norden Suites"
                                 className="h-24 w-auto object-contain"
                                 onError={e => {

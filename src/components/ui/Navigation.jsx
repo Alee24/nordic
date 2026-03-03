@@ -55,14 +55,14 @@ const Navigation = () => {
                             }`}
                         onError={e => { e.target.style.display = 'none'; }}
                     />
-                    <div className="flex items-baseline gap-2 shrink-0">
-                        <span className={`text-lg font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDEN</span>
-                        <span className={`text-lg font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 text-norden-gold-500`}>SUITES</span>
+                    <div className="flex items-baseline gap-1.5 shrink-0">
+                        <span className={`text-base font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDEN</span>
+                        <span className={`text-base font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 text-norden-gold-500`}>SUITES</span>
                     </div>
                 </Link>
 
                 {/* Desktop Nav */}
-                <div className="hidden lg:flex items-center gap-1">
+                <div className="hidden lg:flex items-center gap-0">
                     <Button
                         variant="subtle"
                         component={Link}

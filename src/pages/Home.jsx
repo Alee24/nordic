@@ -93,7 +93,7 @@ const Home = () => {
                             Experience Freedom. <br /> <span className="text-gradient-gold italic">Hotel Soul.</span>
                         </h2>
                         <p className="text-theme-muted mb-6 leading-relaxed">
-                            We’ve combined the best of both worlds. Every NORDEN SUITES residence is a fully-equipped home,
+                            We’ve combined the best of both worlds. Every NORDEN SUITES apartment is a fully-equipped home,
                             featuring a chef-grade kitchenette and a custom-designed ergonomic workspace,
                             all supported by our signature 24/7 concierge and housekeeping.
                         </p>
@@ -207,8 +207,8 @@ const Home = () => {
             <Section className="bg-theme-surface/50">
                 <div className="flex justify-between items-end mb-16">
                     <div>
-                        <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Residencies</span>
-                        <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-2">Executive Living</h2>
+                        <span className="text-norden-gold-500 uppercase tracking-widest text-sm font-bold">Residences</span>
+                        <h2 className="text-4xl md:text-5xl font-serif text-theme-text mt-2">Executive Apartments</h2>
                     </div>
                     <Button variant="outline" className="hidden md:block" onClick={() => openBooking()}>Book a Suite</Button>
                 </div>
