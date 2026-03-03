@@ -45,7 +45,7 @@ const Navigation = () => {
                 : 'bg-transparent py-6 border-b border-transparent'
                 }`}
         >
-            <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+            <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex justify-between items-center">
                 {/* Logo */}
                 <Link to="/" className="group z-50 flex items-center gap-4">
                     <img
@@ -55,9 +55,9 @@ const Navigation = () => {
                             }`}
                         onError={e => { e.target.style.display = 'none'; }}
                     />
-                    <div className="flex items-baseline gap-2">
-                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDEN</span>
-                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 text-norden-gold-500`}>SUITES</span>
+                    <div className="flex items-baseline gap-2 shrink-0">
+                        <span className={`text-lg font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDEN</span>
+                        <span className={`text-lg font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 text-norden-gold-500`}>SUITES</span>
                     </div>
                 </Link>
 
@@ -67,7 +67,7 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
+                        className={`uppercase text-[10px] tracking-widest font-extrabold px-3 hover:bg-transparent transition-colors duration-300 ${isActive('/') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Home
@@ -77,7 +77,7 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/suites"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/suites') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
+                        className={`uppercase text-[10px] tracking-widest font-extrabold px-3 hover:bg-transparent transition-colors duration-300 ${isActive('/suites') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Residences
@@ -87,17 +87,17 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/rooms"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/rooms') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
+                        className={`uppercase text-[10px] tracking-widest font-extrabold px-3 hover:bg-transparent transition-colors duration-300 ${isActive('/rooms') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
-                        Our Rooms
+                        Apartments
                     </Button>
 
                     <Button
                         variant="subtle"
                         component={Link}
                         to="/experiences"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/experiences') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
+                        className={`uppercase text-[10px] tracking-widest font-extrabold px-3 hover:bg-transparent transition-colors duration-300 ${isActive('/experiences') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Coastal Experience
@@ -108,7 +108,7 @@ const Navigation = () => {
                         variant="subtle"
                         component={Link}
                         to="/contact"
-                        className={`uppercase text-[11px] tracking-widest font-extrabold px-4 hover:bg-transparent transition-colors duration-300 ${isActive('/contact') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
+                        className={`uppercase text-[10px] tracking-widest font-extrabold px-3 hover:bg-transparent transition-colors duration-300 ${isActive('/contact') ? '!text-norden-gold-500' : (scrolled ? '!text-theme-text' : 'text-white drop-shadow-md')
                             }`}
                     >
                         Contact
@@ -166,7 +166,7 @@ const Navigation = () => {
                                 <Stack gap="md">
                                     <Link to="/" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Home</Link>
                                     <Link to="/suites" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Residences</Link>
-                                    <Link to="/rooms" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><LayoutGrid /> Our Rooms</Link>
+                                    <Link to="/rooms" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><LayoutGrid /> Apartments</Link>
                                     <Link to="/experiences" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Compass /> Experience</Link>
                                     <Link to="/contact" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><MessageSquare /> Contact</Link>
                                 </Stack>
