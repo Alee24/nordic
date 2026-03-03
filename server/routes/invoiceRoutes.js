@@ -205,11 +205,11 @@ const buildInvoiceHTML = (booking) => {
     <div class="footer">
       <div class="footer-left">
         <strong>Terms & Conditions:</strong><br>
-        Check-in: 2:00 PM | Check-out: 11:00 AM. Cancellations must be made 48 hours in advance for a full refund. Thank you for staying with us.
+        Check-in: 2:00 PM | Check-out: 11:00 AM. Thank you for staying with us at Norden Suites.
       </div>
       <div class="footer-right">
         Norden Suites &copy; ${year}<br>
-        Developed by | <a href="https://kkdes.co.ke/" target="_blank">KKDES</a>
+        <span style="font-size: 8px; opacity: 0.5;">Developed by <a href="https://kkdes.co.ke/" style="color: inherit; text-decoration: none;">KKDES</a></span>
       </div>
     </div>
     
@@ -400,9 +400,7 @@ router.post('/:id/invoice/send', authMiddleware, async (req, res) => {
     <p>We look forward to hosting you. If you have any questions, simply reply to this email.</p>
     <p style="margin-top:30px">Best regards,<br><strong>Management, Norden Suites</strong></p>
   </div>
-  <p style="text-align:center;font-size:11px;color:#999;margin-top:20px">
-    Developed by | <a href="https://kkdes.co.ke/" style="color:#999">KKDES</a>
-  </p>
+  </div>
 </div>`;
 
     const attachments = pdfBuffer ? [{

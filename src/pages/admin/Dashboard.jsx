@@ -170,11 +170,6 @@ const Dashboard = ({ onExit }) => {
                         color="red"
                         style={{ borderRadius: 8, fontWeight: 500 }}
                     />
-                    <Text size="xs" c="dimmed" ta="center" mt="md">
-                        Developed by{' '}
-                        <a href="https://kkdes.co.ke/" target="_blank" rel="noopener noreferrer"
-                            style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>KKDES</a>
-                    </Text>
                 </AppShell.Section>
             </AppShell.Navbar>
 
