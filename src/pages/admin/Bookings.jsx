@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     Paper, Table, Text, Group, Badge, ActionIcon,
     Avatar, Menu, TextInput, Select, Button, Stack,
@@ -49,6 +49,7 @@ const Bookings = () => {
     const [sending, setSending] = useState(false);
     const [confirmingOffline, setConfirmingOffline] = useState(false);
     const [filters, setFilters] = useState({ status: '', search: '', date_from: null });
+    const iframeRef = useRef(null);
 
     useEffect(() => { fetchBookings(); }, [filters]);
 
@@ -145,6 +146,15 @@ const Bookings = () => {
             notifications.update({ id: 'invoice-dl', title: 'Invoice Downloaded', message: 'PDF saved to your downloads folder.', color: 'green', loading: false });
         } catch (err) {
             notifications.update({ id: 'invoice-dl', title: 'Download Failed', message: err.message, color: 'red', loading: false });
+        }
+    };
+
+    const handlePrint = () => {
+        if (iframeRef.current) {
+            iframeRef.current.contentWindow.print();
+        } else {
+            // Fallback to download if iframe not ready
+            handleDownloadInvoice();
         }
     };
 
@@ -278,7 +288,7 @@ const Bookings = () => {
                         <Button variant="light" color="red" leftSection={<IconTrash size={16} />} loading={deleting} onClick={handleDelete}>
                             Delete Reservation
                         </Button>
-                        <Button variant="filled" color="blue" leftSection={<IconPrinter size={16} />} onClick={handleDownloadInvoice}>
+                        <Button variant="filled" color="blue" leftSection={<IconPrinter size={16} />} onClick={handlePrint}>
                             Print Invoice
                         </Button>
                     </Group>
@@ -400,6 +410,7 @@ const Bookings = () => {
                                 </Group>
                                 <Box style={{ flex: 1, position: 'relative' }}>
                                     <iframe
+                                        ref={iframeRef}
                                         src={previewUrl}
                                         style={{
                                             position: 'absolute',
