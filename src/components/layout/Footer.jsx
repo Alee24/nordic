@@ -150,21 +150,20 @@ const Footer = () => {
 
                 {/* Bottom Bar */}
                 <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col items-center md:items-start gap-2">
+                    <div className="flex flex-col items-center md:items-start gap-1 opacity-60">
                         <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-bold">© 2026 NORDEN SUITES. ALL RIGHTS RESERVED.</p>
-                        <div className="text-gray-400 text-sm font-medium flex items-center gap-2">
+                        <div className="text-gray-500 text-[10px] uppercase tracking-widest font-medium flex items-center gap-1">
                             <span>Developed by |</span>
-                            <a href="https://kkdes.co.ke/" target="_blank" rel="noopener noreferrer" className="text-norden-gold-500 hover:text-white transition-all duration-300 flex items-center gap-1 group">
-                                <span className="font-extrabold tracking-tight">KKDES</span>
-                                <div className="w-1.5 h-1.5 rounded-full bg-norden-gold-500 group-hover:bg-white animate-pulse" />
+                            <a href="https://kkdes.co.ke/" target="_blank" rel="noopener noreferrer" className="hover:text-norden-gold-500 transition-colors">
+                                KKDES
                             </a>
                         </div>
                     </div>
 
                     <div className="flex flex-wrap items-center justify-center gap-8">
                         <div className="flex gap-8">
-                            <Link to="#" className="text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-semibold">Privacy Policy</Link>
-                            <Link to="#" className="text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-semibold">Terms of Service</Link>
+                            <Link to="/privacy" className="text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-semibold">Privacy Policy</Link>
+                            <Link to="/terms" className="text-gray-500 hover:text-white transition-colors text-xs uppercase tracking-widest font-semibold">Terms of Service</Link>
                         </div>
 
                         <div className="w-[1px] h-6 bg-white/10 hidden sm:block" />
