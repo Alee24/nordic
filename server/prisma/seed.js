@@ -21,7 +21,7 @@ const rooms = [
         price: 15000,
         status: 'available',
         description: 'Spacious two-bedroom suite with sweeping city views, ideal for families or colleagues traveling together.',
-        imageUrl: '/images/b14.jpg',
+        imageUrl: '/images/b17.jpg',
     },
     {
         name: '1 Bedroom Sea View',
@@ -45,7 +45,7 @@ const rooms = [
         price: 14000,
         status: 'available',
         description: 'The crown jewel of Norden Suites — an iconic penthouse with panoramic 360° views and the finest bespoke interiors.',
-        imageUrl: '/images/b17.jpg',
+        imageUrl: '/images/b14.jpg',
     },
 ];
 
