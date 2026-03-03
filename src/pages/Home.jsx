@@ -4,7 +4,7 @@ import Button from '../components/ui/Button';
 import Section from '../components/ui/Section';
 import BookingWidget from '../components/ui/BookingWidget';
 import RoomCard from '../components/ui/RoomCard';
-import { Star, MapPin, ArrowRight, Utensils, Sparkles, Briefcase, Wifi, Coffee, Key, Headset, Clock, LogIn, Home as HomeIcon, CalendarCheck } from 'lucide-react';
+import { Star, MapPin, ArrowRight, Utensils, Sparkles, Briefcase, Wifi, Coffee, Key, Headset, Clock, LogIn, Home as HomeIcon, CalendarCheck, Building2, ParkingCircle } from 'lucide-react';
 import { Group, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { suites } from '../data/suites';
