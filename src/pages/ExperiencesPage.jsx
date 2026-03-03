@@ -16,21 +16,21 @@ const ExperiencesPage = () => {
         {
             title: 'Nyali Beach Camels',
             description: 'A timeless coastal tradition. Enjoy a peaceful ride along the white sands of Nyali at sunrise or sunset.',
-            image: '/images/IMG_7153.jpg',
+            image: 'https://www.sojournsafaris.co.ke/wp-content/uploads/2021/01/beach-activities-1024x683.jpg',
             tag: 'FAMILY',
             icon: <Sun size={20} />
         },
         {
             title: 'Marine Park Snorkeling',
             description: 'Dive into the protected warm waters of the Mombasa Marine National Park. Swim alongside turtles and vibrant coral reefs.',
-            image: '/images/IMG_7210.jpg',
+            image: 'https://dynamic-media.tacdn.com/media/photo-o/30/0c/0a/28/caption.jpg?w=1400&h=1000&s=1',
             tag: 'ADVENTURE',
             icon: <Compass size={20} />
         },
         {
             title: 'Tsavo East Day Safari',
             description: 'Witness the "Red Elephants" of Tsavo. A dawn-to-dusk adventure into Kenya\'s largest national park, just a short drive away.',
-            image: '/images/IMG_7183.jpg',
+            image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclUJUk26Rx9B37Os6H56RBxlOrc4XGY6THA&s',
             tag: 'WILDLIFE',
             icon: <Map size={20} />
         }

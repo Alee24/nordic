@@ -56,7 +56,7 @@ const SuitesPage = () => {
             {/* ── HERO ──────────────────────────────────────── */}
             <div className="relative h-[70vh] min-h-[500px] overflow-hidden">
                 <img
-                    src="/images/door1.png"
+                    src="/images/ent1.png"
                     alt="Norden Suites — Luxury Residences"
                     className="w-full h-full object-cover scale-105"
                     style={{ filter: 'brightness(0.55)' }}
