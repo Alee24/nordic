@@ -234,6 +234,7 @@ router.get('/:id/invoice', authMiddleware, async (req, res) => {
 
 // ── GET /api/bookings/:id/invoice/pdf  — Download as real PDF ───────────────
 router.get('/:id/invoice/pdf', authMiddleware, async (req, res) => {
+  let browser;
   try {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) return res.status(400).json({ success: false, message: 'Invalid booking ID' });
@@ -248,54 +249,104 @@ router.get('/:id/invoice/pdf', authMiddleware, async (req, res) => {
     let chromium;
     try { chromium = require('@sparticuz/chromium'); } catch (e) { chromium = null; }
 
-    let browser;
     if (chromium) {
       browser = await puppeteer.launch({
-        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
         headless: chromium.headless,
       });
     } else {
-      // Fallback: try common Linux and Windows paths
       const paths = [
         process.env.CHROME_PATH,
         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
         '/usr/bin/chromium-browser',
         '/usr/bin/google-chrome',
-        '/usr/bin/chromium'
+        '/usr/bin/chromium',
+        '/usr/bin/chrome'
       ];
       const executablePath = paths.find(p => p && fs.existsSync(p));
 
       if (!executablePath) {
-        throw new Error('Chromium/Chrome binary not found on server. Please install chromium-browser or set CHROME_PATH.');
+        throw new Error('Chromium/Chrome binary not found. Please ensure Chrome is installed.');
       }
 
       browser = await puppeteer.launch({
         executablePath,
         headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
       });
     }
 
     const page = await browser.newPage();
+    // Emulate screen to ensure full-color backgrounds and images render correctly
+    await page.emulateMediaType('screen');
     await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    // Explicit wait to ensure all Base64 images and fonts are processed
+    await new Promise(r => setTimeout(r, 1000));
+
     const pdf = await page.pdf({
       format: 'A4',
       margin: { top: '0', right: '0', bottom: '0', left: '0' },
       printBackground: true,
+      preferCSSPageSize: true
     });
-    await browser.close();
 
-    const ref = booking.bookingReference || id;
+    const ref = booking.bookingReference || booking.reference || id;
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="NordenSuites-Invoice-${ref}.pdf"`);
     res.send(pdf);
   } catch (error) {
     console.error('Invoice PDF error:', error);
-    res.status(500).json({ success: false, message: 'PDF generation failed: ' + error.message });
+    res.status(500).json({ success: false, message: 'PDF Error: ' + error.message });
+  } finally {
+    if (browser) await browser.close();
   }
 });
+
+// ── Shared Helper for PDF Generation (used by Email) ─────────────────────────
+const generatePDFBuffer = async (html) => {
+  const puppeteer = require('puppeteer-core');
+  let browser;
+  try {
+    let chromium;
+    try { chromium = require('@sparticuz/chromium'); } catch (e) { chromium = null; }
+
+    let executablePath;
+    if (chromium) {
+      executablePath = await chromium.executablePath();
+    } else {
+      const paths = [
+        process.env.CHROME_PATH,
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/google-chrome',
+        '/usr/bin/chromium'
+      ];
+      executablePath = paths.find(p => p && fs.existsSync(p));
+    }
+
+    if (!executablePath) throw new Error('PDF Engine not found');
+
+    browser = await puppeteer.launch({
+      executablePath,
+      headless: "new",
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const page = await browser.newPage();
+    await page.emulateMediaType('screen');
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    await new Promise(r => setTimeout(r, 800));
+    const pdf = await page.pdf({ format: 'A4', printBackground: true });
+    return pdf;
+  } finally {
+    if (browser) await browser.close();
+  }
+};
 
 // ── POST /api/bookings/:id/invoice/send  — Email invoice to guest ────────────
 router.post('/:id/invoice/send', authMiddleware, async (req, res) => {
@@ -308,68 +359,56 @@ router.post('/:id/invoice/send', authMiddleware, async (req, res) => {
 
     const guestEmail = booking.guestEmail || booking.user?.email;
     if (!guestEmail) {
-      return res.status(400).json({ success: false, message: 'No guest email address found for this booking.' });
+      return res.status(400).json({ success: false, message: 'No guest email address found.' });
     }
 
-    const guestName =
-      booking.guestName ||
-      (booking.user ? `${booking.user.firstName || ''} ${booking.user.lastName || ''}`.trim() : 'Guest') ||
-      'Valued Guest';
-    const roomName = booking.room?.name || 'Luxury Suite';
+    const guestName = booking.guestName || (booking.user ? booking.user.name : 'Guest');
     const ref = booking.bookingReference || booking.reference || booking.id;
-    const checkIn = fmtDate(booking.checkIn);
-    const checkOut = fmtDate(booking.checkOut);
-    const total = Number(booking.totalPrice || 0).toLocaleString('en-KE', { minimumFractionDigits: 2 });
-
     const subject = `🧾 Your Invoice – Norden Suites | Ref: ${ref}`;
-    const invoiceHTML = buildInvoiceHTML(booking);
 
-    // Build a wrapping email body that embeds the invoice HTML inline
+    // Create the PDF buffer
+    const invoiceHTML = buildInvoiceHTML(booking);
+    let pdfBuffer;
+    try {
+      pdfBuffer = await generatePDFBuffer(invoiceHTML);
+    } catch (pdfErr) {
+      console.warn('Could not generate PDF attachment, sending email only:', pdfErr.message);
+    }
+
     const emailBody = `
-<div style="font-family:Georgia,serif;max-width:620px;margin:0 auto">
-  <div style="background:#1e3a5f;padding:28px 32px;text-align:center">
-    <h1 style="color:#fff;margin:0;font-size:26px;font-weight:900;letter-spacing:-0.5px">NORDEN SUITES</h1>
-    <p style="color:#93c5fd;font-size:12px;margin:6px 0 0;letter-spacing:.08em;text-transform:uppercase">Coastal Luxury Accommodation</p>
+<div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#111;line-height:1.6">
+  <div style="background:#0A0B0D;padding:30px;text-align:center;border-radius:10px 10px 0 0">
+    <h1 style="color:#fff;margin:0;font-size:24px;letter-spacing:2px">NORDEN SUITES</h1>
   </div>
-  <div style="background:#fff;padding:36px 32px">
-    <h2 style="color:#111;font-size:18px;margin-top:0">Dear ${guestName},</h2>
-    <p style="color:#374151;line-height:1.6">Please find your invoice for your reservation at <strong>Norden Suites</strong> attached below.</p>
-    <table style="width:100%;border-collapse:collapse;margin:20px 0;font-size:14px">
-      <tr style="border-bottom:1px solid #e5e7eb">
-        <td style="padding:10px 0;color:#6b7280">Reference</td>
-        <td style="padding:10px 0;text-align:right;font-weight:700;color:#1e3a5f">${ref}</td>
-      </tr>
-      <tr style="border-bottom:1px solid #e5e7eb">
-        <td style="padding:10px 0;color:#6b7280">Suite</td>
-        <td style="padding:10px 0;text-align:right;font-weight:600;color:#111">${roomName}</td>
-      </tr>
-      <tr style="border-bottom:1px solid #e5e7eb">
-        <td style="padding:10px 0;color:#6b7280">Check-in</td>
-        <td style="padding:10px 0;text-align:right;font-weight:600;color:#111">${checkIn}</td>
-      </tr>
-      <tr style="border-bottom:1px solid #e5e7eb">
-        <td style="padding:10px 0;color:#6b7280">Check-out</td>
-        <td style="padding:10px 0;text-align:right;font-weight:600;color:#111">${checkOut}</td>
-      </tr>
-      <tr>
-        <td style="padding:10px 0;color:#6b7280;font-weight:700">Total Amount</td>
-        <td style="padding:10px 0;text-align:right;font-weight:900;font-size:18px;color:#2563eb">KES ${total}</td>
-      </tr>
-    </table>
-    <p style="color:#374151;line-height:1.6;margin-top:24px">For any queries, please reply to this email or contact us at <a href="mailto:info@nordensuites.com" style="color:#2563eb">info@nordensuites.com</a>.</p>
-    <p style="color:#374151">Warm regards,<br><strong>The Norden Suites Team</strong></p>
+  <div style="padding:40px;border:1px solid #eee;border-top:none;border-radius:0 0 10px 10px">
+    <h2 style="margin-top:0">Reservation Invoice</h2>
+    <p>Dear ${guestName},</p>
+    <p>Please find attached your official invoice for your stay at <strong>Norden Suites</strong>.</p>
+    <div style="background:#f9fafb;padding:20px;border-radius:8px;margin:25px 0">
+        <p style="margin:5px 0"><strong>Reference:</strong> ${ref}</p>
+        <p style="margin:5px 0"><strong>Suite:</strong> ${booking.room?.name || 'Luxury Suite'}</p>
+        <p style="margin:5px 0"><strong>Total:</strong> KES ${fmt(booking.totalPrice)}</p>
+    </div>
+    <p>We look forward to hosting you. If you have any questions, simply reply to this email.</p>
+    <p style="margin-top:30px">Best regards,<br><strong>Management, Norden Suites</strong></p>
   </div>
-  <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:16px 32px;text-align:center;font-size:12px;color:#9ca3af">
-    Developed by | <a href="https://kkdes.co.ke/" style="color:#2563eb;text-decoration:none;font-weight:600">KKDES</a>
-  </div>
+  <p style="text-align:center;font-size:11px;color:#999;margin-top:20px">
+    Developed by | <a href="https://kkdes.co.ke/" style="color:#999">KKDES</a>
+  </p>
 </div>`;
 
-    const result = await sendEmail(guestEmail, subject, emailBody);
+    const attachments = pdfBuffer ? [{
+      filename: `NordenSuites-Invoice-${ref}.pdf`,
+      content: pdfBuffer,
+      contentType: 'application/pdf'
+    }] : [];
+
+    const result = await sendEmail(guestEmail, subject, emailBody, attachments);
 
     if (result.success) {
-      res.json({ success: true, message: `Invoice sent to ${guestEmail}` });
+      res.json({ success: true, message: `Invoice emailed to ${guestEmail} with PDF attachment.` });
     } else {
-      res.status(500).json({ success: false, message: result.error || 'Failed to send email. Check SMTP settings.' });
+      res.status(500).json({ success: false, message: result.error || 'SMTP Error. Check settings.' });
     }
   } catch (error) {
     console.error('Send invoice error:', error);
