@@ -49,7 +49,7 @@ const Navigation = () => {
                 {/* Logo */}
                 <Link to="/" className="group z-50 flex items-center">
                     <img
-                        src="/images/mainlogo.png"
+                        src="/images/mlogo.png"
                         alt="Norden Suites"
                         className={`h-12 w-auto object-contain transition-all duration-500 drop-shadow-lg ${scrolled ? 'brightness-100' : 'brightness-0 invert'
                             }`}
