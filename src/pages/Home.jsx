@@ -23,8 +23,8 @@ const Home = () => {
                 {/* Background Image / Video */}
                 <div className="absolute inset-0">
                     <img
-                        src="/images/IMG_7071.jpg"
-                        alt="Norden Suites - Ocean View"
+                        src="/images/sitting 3.jpg"
+                        alt="Norden Suites - Luxury Living"
                         className="w-full h-full object-cover"
                     />
                     {/* Darker overall overlay to ensure text visibility regardless of theme */}
@@ -46,8 +46,8 @@ const Home = () => {
                             <span className="h-[1px] w-12 bg-norden-gold-500" />
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif text-white mb-8 tracking-tight drop-shadow-2xl">
-                            <span className="italic text-norden-gold-500">Excellence</span>
+                        <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-serif text-white mb-8 tracking-tighter drop-shadow-2xl leading-none">
+                            NORDEN <span className="italic text-norden-gold-500 font-light underline decoration-norden-gold-500/30 underline-offset-8">Suites</span>
                         </h1>
 
                         <p className="max-w-2xl mx-auto text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md">
