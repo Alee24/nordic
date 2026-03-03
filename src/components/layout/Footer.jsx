@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Instagram, Youtube, Mail, Phone, MapPin, Shield } from 'lucide-react';
+import { ArrowRight, Instagram, Youtube, Facebook, Mail, Phone, MapPin, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import useManagementStore from '../../store/useManagementStore';
 
@@ -36,6 +36,9 @@ const Footer = () => {
                             </a>
                             <a href="https://www.youtube.com/@nordensuites" target="_blank" rel="noopener noreferrer" className="text-theme-muted hover:text-norden-gold-500 transition-colors" title="YouTube">
                                 <Youtube size={20} />
+                            </a>
+                            <a href="https://www.facebook.com/profile.php?id=61588263853770&sk=about" target="_blank" rel="noopener noreferrer" className="text-theme-muted hover:text-norden-gold-500 transition-colors" title="Facebook">
+                                <Facebook size={20} />
                             </a>
                         </div>
                     </div>
