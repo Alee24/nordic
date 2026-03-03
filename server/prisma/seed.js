@@ -83,6 +83,18 @@ async function main() {
     });
     console.log(`✔ Admin user ready: ${admin.email}`);
 
+    // Also add the typo version as requested/seen in screenshots
+    await prisma.user.upsert({
+        where: { email: 'admin@nordensuits.com' },
+        update: {},
+        create: {
+            email: 'admin@nordensuits.com',
+            password: hashedAdminPassword,
+            name: 'Norden Admin (Typo Fix)',
+            role: 'admin'
+        }
+    });
+
     const count = await prisma.room.count({ where: { status: 'available' } });
     console.log(`\n✅ Done. ${count} available rooms in the database.`);
 }
