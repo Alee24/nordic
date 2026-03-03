@@ -276,10 +276,10 @@ const Bookings = () => {
                     </Group>
                     <Group>
                         <Button variant="light" color="red" leftSection={<IconTrash size={16} />} loading={deleting} onClick={handleDelete}>
-                            Delete
+                            Delete Reservation
                         </Button>
                         <Button variant="filled" color="blue" leftSection={<IconPrinter size={16} />} onClick={handleDownloadInvoice}>
-                            Print/Download PDF
+                            Print Invoice
                         </Button>
                     </Group>
                 </Group>
