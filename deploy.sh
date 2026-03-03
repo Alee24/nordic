@@ -77,13 +77,25 @@ ok "Uploads directory ready at $UPLOADS_DIR"
 echo "test" > "$UPLOADS_DIR/.test_write" && rm "$UPLOADS_DIR/.test_write"
 ok "Write test passed"
 
-# ── 8. Restart backend ─────────────────────────────────────────────────────
+# ── 8. Restart / start backend ─────────────────────────────────────────────
 echo -e "\n${YELLOW}[8/8] Restarting backend (PM2)...${NC}"
 if command -v pm2 &>/dev/null; then
-    pm2 restart all --update-env
-    ok "PM2 restarted"
+    if pm2 list 2>/dev/null | grep -qE "norden|index"; then
+        pm2 restart all --update-env && ok "PM2 restarted"
+    else
+        warn "No PM2 process found — starting fresh"
+        cd "$APP_DIR/server"
+        pm2 start index.js --name "norden" --update-env
+        pm2 save
+        ok "PM2 started norden for the first time"
+        cd "$APP_DIR"
+    fi
 else
-    warn "PM2 not found — checking for node process"
+    warn "PM2 not found — starting node server in background"
+    cd "$APP_DIR/server"
+    nohup node index.js &>/tmp/norden-server.log &
+    ok "Node server started (PID $!)"
+    cd "$APP_DIR"
 fi
 
 echo -e "\n${GREEN}========================================"
@@ -92,11 +104,23 @@ echo -e " Site:    https://nordensuites.com"
 echo -e " Uploads: https://nordensuites.com/uploads/"
 echo -e "========================================${NC}"
 
-# Quick smoke test
-echo -e "\n${YELLOW}Running quick smoke test...${NC}"
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://nordensuites.com/api/health 2>/dev/null || echo "000")
-if [ "$HTTP_CODE" = "200" ]; then
-    ok "API health check: HTTP $HTTP_CODE"
+# ── Smoke test with retries ────────────────────────────────────────────────
+echo -e "\n${YELLOW}Running smoke tests (retrying up to 15s)...${NC}"
+for i in 1 2 3 4 5; do
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://nordensuites.com/api/health 2>/dev/null || echo "000")
+    if [ "$HTTP_CODE" = "200" ]; then
+        ok "API health check: HTTP $HTTP_CODE ✔"
+        break
+    else
+        warn "Attempt $i: API returned HTTP $HTTP_CODE — waiting 3s..."
+        sleep 3
+    fi
+done
+
+ROOMS_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://nordensuites.com/api/rooms 2>/dev/null || echo "000")
+if [ "$ROOMS_CODE" = "200" ]; then
+    ok "Rooms API: HTTP $ROOMS_CODE ✔"
 else
-    warn "API health returned HTTP $HTTP_CODE (may need a moment to start)"
+    warn "Rooms API returned HTTP $ROOMS_CODE"
+    warn "Check logs: pm2 logs norden --lines 30"
 fi

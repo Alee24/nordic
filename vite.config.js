@@ -7,7 +7,17 @@ export default defineConfig({
   server: {
     port: 8124,
     strictPort: true,
-    host: true
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8123',
+        changeOrigin: true
+      },
+      '/uploads': {
+        target: 'http://127.0.0.1:8123',
+        changeOrigin: true
+      }
+    }
   },
   optimizeDeps: {
     include: ['recharts', 'framer-motion']

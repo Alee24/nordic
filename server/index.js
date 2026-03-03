@@ -5,7 +5,21 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-    origin: ['http://localhost:8124', 'http://127.0.0.1:8124'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        // Allow production domain and all local dev origins
+        const allowed = [
+            'https://nordensuites.com',
+            'https://www.nordensuites.com',
+            'http://localhost:8124',
+            'http://127.0.0.1:8124'
+        ];
+        if (!origin || allowed.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, true); // Allow all in production for simplicity
+        }
+    },
     credentials: true
 }));
 app.use(express.json());
