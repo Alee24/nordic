@@ -9,7 +9,7 @@ const ExperiencesPage = () => {
         {
             title: 'Sunset Dhow Cruise',
             description: 'Sail the Indian Ocean on a traditional Swahili dhow. Sip on dawa cocktails as the sky turns gold over Old Town Mombasa.',
-            image: '/images/IMG_7071.jpg',
+            image: '/images/IMG_7156.jpg',
             tag: 'SIGNATURE',
             icon: <Anchor size={20} />
         },
@@ -37,28 +37,43 @@ const ExperiencesPage = () => {
     ];
 
     return (
-        <div className="bg-theme-bg min-h-screen pt-24 transition-colors duration-300">
-            {/* Hero Text */}
-            <Section className="pb-10">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-16 max-w-4xl mx-auto"
-                >
-                    <div className="flex items-center justify-center gap-4 mb-6">
-                        <div className="h-[1px] w-12 bg-norden-gold-500"></div>
-                        <span className="text-norden-gold-500 uppercase tracking-[0.2em] text-sm font-bold">Discover The Coast</span>
-                        <div className="h-[1px] w-12 bg-norden-gold-500"></div>
-                    </div>
-                    <h1 className="text-5xl md:text-7xl font-serif text-theme-text mb-8">
-                        The Spirit of <span className="italic text-norden-gold-500">Nyali</span>
-                    </h1>
-                    <p className="text-theme-muted text-lg md:text-xl leading-relaxed">
-                        Beyond the comfort of your residence lies the magic of the Swahili coast.
-                        From ancient history to wild safaris, allow us to curate your perfect African journey.
-                    </p>
-                </motion.div>
-            </Section>
+        <div className="bg-theme-bg min-h-screen transition-colors duration-300">
+            {/* Hero Section */}
+            <div className="relative h-[80vh] w-full overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src="/images/IMG_7071.jpg"
+                        alt="Mombasa Coastal Experience"
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-norden-dark-900/40" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-norden-dark-900/60 via-transparent to-theme-bg" />
+                </div>
+
+                <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="max-w-4xl"
+                    >
+                        <div className="flex items-center justify-center gap-4 mb-6">
+                            <span className="h-[1px] w-12 bg-norden-gold-500" />
+                            <span className="text-norden-gold-500 uppercase tracking-[0.4em] text-xs font-extrabold">Curated Journeys</span>
+                            <span className="h-[1px] w-12 bg-norden-gold-500" />
+                        </div>
+
+                        <h1 className="text-6xl md:text-8xl font-serif text-white mb-8 tracking-tight drop-shadow-2xl">
+                            The Spirit of <span className="italic text-norden-gold-500">Nyali</span>
+                        </h1>
+
+                        <p className="text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md max-w-2xl mx-auto">
+                            Beyond the comfort of your residence lies the magic of the Swahili coast.
+                            From ancient history to wild safaris, allow us to curate your perfect African journey.
+                        </p>
+                    </motion.div>
+                </div>
+            </div>
 
             {/* Experiences Grid */}
             <Section className="pt-0">
