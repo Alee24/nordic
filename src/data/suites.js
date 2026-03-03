@@ -36,7 +36,7 @@ export const suites = [
         longDescription: 'Immerse yourself in the vibrant energy of the city from the comfort of your luxury suite. The 1 Bedroom City View Luxury Suite is designed for the discerning traveler, offering a fully equipped kitchen, a spacious living area, and premium QLED television. Floor-to-ceiling windows frame breathtaking city vistas, making every moment an unforgettable experience.',
         price: 12000,
         currency: 'KES',
-        image: '/images/living13.jpg',
+        image: '/images/b13.jpg',
         images: [
             '/images/living13.jpg',
             '/images/bed1.jpg',
@@ -136,7 +136,7 @@ export const suites = [
         longDescription: 'The Penthouse Luxury Suite is the crown jewel of Norden Suites. Perched at the top of the building, it offers unrivaled 360° panoramic views of both the city and the Indian Ocean. With bespoke interiors, a fully equipped designer kitchen, and every premium amenity at your disposal, the Penthouse redefines the meaning of luxury residence living.',
         price: 14000,
         currency: 'KES',
-        image: '/images/living67.jpg',
+        image: '/images/b17.jpg',
         images: [
             '/images/living67.jpg',
             '/images/dining1.jpg',

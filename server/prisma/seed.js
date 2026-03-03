@@ -13,7 +13,7 @@ const rooms = [
         price: 12000,
         status: 'available',
         description: 'A sophisticated one-bedroom suite with stunning panoramic city views, a fully equipped kitchen, and premium finishes throughout.',
-        imageUrl: '/images/bed1.jpg',
+        imageUrl: '/images/b13.jpg',
     },
     {
         name: '2 Bedrooms City View',
@@ -45,7 +45,7 @@ const rooms = [
         price: 14000,
         status: 'available',
         description: 'The crown jewel of Norden Suites — an iconic penthouse with panoramic 360° views and the finest bespoke interiors.',
-        imageUrl: '/images/living67.jpg',
+        imageUrl: '/images/b17.jpg',
     },
 ];
 
