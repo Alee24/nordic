@@ -32,9 +32,15 @@ echo -e "\n${YELLOW}[2/6] Installing dependencies...${NC}"
 # Install Google Chrome for Puppeteer if missing
 if ! command -v google-chrome &> /dev/null; then
     warn "Installing Google Chrome for PDF generation..."
-    apt-get update -y && apt-get install -y wget gnupg curl
+    apt-get update -y || warn "Initial update failed, continuing..."
+    apt-get install -y wget gnupg curl
     
     # Modern keyring setup for Chrome (prevents legacy warnings)
+    # ── CLEANUP CONFLICTS ───────────────────────────────────────────────────
+    # Remove old variants that cause "Conflicting values for Signed-By"
+    rm -f /etc/apt/sources.list.d/google.list
+    rm -f /etc/apt/sources.list.d/google-chrome.list
+    
     curl -fSsL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | tee /usr/share/keyrings/google-chrome.gpg > /dev/null
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
     
