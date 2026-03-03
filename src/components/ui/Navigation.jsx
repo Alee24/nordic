@@ -47,7 +47,7 @@ const Navigation = () => {
         >
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
                 {/* Logo */}
-                <Link to="/" className="group z-50 flex items-center">
+                <Link to="/" className="group z-50 flex items-center gap-4">
                     <img
                         src="/images/mlogo.png"
                         alt="Norden Suites"
@@ -55,6 +55,10 @@ const Navigation = () => {
                             }`}
                         onError={e => { e.target.style.display = 'none'; }}
                     />
+                    <div className="flex items-baseline gap-2">
+                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 ${scrolled ? 'text-theme-text' : 'text-white'}`}>NORDEN</span>
+                        <span className={`text-xl font-serif font-bold tracking-[0.2em] leading-none transition-colors duration-500 text-norden-gold-500`}>SUITES</span>
+                    </div>
                 </Link>
 
                 {/* Desktop Nav */}

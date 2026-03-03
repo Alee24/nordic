@@ -22,9 +22,9 @@ const Footer = () => {
                     <div className="col-span-1 md:col-span-1">
                         <Link to="/" className="block mb-6">
                             <img
-                                src="/images/mlogo.png"
+                                src="/images/mainlogo.png"
                                 alt="Norden Suites"
-                                className="h-14 w-auto object-contain"
+                                className="h-24 w-auto object-contain"
                                 onError={e => {
                                     e.target.style.display = 'none';
                                     e.target.insertAdjacentHTML('afterend', '<span class="text-3xl font-serif font-bold text-theme-text tracking-wider">NORDEN<span class="block text-xs text-norden-gold-500 uppercase tracking-[0.2em] mt-1">Suits &amp; Apartments</span></span>');
