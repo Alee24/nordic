@@ -82,10 +82,11 @@ const createBooking = async (req, res) => {
 const updateBookingStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const updateData = req.body;
+
         const booking = await prisma.booking.update({
             where: { id: parseInt(id) },
-            data: { status }
+            data: updateData
         });
         res.json({ success: true, data: booking });
     } catch (error) {

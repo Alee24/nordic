@@ -127,15 +127,16 @@ export const dashboardService = {
         }
     },
 
-    updateBookingStatus: async (id, status) => {
+    updateBookingStatus: async (id, data) => {
         try {
-            const response = await api.put(`/bookings/${id}`, { status });
+            // data can be { status: '...' } or { status: '...', paymentStatus: '...' }
+            const response = await api.put(`/bookings/${id}`, data);
             return { success: true, data: response.data.data };
         } catch (error) {
-            console.error('Update Booking Status Error:', error);
+            console.error('Update Booking Error:', error);
             return {
                 success: false,
-                error: error.response?.data?.message || 'Failed to update booking status'
+                error: error.response?.data?.message || 'Failed to update booking'
             };
         }
     },

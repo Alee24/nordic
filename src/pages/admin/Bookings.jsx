@@ -3,14 +3,16 @@ import {
     Paper, Table, Text, Group, Badge, ActionIcon,
     Avatar, Menu, TextInput, Select, Button, Stack,
     Loader, Center, Pagination, Card, SimpleGrid,
-    Drawer, ScrollArea, Divider, ThemeIcon, Tooltip, Box
+    ScrollArea, Divider, ThemeIcon, Box, Grid,
+    Title, Container
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import {
     IconDots, IconEye, IconSearch, IconDownload,
     IconCheck, IconX, IconCalendarEvent, IconUser,
     IconHome, IconCreditCard, IconClock, IconMail,
-    IconPhone, IconChevronRight, IconTrash, IconSend
+    IconPhone, IconChevronRight, IconTrash, IconSend,
+    IconArrowLeft, IconReceipt2, IconPrinter
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { dashboardService } from '../../services/dashboardService';
@@ -42,9 +44,10 @@ const Bookings = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const [selectedBooking, setSelectedBooking] = useState(null);
-    const [drawerOpened, setDrawerOpened] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [sending, setSending] = useState(false);
+    const [confirmingOffline, setConfirmingOffline] = useState(false);
     const [filters, setFilters] = useState({ status: '', search: '', date_from: null });
 
     useEffect(() => { fetchBookings(); }, [filters]);
@@ -71,7 +74,7 @@ const Bookings = () => {
 
     const handleStatusUpdate = async (id, newStatus) => {
         try {
-            const response = await dashboardService.updateBookingStatus(id, newStatus);
+            const response = await dashboardService.updateBookingStatus(id, { status: newStatus });
             if (response.success) {
                 notifications.show({ title: 'Updated', message: `Status changed to ${newStatus}`, color: 'green' });
                 fetchBookings();
@@ -82,6 +85,26 @@ const Bookings = () => {
         }
     };
 
+    const handleConfirmOffline = async () => {
+        if (!selectedBooking) return;
+        setConfirmingOffline(true);
+        try {
+            const response = await dashboardService.updateBookingStatus(selectedBooking.id, {
+                status: 'confirmed',
+                paymentStatus: 'paid'
+            });
+            if (response.success) {
+                notifications.show({ title: 'Payment Confirmed', message: 'Booking is now marked as Paid & Confirmed', color: 'green' });
+                fetchBookings();
+                setSelectedBooking(prev => ({ ...prev, status: 'confirmed', payment_status: 'paid' }));
+            } else throw new Error(response.error);
+        } catch (error) {
+            notifications.show({ title: 'Update failed', message: error.message, color: 'red' });
+        } finally {
+            setConfirmingOffline(false);
+        }
+    };
+
     const handleDelete = async () => {
         if (!selectedBooking) return;
         if (!window.confirm(`Delete booking #${selectedBooking.booking_reference}? This cannot be undone.`)) return;
@@ -89,7 +112,7 @@ const Bookings = () => {
         try {
             await api.delete(`/bookings/${selectedBooking.id}`);
             notifications.show({ title: 'Deleted', message: 'Booking record removed', color: 'orange' });
-            setDrawerOpened(false);
+            setShowDetails(false);
             fetchBookings();
         } catch (error) {
             notifications.show({ title: 'Delete failed', message: error.response?.data?.message || error.message, color: 'red' });
@@ -141,7 +164,7 @@ const Bookings = () => {
                 throw new Error(resp.data?.message || 'Failed to send invoice');
             }
         } catch (err) {
-            notifications.show({ title: 'Send Failed', message: err.response?.data?.message || err.message, color: 'red' });
+            notifications.show({ title: 'Send Failed', message: err.response?.data?.message || error.message, color: 'red' });
         } finally {
             setSending(false);
         }
@@ -159,7 +182,7 @@ const Bookings = () => {
 
     const openDetails = (booking) => {
         setSelectedBooking(booking);
-        setDrawerOpened(true);
+        setShowDetails(true);
     };
 
     const rows = data.map((booking) => (
@@ -232,6 +255,171 @@ const Bookings = () => {
             </Table.Td>
         </Table.Tr>
     ));
+
+    if (showDetails && selectedBooking) {
+        const apiBase = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+        const token = localStorage.getItem('admin_token') || localStorage.getItem('token') || '';
+        const previewUrl = `${apiBase}/bookings/${selectedBooking.id}/invoice?token=${token}`;
+
+        return (
+            <Stack gap="xl" p={0}>
+                {/* Header with back button */}
+                <Group justify="space-between" align="center" py="md" px="lg" style={{ borderBottom: '1px solid #eee', background: '#fff' }}>
+                    <Group>
+                        <ActionIcon variant="subtle" size="lg" onClick={() => setShowDetails(false)}>
+                            <IconArrowLeft size={24} />
+                        </ActionIcon>
+                        <Box>
+                            <Title order={3}>Booking details</Title>
+                            <Text fz="xs" c="dimmed" fw={700}>REF: {selectedBooking.booking_reference}</Text>
+                        </Box>
+                    </Group>
+                    <Group>
+                        <Button variant="light" color="red" leftSection={<IconTrash size={16} />} loading={deleting} onClick={handleDelete}>
+                            Delete
+                        </Button>
+                        <Button variant="filled" color="blue" leftSection={<IconPrinter size={16} />} onClick={handleDownloadInvoice}>
+                            Print/Download PDF
+                        </Button>
+                    </Group>
+                </Group>
+
+                <Container size="xl" w="100%" px="lg" pb="xl">
+                    <Grid gutter="xl">
+                        {/* Left Side: Booking Info */}
+                        <Grid.Col span={{ base: 12, md: 5 }}>
+                            <Stack gap="lg">
+                                {/* Status Card */}
+                                <Card padding="lg" radius="md" withBorder>
+                                    <Text fw={700} fz="xs" mb="lg" tt="uppercase" c="dimmed">Booking Status</Text>
+                                    <Group grow gap="xl">
+                                        <Stack gap={4}>
+                                            <Text fz="xs" c="dimmed">Reservation</Text>
+                                            <Badge size="lg" color={statusColors[selectedBooking.status] || 'gray'} variant="filled">
+                                                {selectedBooking.status.toUpperCase()}
+                                            </Badge>
+                                        </Stack>
+                                        <Stack gap={4}>
+                                            <Text fz="xs" c="dimmed">Payment</Text>
+                                            <Badge size="lg" color={paymentColors[selectedBooking.payment_status] || 'gray'} variant="light">
+                                                {selectedBooking.payment_status.toUpperCase()}
+                                            </Badge>
+                                        </Stack>
+                                    </Group>
+
+                                    {selectedBooking.payment_status !== 'paid' && (
+                                        <Button
+                                            fullWidth
+                                            mt="xl"
+                                            color="green"
+                                            leftSection={<IconCheck size={18} />}
+                                            onClick={handleConfirmOffline}
+                                            loading={confirmingOffline}
+                                        >
+                                            Confirm Payment Offline
+                                        </Button>
+                                    )}
+                                </Card>
+
+                                {/* Guest Card */}
+                                <Card padding="lg" radius="md" withBorder>
+                                    <Text fw={700} fz="xs" mb="lg" tt="uppercase" c="dimmed">Guest Information</Text>
+                                    <Group gap="lg" align="flex-start" mb="xl">
+                                        <Avatar size="xl" radius="md" color="blue" src={null}>{(selectedBooking.guest_name || 'G').charAt(0)}</Avatar>
+                                        <Box>
+                                            <Text fz="lg" fw={700}>{selectedBooking.guest_name}</Text>
+                                            <Text c="dimmed" fz="sm" mb="xs">{selectedBooking.guest_email}</Text>
+                                            <Badge variant="dot" color="blue">Primary Guest</Badge>
+                                        </Box>
+                                    </Group>
+
+                                    <Stack gap="sm">
+                                        <Group>
+                                            <ThemeIcon size="sm" variant="light" color="gray"><IconMail size={14} /></ThemeIcon>
+                                            <Text fz="sm">{selectedBooking.guest_email}</Text>
+                                        </Group>
+                                        <Group>
+                                            <ThemeIcon size="sm" variant="light" color="gray"><IconPhone size={14} /></ThemeIcon>
+                                            <Text fz="sm">{selectedBooking.guest_phone}</Text>
+                                        </Group>
+                                    </Stack>
+                                </Card>
+
+                                {/* Reservation Card */}
+                                <Card padding="lg" radius="md" withBorder>
+                                    <Text fw={700} fz="xs" mb="lg" tt="uppercase" c="dimmed">Reservation Details</Text>
+                                    <Stack gap="md">
+                                        <Group justify="space-between">
+                                            <Group gap="sm">
+                                                <ThemeIcon variant="light" color="blue" size="md"><IconHome size={18} /></ThemeIcon>
+                                                <Text fw={600}>{selectedBooking.suite_name}</Text>
+                                            </Group>
+                                            <Text fw={700} c="blue">KES {selectedBooking.total_price.toLocaleString()}</Text>
+                                        </Group>
+
+                                        <Divider style={{ opacity: 0.5 }} />
+
+                                        <SimpleGrid cols={2}>
+                                            <Box>
+                                                <Text fz="xs" c="dimmed" fw={700} tt="uppercase">Check-In</Text>
+                                                <Text fw={600}>{selectedBooking.check_in}</Text>
+                                            </Box>
+                                            <Box>
+                                                <Text fz="xs" c="dimmed" fw={700} tt="uppercase">Check-Out</Text>
+                                                <Text fw={600}>{selectedBooking.check_out}</Text>
+                                            </Box>
+                                        </SimpleGrid>
+
+                                        <Box mt="md">
+                                            <Button
+                                                fullWidth
+                                                variant="light"
+                                                color="indigo"
+                                                leftSection={<IconSend size={16} />}
+                                                loading={sending}
+                                                onClick={handleSendInvoice}
+                                                disabled={!selectedBooking.guest_email}
+                                            >
+                                                Email Invoice to Guest
+                                            </Button>
+                                        </Box>
+                                    </Stack>
+                                </Card>
+                            </Stack>
+                        </Grid.Col>
+
+                        {/* Right Side: Invoice Preview */}
+                        <Grid.Col span={{ base: 12, md: 7 }}>
+                            <Card padding={0} radius="md" withBorder h="100%" style={{ minHeight: '700px', display: 'flex', flexDirection: 'column' }}>
+                                <Group px="lg" py="sm" justify="space-between" style={{ borderBottom: '1px solid #eee', background: '#fcfcfc' }}>
+                                    <Group gap="sm">
+                                        <IconReceipt2 size={20} color="gray" />
+                                        <Text fw={700} fz="sm">Invoice Draft / Preview</Text>
+                                    </Group>
+                                    <Badge variant="outline">Live Preview</Badge>
+                                </Group>
+                                <Box style={{ flex: 1, position: 'relative' }}>
+                                    <iframe
+                                        src={previewUrl}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            border: 'none',
+                                            background: '#fff'
+                                        }}
+                                        title="Invoice Preview"
+                                    />
+                                </Box>
+                            </Card>
+                        </Grid.Col>
+                    </Grid>
+                </Container>
+            </Stack>
+        );
+    }
 
     return (
         <Stack gap="xl" p={2}>
@@ -334,125 +522,6 @@ const Bookings = () => {
                     <Pagination total={1} radius="md" size="sm" />
                 </Group>
             </Card>
-
-            {/* Booking Detail Drawer */}
-            <Drawer
-                opened={drawerOpened}
-                onClose={() => setDrawerOpened(false)}
-                position="right"
-                size="md"
-                title={<Text fw={900} fz="xl">Booking Details</Text>}
-                padding="xl"
-            >
-                {selectedBooking && (
-                    <Stack gap="xl">
-                        {/* Reference Banner */}
-                        <Paper withBorder p="md" radius="md" style={{ background: '#eff6ff', borderColor: '#bfdbfe' }}>
-                            <Group justify="space-between">
-                                <Text fw={800} fz="sm" c="blue">#{selectedBooking.booking_reference}</Text>
-                                <Badge color={statusColors[selectedBooking.status] || 'gray'}>{selectedBooking.status}</Badge>
-                            </Group>
-                        </Paper>
-
-                        {/* Guest details */}
-                        <div>
-                            <Text fw={700} fz="xs" mb="md" tt="uppercase" c="dimmed" style={{ letterSpacing: '0.08em' }}>GUEST DETAILS</Text>
-                            {[
-                                { icon: IconUser, label: selectedBooking.guest_name, fw: 600 },
-                                { icon: IconMail, label: selectedBooking.guest_email },
-                                { icon: IconPhone, label: selectedBooking.guest_phone || 'Not provided' },
-                            ].map(({ icon: Icon, label, fw }) => (
-                                <Group key={label} mb="sm">
-                                    <ThemeIcon variant="light" radius="xl"><Icon size={16} /></ThemeIcon>
-                                    <Text fz="sm" fw={fw}>{label}</Text>
-                                </Group>
-                            ))}
-                        </div>
-
-                        <Divider />
-
-                        {/* Reservation details */}
-                        <div>
-                            <Text fw={700} fz="xs" mb="md" tt="uppercase" c="dimmed" style={{ letterSpacing: '0.08em' }}>RESERVATION</Text>
-                            <Group mb="sm">
-                                <ThemeIcon variant="light" radius="xl" color="violet"><IconHome size={16} /></ThemeIcon>
-                                <Text fw={600} fz="sm">{selectedBooking.suite_name}</Text>
-                            </Group>
-                            <Group mb="sm">
-                                <ThemeIcon variant="light" radius="xl" color="cyan"><IconCalendarEvent size={16} /></ThemeIcon>
-                                <Text fz="sm">{selectedBooking.check_in} → {selectedBooking.check_out}</Text>
-                            </Group>
-                        </div>
-
-                        <Divider />
-
-                        {/* Payment summary */}
-                        <Box style={{ background: '#f8fafc', borderRadius: 12, padding: 20 }}>
-                            <Group justify="space-between" mb="xs">
-                                <Text fz="sm" c="dimmed">Payment Status</Text>
-                                <Badge variant="filled" color={paymentColors[selectedBooking.payment_status] || 'gray'}>
-                                    {selectedBooking.payment_status}
-                                </Badge>
-                            </Group>
-                            <Group justify="space-between">
-                                <Text fw={700}>Total Amount</Text>
-                                <Text fw={900} fz="xl" c="blue">
-                                    KES {selectedBooking.total_price.toLocaleString('en-KE')}
-                                </Text>
-                            </Group>
-                        </Box>
-
-                        {/* Status quick actions */}
-                        <Group grow>
-                            {selectedBooking.status !== 'confirmed' && selectedBooking.status !== 'checked_out' && (
-                                <Button variant="light" color="green" leftSection={<IconCheck size={16} />}
-                                    onClick={() => handleStatusUpdate(selectedBooking.id, 'confirmed')}>
-                                    Confirm
-                                </Button>
-                            )}
-                            {selectedBooking.status === 'confirmed' && (
-                                <Button variant="light" color="teal" leftSection={<IconCheck size={16} />}
-                                    onClick={() => handleStatusUpdate(selectedBooking.id, 'checked_out')}>
-                                    Check Out
-                                </Button>
-                            )}
-                        </Group>
-
-                        {/* Action buttons */}
-                        <Group mt="md" grow>
-                            <Button
-                                variant="light"
-                                color="red"
-                                leftSection={<IconTrash size={16} />}
-                                loading={deleting}
-                                onClick={handleDelete}
-                            >
-                                Delete Record
-                            </Button>
-                            <Button
-                                variant="filled"
-                                color="blue"
-                                leftSection={<IconDownload size={16} />}
-                                onClick={handleDownloadInvoice}
-                            >
-                                Download PDF
-                            </Button>
-                        </Group>
-                        <Button
-                            fullWidth
-                            variant="light"
-                            color="teal"
-                            leftSection={<IconSend size={16} />}
-                            loading={sending}
-                            onClick={handleSendInvoice}
-                            disabled={!selectedBooking?.guest_email}
-                            title={!selectedBooking?.guest_email ? 'No guest email on record' : `Send invoice to ${selectedBooking.guest_email}`}
-                        >
-                            {sending ? 'Sending…' : `Send Invoice to Guest${selectedBooking?.guest_email ? ` (${selectedBooking.guest_email})` : ''}`}
-                        </Button>
-                    </Stack>
-                )}
-            </Drawer>
         </Stack>
     );
 };
