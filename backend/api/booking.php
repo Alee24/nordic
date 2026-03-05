@@ -43,7 +43,13 @@ if (strpos($requestUri, 'auth.php') !== false || strpos($apiPath, 'auth/') === 0
     exit;
 }
 
-// HOMEPAGE IMAGES ENDPOINT
+// SITE MEDIA ENDPOINT
+if ($apiPath === 'site-media' || strpos($apiPath, 'site-media') === 0) {
+    require_once __DIR__ . '/site_media.php';
+    exit;
+}
+
+// HOMEPAGE IMAGES ENDPOINT (kept for backward compatibility during transition if needed)
 if ($apiPath === 'homepage-images' || strpos($apiPath, 'homepage-images') === 0) {
     require_once __DIR__ . '/homepage_images.php';
     exit;

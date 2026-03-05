@@ -14,7 +14,7 @@ import Rooms from './Rooms';
 import Settings from './Settings';
 import PaymentSettingsPage from './PaymentSettingsPage';
 import Messages from './Messages';
-import HomepageImages from './HomepageImages';
+import WebsiteMedia from './WebsiteMedia';
 import useManagementStore from '../../store/useManagementStore';
 import api from '../../services/api';
 
@@ -74,7 +74,7 @@ const Dashboard = ({ onExit }) => {
             badge: unreadMessages > 0 ? unreadMessages : null
         },
         { icon: IconCurrencyDollar, label: 'Payments' },
-        { icon: IconPhoto, label: 'Homepage Images' },
+        { icon: IconPhoto, label: 'Website Images' },
         { icon: IconSettings, label: 'Settings' },
     ];
 
@@ -84,7 +84,7 @@ const Dashboard = ({ onExit }) => {
             case 'Rooms': return <Rooms />;
             case 'Messages': return <Messages onUnreadChange={setUnreadMessages} />;
             case 'Payments': return <PaymentSettingsPage />;
-            case 'Homepage Images': return <HomepageImages />;
+            case 'Website Images': return <WebsiteMedia />;
             case 'Settings': return <Settings />;
             default: return <Bookings />;
         }
