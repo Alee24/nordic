@@ -24,9 +24,12 @@ echo -e "${GREEN}  Norden Suites — VPS Sync & Deploy${NC}"
 echo -e "${GREEN}======================================================${NC}"
 
 # ── 1. Pull latest code ───────────────────────────────────────────────────
-step "1/6" "Pulling latest code from GitHub"
+step "1/6" "Pulling latest code from GitHub (booking-engine branch)"
 cd "$GIT_DIR"
-git pull origin master
+git stash 2>/dev/null || true
+git fetch origin
+git checkout booking-engine 2>/dev/null || git checkout -b booking-engine origin/booking-engine
+git pull origin booking-engine
 ok "Code pulled: $(git log --oneline -1)"
 
 # ── 2. Build frontend ──────────────────────────────────────────────────────
