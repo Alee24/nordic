@@ -20,6 +20,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare, Instagram, Facebook, Twitter, ArrowRight } from 'lucide-react';
 import { notifications } from '@mantine/notifications';
 import Section from '../components/ui/Section';
+import api from '../services/api';
 
 const ContactPage = () => {
     const [submitted, setSubmitted] = useState(false);
@@ -35,32 +36,24 @@ const ContactPage = () => {
         };
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
+            const { data: result } = await api.post('/messages', data);
 
             if (result.success) {
                 setSubmitted(true);
                 notifications.show({
-                    title: 'Message Sent',
+                    title: 'Message Sent!',
                     message: 'Our concierge will get back to you shortly. Welcome home.',
-                    color: 'gold',
+                    color: 'green',
                 });
                 setTimeout(() => setSubmitted(false), 5000);
                 e.target.reset();
             } else {
-                throw new Error(result.error || 'Failed to send message');
+                throw new Error(result.message || 'Failed to send message');
             }
         } catch (error) {
             notifications.show({
-                title: 'Error',
-                message: error.message || 'Something went wrong. Please try again.',
+                title: 'Error Sending Message',
+                message: error.response?.data?.message || error.message || 'Something went wrong. Please try again.',
                 color: 'red',
             });
         }
