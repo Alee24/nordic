@@ -72,11 +72,11 @@ const ContactPage = () => {
             <div className="relative h-[500px] w-full overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="/images/front1.jpg"
-                        alt="Norden Suits Concierge"
+                        src="/images/reception1.jpg"
+                        alt="Norden Suites Concierge"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-norden-dark-900/60 backdrop-blur-[2px]" />
+                    <div className="absolute inset-0 bg-norden-dark-900/50 backdrop-blur-[1px]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-theme-bg via-transparent to-transparent" />
                 </div>
 
