@@ -43,6 +43,12 @@ if (strpos($requestUri, 'auth.php') !== false || strpos($apiPath, 'auth/') === 0
     exit;
 }
 
+// HOMEPAGE IMAGES ENDPOINT
+if ($apiPath === 'homepage-images' || strpos($apiPath, 'homepage-images') === 0) {
+    require_once __DIR__ . '/homepage_images.php';
+    exit;
+}
+
 require_once __DIR__ . '/../controllers/PropertyController.php';
 require_once __DIR__ . '/../controllers/CompleteBookingController.php';
 require_once __DIR__ . '/../utils/response.php';
@@ -100,6 +106,18 @@ try {
             sendError('User ID required', 400);
         }
         $bookingController->getMyBookings($queryParams['user_id']);
+        exit;
+    }
+
+    // Dashboard
+    if ($method === 'GET' && ($apiPath === 'dashboard' || strpos($apiPath, 'dashboard') === 0)) {
+        require_once __DIR__ . '/dashboard.php';
+        exit;
+    }
+
+    // Settings
+    if ($apiPath === 'settings' || strpos($apiPath, 'settings') === 0) {
+        require_once __DIR__ . '/settings.php';
         exit;
     }
 

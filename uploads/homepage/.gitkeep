@@ -1,0 +1,2 @@
+# Keep this directory in git to ensure the uploads/homepage path exists on the server.
+# Images uploaded via the admin panel will be stored here.

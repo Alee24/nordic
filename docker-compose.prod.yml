@@ -20,6 +20,7 @@ services:
     restart: always
     volumes:
       - ./backend/uploads:/var/www/html/backend/uploads
+      - ./backend/uploads/homepage:/var/www/html/backend/uploads/homepage
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME:-nordic_db}
