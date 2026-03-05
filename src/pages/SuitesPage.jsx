@@ -56,7 +56,7 @@ const SuitesPage = () => {
             {/* ── HERO ──────────────────────────────────────── */}
             <div className="relative h-[70vh] min-h-[500px] overflow-hidden">
                 <img
-                    src="/images/ent1.png"
+                    src="/images/lview.jpg"
                     alt="Norden Suites — Luxury Residences"
                     className="w-full h-full object-cover scale-105"
                     style={{ filter: 'brightness(0.55)' }}
@@ -333,7 +333,7 @@ const SuitesPage = () => {
             {/* ── CTA BANNER ───────────────────────────────── */}
             < div className="relative overflow-hidden" >
                 <img
-                    src="/images/IMG_7071.jpg"
+                    src="/images/bsview.jpg"
                     alt="Norden Suites"
                     className="w-full h-[400px] object-cover"
                     style={{ filter: 'brightness(0.35)' }}
