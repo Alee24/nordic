@@ -18,7 +18,7 @@ const fadeIn = (dir = 0, delay = 0) => ({
 
 const SuiteDetailsPage = () => {
     const { id } = useParams();
-    const suite = suites.find(s => s.id === parseInt(id) || s.slug === id);
+    const suite = suites.find(s => (s.id === parseInt(id) || s.slug === id) && s.active !== false);
     const openBooking = useBookingModalStore(s => s.openBooking);
     const { formatPrice } = useCurrencyStore();
 

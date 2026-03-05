@@ -15,6 +15,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import ExperiencesPage from './pages/ExperiencesPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import PesapalSuccessPage from './pages/PesapalSuccessPage';
 
 // UI Components
 import Navigation from './components/ui/Navigation';
@@ -65,6 +66,7 @@ function App() {
           <Route path="/experiences" element={<ExperiencesPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/payment/pesapal/success" element={<PesapalSuccessPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -64,7 +64,7 @@ export const suites = [
         image: '/images/b17.jpg',
         images: [
             '/images/sitting2.jpg',
-            '/images/bed2.jpg',
+            '/images/b17.jpg',
             '/images/kitchen5.jpg',
             '/images/street2.jpg'
         ],
@@ -86,8 +86,9 @@ export const suites = [
         longDescription: 'Fall asleep to the rhythm of the Indian Ocean and wake up to unobstructed sea views from your private 1 Bedroom Sea View Luxury Suite. Every detail has been curated for an exceptional coastal living experience — from the fully equipped kitchen to the premium QLED display, and complimentary teas and coffee to start your day right.',
         price: 13000,
         currency: 'KES',
-        image: '/images/b15.jpg',
+        image: '/images/b13.jpg',
         images: [
+            '/images/b16.jpg',
             '/images/bedview.jpeg',
             '/images/sitting7.jpg',
             '/images/bath1.png',
@@ -111,10 +112,10 @@ export const suites = [
         longDescription: 'The 2 Bedrooms Sea View Luxury Suite is the ultimate coastal escape. Two spacious bedrooms, a grand open-plan living area, and a fully equipped kitchen combine to create a true home away from home. The sweeping ocean panorama visible from every room elevates this suite to one of the finest offerings along the Nyali coast.',
         price: 16000,
         currency: 'KES',
-        image: '/images/b16.jpg',
+        image: '/images/bed1.jpg',
         images: [
             '/images/b11.jpg',
-            '/images/bed3.jpg',
+            '/images/b17.jpg',
             '/images/dining5.jpg',
             '/images/door2.jpg'
         ],
@@ -130,6 +131,7 @@ export const suites = [
     {
         id: 5,
         slug: 'penthouse-luxury-suite',
+        active: false,
         name: 'Penthouse',
         subtitle: 'Luxury Suite',
         description: 'The crown jewel of Norden Suites — an iconic penthouse with panoramic 360° views and the finest bespoke interiors.',

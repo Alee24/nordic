@@ -34,7 +34,7 @@ const amenityIcon = (label) => {
 };
 
 /* ── rate card rows ─────────────────────────────── */
-const rateRows = suites.map(s => ({
+const rateRows = suites.filter(s => s.active !== false).map(s => ({
     name: s.name,
     subtitle: s.subtitle,
     price: s.price,

@@ -36,6 +36,7 @@ const additionalRoutes = require('./routes/additionalRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
+const pesapalRoutes = require('./routes/pesapalRoutes');
 
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -48,6 +49,7 @@ app.use('/api', additionalRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api', settingsRoutes);
 app.use('/api/bookings', invoiceRoutes);
+app.use('/api', pesapalRoutes);
 
 const PORT = process.env.PORT || 8123;
 app.listen(PORT, '0.0.0.0', () => {
