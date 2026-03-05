@@ -86,7 +86,7 @@ export const suites = [
         longDescription: 'Fall asleep to the rhythm of the Indian Ocean and wake up to unobstructed sea views from your private 1 Bedroom Sea View Luxury Suite. Every detail has been curated for an exceptional coastal living experience — from the fully equipped kitchen to the premium QLED display, and complimentary teas and coffee to start your day right.',
         price: 13000,
         currency: 'KES',
-        image: '/images/b13.jpg',
+        image: '/images/b14.jpg',
         images: [
             '/images/b16.jpg',
             '/images/bedview.jpeg',
