@@ -69,8 +69,8 @@ const ContactPage = () => {
                         alt="Norden Suites Concierge"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-norden-dark-900/50 backdrop-blur-[1px]" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-theme-bg via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-norden-dark-900/20" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-theme-bg/60 via-transparent to-transparent" />
                 </div>
 
                 <Container size="xl" className="relative z-10 text-center">
