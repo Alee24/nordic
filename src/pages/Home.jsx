@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../components/ui/Button';
 import Section from '../components/ui/Section';
 import BookingWidget from '../components/ui/BookingWidget';
@@ -9,6 +9,44 @@ import { Group, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { suites } from '../data/suites';
 import useBookingModalStore from '../store/useBookingModalStore';
+
+const HERO_IMAGES = [
+    '/images/living13.jpg',
+    '/images/bsview.jpg',
+    '/images/lview.jpg',
+    '/images/EMS.jpg'
+];
+
+const HeroBackground = () => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+        }, 6000); // Change image every 6 seconds
+        return () => clearInterval(timer);
+    }, []);
+
+    return (
+        <div className="absolute inset-0 overflow-hidden bg-norden-dark-900 z-0">
+            <AnimatePresence mode="popLayout">
+                <motion.img
+                    key={currentIndex}
+                    src={HERO_IMAGES[currentIndex]}
+                    alt="Luxury Residences"
+                    className="absolute inset-0 w-full h-full object-cover origin-center"
+                    initial={{ scale: 1.15, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                        opacity: { duration: 1.5, ease: 'easeInOut' },
+                        scale: { duration: 8, ease: 'linear' } // Slow zoom-out effect
+                    }}
+                />
+            </AnimatePresence>
+        </div>
+    );
+};
 
 const Home = () => {
     const openBooking = useBookingModalStore(s => s.openBooking);
@@ -20,18 +58,13 @@ const Home = () => {
 
             {/* Hero Section */}
             <div className="relative h-screen w-full overflow-hidden">
-                {/* Background Image / Video */}
-                <div className="absolute inset-0">
-                    <img
-                        src="/images/living13.jpg"
-                        alt="Norden Suites — Luxury Lifestyle"
-                        className="w-full h-full object-cover"
-                    />
-                    {/* Darker overall overlay to ensure text visibility regardless of theme */}
-                    <div className="absolute inset-0 bg-norden-dark-900/40" />
-                    {/* Fixed dark gradient to protect white text in both themes - prevents washing out in light mode */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-norden-dark-900/60 via-transparent to-norden-dark-900/40" />
-                </div>
+                {/* Animated Background Slideshow */}
+                <HeroBackground />
+
+                {/* Darker overall overlay to ensure text visibility regardless of theme */}
+                <div className="absolute inset-0 bg-norden-dark-900/40 pointer-events-none z-0" />
+                {/* Fixed dark gradient to protect white text in both themes - prevents washing out in light mode */}
+                <div className="absolute inset-0 bg-gradient-to-b from-norden-dark-900/60 via-transparent to-norden-dark-900/40 pointer-events-none z-0" />
 
                 {/* Hero Content */}
                 <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
