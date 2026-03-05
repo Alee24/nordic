@@ -11,10 +11,11 @@ import { suites } from '../data/suites';
 import useBookingModalStore from '../store/useBookingModalStore';
 
 const HERO_IMAGES = [
-    '/images/living13.jpg',
-    '/images/bsview.jpg',
-    '/images/lview.jpg',
-    '/images/EMS.jpg'
+    '/images/living2_1.jpg',
+    '/images/living2_2.jpg',
+    '/images/living2_3.jpg',
+    '/images/living2_4.jpg',
+    '/images/living2_5.jpg'
 ];
 
 const HeroBackground = () => {
