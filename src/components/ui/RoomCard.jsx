@@ -1,72 +1,79 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Button from './Button';
-import { ArrowRight, Wifi, Coffee, Tv } from 'lucide-react';
+import { Users, Maximize, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import useCurrencyStore from '../../store/useCurrencyStore';
+import useBookingModalStore from '../../store/useBookingModalStore';
 
 const RoomCard = ({ room }) => {
     const navigate = useNavigate();
-    const { formatPrice } = useCurrencyStore();
+    const openBooking = useBookingModalStore(s => s.openBooking);
 
     return (
         <motion.div
-            whileHover={{ y: -15, scale: 1.02 }}
+            whileHover={{ y: -5, shadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             onClick={() => navigate(`/suite/${room.id}`)}
-            className="group relative overflow-hidden rounded-xl shadow-2xl bg-theme-surface h-[500px] w-full md:w-[350px] flex-shrink-0 transition-all duration-500 ease-out cursor-pointer"
+            className="group relative flex flex-col overflow-hidden rounded-xl border border-theme-border shadow-sm bg-theme-surface h-[440px] w-full md:w-[350px] flex-shrink-0 transition-all duration-300 ease-out cursor-pointer"
         >
-            <div className="absolute inset-0 z-0">
+            {/* Top Image Area */}
+            <div className="relative h-[220px] w-full overflow-hidden shrink-0">
                 <img
                     src={room.image}
                     alt={room.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     onError={e => {
                         e.target.src = '/images/b11.jpg';
                     }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-norden-dark-900/90 via-norden-dark-900/40 to-transparent" />
-                {/* Glint Effect */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                {/* Badge */}
+                {room.badge && (
+                    <div className="absolute top-4 left-4 z-10">
+                        <span className="inline-block px-3 py-1 bg-norden-gold-500 text-norden-dark-900 text-[10px] font-black uppercase tracking-widest rounded-sm shadow-md">
+                            {room.badge}
+                        </span>
+                    </div>
+                )}
             </div>
 
-            {/* Badge */}
-            {room.badge && (
-                <div className="absolute top-4 left-4 z-10">
-                    <span className="inline-block px-3 py-1 bg-norden-gold-500 text-norden-dark-900 text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                        {room.badge}
-                    </span>
-                </div>
-            )}
+            {/* Bottom Content Area */}
+            <div className="p-6 flex flex-col flex-grow bg-theme-surface">
+                <h3 className="text-xl font-medium text-theme-text mb-5">{room.name}</h3>
 
-            <div className="absolute bottom-0 left-0 right-0 p-6 z-10 flex flex-col justify-end h-full">
-                <h3 className="text-2xl font-serif text-white mb-1 drop-shadow-md">{room.name}</h3>
-                {room.subtitle && (
-                    <p className="text-norden-gold-400 text-xs font-bold uppercase tracking-widest mb-2">{room.subtitle}</p>
-                )}
-                <p className="text-gray-200 text-sm mb-4 line-clamp-2 drop-shadow-sm">{room.description}</p>
-
-                <div className="flex gap-4 mb-6 text-norden-gold-400">
-                    <Wifi size={18} className="drop-shadow-sm" />
-                    <Coffee size={18} className="drop-shadow-sm" />
-                    <Tv size={18} className="drop-shadow-sm" />
+                <div className="flex flex-col gap-3 mb-6">
+                    <div className="flex items-center text-sm text-theme-muted gap-3">
+                        <Users size={18} className="text-norden-gold-600" />
+                        <span>Max {room.capacity || 2} paxs</span>
+                    </div>
+                    <div className="flex items-center text-sm text-theme-muted gap-3">
+                        <Maximize size={18} className="text-norden-gold-600" />
+                        <span>{room.size || '60 sqm / 646 sqft'}</span>
+                    </div>
                 </div>
 
-                <div className="flex justify-between items-center transition-all duration-300 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
-                    <span className="text-xl font-bold text-white drop-shadow-md">
-                        {formatPrice(room.price || 0)}
-                        <span className="text-sm font-normal text-gray-300 ml-1">/ night</span>
-                    </span>
-                    <Link to={`/suite/${room.id}`} onClick={e => e.stopPropagation()}>
-                        <Button
-                            variant="outline"
-                            className="!px-4 !py-2 text-sm flex items-center gap-2 border-white/40 text-white hover:bg-white hover:text-norden-dark-900"
-                        >
-                            View <ArrowRight size={14} />
-                        </Button>
-                    </Link>
+                {/* Buttons (pushed to bottom) */}
+                <div className="mt-auto grid grid-cols-2 gap-3">
+                    <Button
+                        variant="outline"
+                        className="w-full text-theme-text border-theme-border hover:bg-theme-border/50 text-sm font-medium h-11"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/suite/${room.id}`);
+                        }}
+                    >
+                        Learn more
+                    </Button>
+                    <Button
+                        className="w-full bg-norden-gold-600 hover:bg-norden-gold-500 text-norden-dark-900 text-sm font-bold h-11"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            openBooking(room.id);
+                        }}
+                    >
+                        Book now
+                    </Button>
                 </div>
             </div>
         </motion.div>
