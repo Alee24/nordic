@@ -89,16 +89,18 @@ const Home = () => {
                             security and convenience of a professional concierge. Your home away from home.
                         </p>
 
-                        <div className="flex flex-col md:flex-row gap-6 justify-center">
-                            <Link to="/suites">
-                                <Button className="bg-norden-gold-500 text-norden-dark-900">View Residences</Button>
+                        <div className="flex flex-col md:flex-row gap-4 justify-center">
+                            <Link to="/suites" className="w-full md:w-52">
+                                <Button className="w-full h-14 bg-norden-gold-500 text-norden-dark-900 font-semibold text-lg flex items-center justify-center">
+                                    View Residences
+                                </Button>
                             </Link>
                             <Button
                                 variant="outline"
-                                className="text-white border-white/40 hover:bg-white hover:text-norden-dark-900"
+                                className="w-full md:w-52 h-14 text-white border-white/40 hover:bg-white hover:text-norden-dark-900 font-semibold text-lg flex items-center justify-center"
                                 onClick={() => openBooking()}
                             >
-                                <CalendarCheck size={16} className="mr-2" /> Book Now
+                                <CalendarCheck size={18} className="mr-2" /> Book Now
                             </Button>
                         </div>
                     </motion.div>
