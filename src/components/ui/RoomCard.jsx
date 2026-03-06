@@ -57,7 +57,7 @@ const RoomCard = ({ room }) => {
                 <div className="mt-auto grid grid-cols-2 gap-3">
                     <Button
                         variant="outline"
-                        className="w-full text-theme-text border-theme-border hover:bg-theme-border/50 text-sm font-medium h-11"
+                        className="w-full text-theme-text border-theme-border hover:bg-theme-border/50 text-xs md:text-sm font-semibold h-11 px-1 whitespace-nowrap tracking-wide"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/suite/${room.id}`);
@@ -66,7 +66,7 @@ const RoomCard = ({ room }) => {
                         Learn more
                     </Button>
                     <Button
-                        className="w-full bg-norden-gold-600 hover:bg-norden-gold-500 text-norden-dark-900 text-sm font-bold h-11"
+                        className="w-full bg-norden-gold-600 hover:bg-norden-gold-500 text-norden-dark-900 text-xs md:text-sm font-bold h-11 px-1 whitespace-nowrap tracking-wide"
                         onClick={(e) => {
                             e.stopPropagation();
                             openBooking(room.id);

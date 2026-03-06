@@ -44,7 +44,7 @@ export const suites = [
             '/images/street1.png'
         ],
         capacity: 2,
-        size: '65 sqm',
+        size: '65 sqm / 700 sqft',
         view: 'City View',
         bedrooms: 1,
         type: 'City View',
@@ -69,7 +69,7 @@ export const suites = [
             '/images/street2.jpg'
         ],
         capacity: 4,
-        size: '95 sqm',
+        size: '130 sqm / 1500 sqft',
         view: 'City View',
         bedrooms: 2,
         type: 'City View',
@@ -95,7 +95,7 @@ export const suites = [
             '/images/b11.jpg'
         ],
         capacity: 2,
-        size: '70 sqm',
+        size: '70 sqm / 753 sqft',
         view: 'Sea View',
         bedrooms: 1,
         type: 'Sea View',
@@ -120,7 +120,7 @@ export const suites = [
             '/images/door2.jpg'
         ],
         capacity: 4,
-        size: '110 sqm',
+        size: '130 sqm / 1500 sqft',
         view: 'Sea View',
         bedrooms: 2,
         type: 'Sea View',
@@ -146,7 +146,7 @@ export const suites = [
             '/images/b12.jpg'
         ],
         capacity: 2,
-        size: '150 sqm',
+        size: '150 sqm / 1614 sqft',
         view: '360° Panoramic View',
         bedrooms: 1,
         type: 'Penthouse',
