@@ -44,9 +44,10 @@ const rooms = [
 async function main() {
     console.log('🌱 Refreshing Norden Suites rooms to match final list...');
 
-    // Delete all existing rooms to ensure exactly these 4 remain
+    // Delete all existing entries to avoid foreign key errors
+    await prisma.booking.deleteMany({});
     await prisma.room.deleteMany({});
-    console.log('✔ Cleared existing rooms.');
+    console.log('✔ Cleared existing bookings and rooms.');
 
     for (const room of rooms) {
         await prisma.room.create({ data: room });
