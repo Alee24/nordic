@@ -15,8 +15,6 @@ services:
       MYSQL_DATABASE: nordic_db
       MYSQL_USER: nordic_user
       MYSQL_PASSWORD: nordic_password
-    ports:
-      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
