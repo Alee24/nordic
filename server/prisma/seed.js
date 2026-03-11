@@ -40,11 +40,11 @@ const rooms = [
         imageUrl: '/images/b16.jpg',
     },
     {
-        name: 'Penthouse',
-        type: 'Penthouse',
-        price: 14000,
+        name: 'Executive Suite',
+        type: 'Executive',
+        price: 0,
         status: 'available',
-        description: 'The crown jewel of Norden Suites — an iconic penthouse with panoramic 360° views and the finest bespoke interiors.',
+        description: 'Elite living for the modern professional. A beautifully designed executive suite with dedicated workspace and premium comfort.',
         imageUrl: '/images/b14.jpg',
     },
 ];

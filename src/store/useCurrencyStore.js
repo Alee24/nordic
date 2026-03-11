@@ -10,7 +10,10 @@ const useCurrencyStore = create(
             setCurrency: (currency) => set({ currency }),
             toggleCurrency: () => set((state) => ({ currency: state.currency === 'KES' ? 'USD' : 'KES' })),
             formatPrice: (priceKES) => {
-                const price = Number(priceKES) || 0;
+                if (priceKES === null || priceKES === undefined || isNaN(Number(priceKES)) || Number(priceKES) <= 0) {
+                    return 'Coming Soon';
+                }
+                const price = Number(priceKES);
                 const { currency } = get();
                 if (currency === 'USD') {
                     const priceUSD = Math.round(price * KES_TO_USD_RATE);
