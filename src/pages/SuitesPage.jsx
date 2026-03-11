@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Section from '../components/ui/Section';
 import { motion, AnimatePresence } from 'framer-motion';
-import { suites, GUEST_AMENITIES, BOOKING_INFO } from '../data/suites';
+import { suites, GUEST_AMENITIES_CATEGORIES, BOOKING_INFO } from '../data/suites';
 import {
     Wifi, Coffee, Tv, Car, Phone, Mail, Users, Maximize, MapPin,
     CheckCircle2, ArrowRight, Utensils, Droplets, Wind, Star,
@@ -185,21 +185,32 @@ const SuitesPage = () => {
                         </p>
                     </motion.div>
 
-                    <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-5xl mx-auto">
-                        {GUEST_AMENITIES.map((amenity, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={fadeUp}
-                                whileHover={{ y: -4, borderColor: 'rgba(212,175,55,0.5)' }}
-                                className="flex items-start gap-3 p-5 bg-theme-bg rounded-xl border border-theme-border hover:border-norden-gold-500/40 transition-all duration-300 group"
-                            >
-                                <div className="text-norden-gold-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
-                                    {amenityIcon(amenity)}
+                    <div className="space-y-16 max-w-5xl mx-auto">
+                        {Object.entries(GUEST_AMENITIES_CATEGORIES).map(([category, items], catIdx) => (
+                            <div key={category}>
+                                <h3 className="text-xs lg:text-sm uppercase tracking-[0.4em] font-black text-norden-gold-500 mb-8 text-center flex items-center justify-center gap-4">
+                                    <span className="w-12 h-[1px] bg-norden-gold-500/20"></span>
+                                    {category}
+                                    <span className="w-12 h-[1px] bg-norden-gold-500/20"></span>
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {items.map((amenity, idx) => (
+                                        <motion.div
+                                            key={idx}
+                                            variants={fadeUp}
+                                            whileHover={{ y: -4, borderColor: 'rgba(212,175,55,0.5)' }}
+                                            className="flex items-start gap-3 p-5 bg-theme-bg rounded-xl border border-theme-border hover:border-norden-gold-500/40 transition-all duration-300 group"
+                                        >
+                                            <div className="text-norden-gold-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
+                                                {amenityIcon(amenity)}
+                                            </div>
+                                            <span className="text-theme-text text-sm leading-relaxed font-medium">{amenity}</span>
+                                        </motion.div>
+                                    ))}
                                 </div>
-                                <span className="text-theme-text text-sm leading-relaxed font-medium">{amenity}</span>
-                            </motion.div>
+                            </div>
                         ))}
-                    </motion.div>
+                    </div>
 
                     {/* Icon Legend Row */}
                     <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-8 mt-14 pt-10 border-t border-theme-border">

@@ -1,58 +1,61 @@
 // 2026 Rate Card — Norden Suites
 // Rates are in Kenya Shillings (KES), per room per night, inclusive of VAT
 
-export const GUEST_AMENITIES = [
-    // Core Suite Features
-    'Fully equipped Kitchen with Crockeries & Cutleries',
-    'Fridge',
-    'Cooking panel with Gas',
-    'QLED High definition TV\'s',
-    'Coffee & Tea making facility in the suites',
-    'Complimentary Teas & Coffee',
-    'Bottled Mineral Water',
-    'Free high speed Wi-Fi Internet access',
-    'Air conditioning',
-    'In-room Safe deposit boxes',
-    'Non-smoking rooms',
+export const GUEST_AMENITIES_CATEGORIES = {
+    'Core Suite Features': [
+        'Fully equipped Kitchen with Crockeries & Cutleries',
+        'Fridge',
+        'Cooking panel with Gas',
+        'QLED High definition TV\'s',
+        'Coffee & Tea making facility in the suites',
+        'Complimentary Teas & Coffee',
+        'Bottled Mineral Water',
+        'Free high speed Wi-Fi Internet access',
+        'Air conditioning',
+        'In-room Safe deposit boxes',
+        'Non-smoking rooms',
+    ],
+    'Cleaning & COVID Safety': [
+        'Cleaning chemicals used are effective against COVID',
+        'All rooms disinfected daily',
+        'Daily Housekeeping',
+        'Hand sanitizer provided',
+        'Guest accommodations disinfected between stays',
+        'Linens, towels, laundry washed per local authority guidelines',
+        'Linens & towels changed upon request',
+    ],
+    'Services & Facilities': [
+        '24-hour Front desk & Security',
+        'CCTV in common areas and outside property',
+        'Express check-in / check-out',
+        'Elevator / Lift access',
+        'Free Guest Parking',
+        'Laundry & Dry Cleaning services (Chargeable)',
+        'Ironing Service',
+        'Baggage storage',
+        'Room service (24 hours)',
+    ],
+    'Accessibility': [
+        'Property has wheelchair access',
+        'Accessible Parking',
+        'Facilities for disabled guests',
+        'Raised toilet',
+    ],
+    'Sustainability': [
+        'Refillable water stations',
+        'Single-use plastics removed',
+        'Key card or motion-controlled electricity',
+    ],
+    'General': [
+        'Terrace & Common Areas',
+        'Smoke-free property',
+        'Family rooms available',
+        'Welcome drink upon arrival',
+        'Taxi service & Transfers (Chargeable)',
+    ]
+};
 
-    // Cleaning & Hygiene (COVID Safety)
-    'Cleaning chemicals used are effective against COVID',
-    'All rooms disinfected daily',
-    'Daily Housekeeping',
-    'Hand sanitizer provided',
-    'Guest accommodations disinfected between stays',
-    'Linens, towels, laundry washed per local authority guidelines',
-    'Linens & towels changed upon request',
-
-    // Building & Services
-    '24-hour Front desk & Security',
-    'CCTV in common areas and outside property',
-    'Express check-in / check-out',
-    'Elevator / Lift access',
-    'Free Guest Parking',
-    'Laundry & Dry Cleaning services (Chargeable)',
-    'Ironing Service',
-    'Baggage storage',
-    'Room service (24 hours)',
-
-    // Accessibility
-    'Property has wheelchair access',
-    'Accessible Parking',
-    'Facilities for disabled guests',
-    'Raised toilet',
-
-    // Environment & Sustainability
-    'Refillable water stations',
-    'Single-use plastics removed',
-    'Key card or motion-controlled electricity',
-
-    // General
-    'Terrace & Common Areas',
-    'Smoke-free property',
-    'Family rooms available',
-    'Welcome drink upon arrival',
-    'Taxi service & Transfers (Chargeable)',
-];
+export const GUEST_AMENITIES = Object.values(GUEST_AMENITIES_CATEGORIES).flat();
 
 export const BOOKING_INFO = {
     note: 'Room rates are quoted in Kenya Shillings (KES) on per room per night, inclusive of VAT.',

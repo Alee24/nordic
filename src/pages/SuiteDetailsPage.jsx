@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { suites, BOOKING_INFO } from '../data/suites';
+import { suites, BOOKING_INFO, GUEST_AMENITIES_CATEGORIES } from '../data/suites';
 import Section from '../components/ui/Section';
 import {
     Wifi, Coffee, Tv, Car, Phone, Mail,
@@ -136,22 +136,33 @@ const SuiteDetailsPage = () => {
                                 <Diamond size={18} className="text-norden-gold-500" />
                                 <h2 className="text-2xl font-serif text-theme-text">Guest Amenities</h2>
                             </div>
-                            <p className="text-theme-muted text-sm mb-6">
+                            <p className="text-theme-muted text-sm mb-10">
                                 Every Norden Suites residence comes complete with the following premium amenities, included in your stay.
                             </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {suite.amenities.map((amenity, idx) => (
-                                    <motion.div
-                                        key={idx}
-                                        initial={{ opacity: 0, x: -10 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: idx * 0.04 }}
-                                        className="flex items-start gap-3 p-4 rounded-xl bg-theme-surface border border-theme-border hover:border-norden-gold-500/30 transition-colors duration-300 group"
-                                    >
-                                        <CheckCircle2 size={16} className="text-norden-gold-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                                        <span className="text-sm text-theme-text/80 font-medium">{amenity}</span>
-                                    </motion.div>
+
+                            <div className="space-y-12">
+                                {Object.entries(GUEST_AMENITIES_CATEGORIES).map(([category, items], catIdx) => (
+                                    <div key={category}>
+                                        <h3 className="text-xs uppercase tracking-[0.25em] font-black text-norden-gold-500 mb-6 flex items-center gap-3">
+                                            <span className="w-8 h-[1px] bg-norden-gold-500/30"></span>
+                                            {category}
+                                        </h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            {items.map((amenity, idx) => (
+                                                <motion.div
+                                                    key={idx}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    whileInView={{ opacity: 1, x: 0 }}
+                                                    viewport={{ once: true }}
+                                                    transition={{ delay: idx * 0.02 }}
+                                                    className="flex items-start gap-3 p-4 rounded-xl bg-theme-surface border border-theme-border hover:border-norden-gold-500/30 transition-colors duration-300 group"
+                                                >
+                                                    <CheckCircle2 size={16} className="text-norden-gold-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                                                    <span className="text-sm text-theme-text/80 font-medium">{amenity}</span>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         </motion.div>
