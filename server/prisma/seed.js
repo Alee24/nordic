@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // Norden Suites — Database Seed
-// Seeds exactly 5 suites as shown in the screenshot.
+// Seeds exactly 4 suites with "Suite" naming convention.
 // Run with:  node server/prisma/seed.js
 // ─────────────────────────────────────────────
 const { PrismaClient } = require('@prisma/client');
@@ -8,15 +8,15 @@ const prisma = new PrismaClient();
 
 const rooms = [
     {
-        name: '1 Bedroom City View',
-        type: 'City View',
+        name: '1 Bedroom Suite',
+        type: 'Luxury Suite',
         price: 12000,
         status: 'available',
-        description: 'A sophisticated one-bedroom suite with stunning panoramic city views.',
+        description: 'A sophisticated one-bedroom suite with a fully equipped kitchen and premium finishes.',
         imageUrl: '/images/b13.jpg',
     },
     {
-        name: '2 Bedrooms City View',
+        name: '2 Bedroom Suite City View',
         type: 'City View',
         price: 15000,
         status: 'available',
@@ -24,15 +24,7 @@ const rooms = [
         imageUrl: '/images/b17.jpg',
     },
     {
-        name: '1 Bedroom Sea View',
-        type: 'Sea View',
-        price: 13000,
-        status: 'available',
-        description: 'A breathtaking one-bedroom suite with unobstructed ocean views.',
-        imageUrl: '/images/b14.jpg',
-    },
-    {
-        name: '2 Bedrooms Sea View',
+        name: '2 Bedroom Suite Sea View',
         type: 'Sea View',
         price: 16000,
         status: 'available',
@@ -50,9 +42,9 @@ const rooms = [
 ];
 
 async function main() {
-    console.log('🌱 Refreshing Norden Suites rooms to match original list...');
+    console.log('🌱 Refreshing Norden Suites rooms to match final list...');
 
-    // Delete all existing rooms to ensure exactly these 5 remain
+    // Delete all existing rooms to ensure exactly these 4 remain
     await prisma.room.deleteMany({});
     console.log('✔ Cleared existing rooms.');
 
