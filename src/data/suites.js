@@ -136,7 +136,7 @@ export const suites = [
             '/images/b11.jpg'
         ],
         capacity: 2,
-        size: '70 sqm / 753 sqft',
+        size: '130 sqm / 1400 sqft',
         view: 'Sea View',
         bedrooms: 1,
         type: 'Sea View',
