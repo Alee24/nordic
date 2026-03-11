@@ -25,7 +25,7 @@ app.use(cors({
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', database: 'postgres' });
+    res.json({ status: 'ok', database: 'mysql' });
 });
 
 const authRoutes = require('./routes/authRoutes');
