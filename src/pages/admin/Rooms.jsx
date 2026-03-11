@@ -61,6 +61,7 @@ const isRealImage = (url) => {
 const emptyForm = {
     name: '', type: 'suite', price: 0,
     description: '', imageUrl: '', status: 'available',
+    cloudbeds_id: '',
 };
 
 const Rooms = () => {
@@ -101,6 +102,7 @@ const Rooms = () => {
             name: room.name || '', type: room.type || 'suite',
             price: Number(room.price) || 0, description: room.description || '',
             imageUrl: img, status: room.status || 'available',
+            cloudbeds_id: room.cloudbeds_id || '',
         });
         open();
     };
@@ -153,6 +155,7 @@ const Rooms = () => {
                 name: formData.name.trim(), type: formData.type,
                 price: formData.price, description: formData.description.trim(),
                 imageUrl: formData.imageUrl || null, status: formData.status,
+                cloudbeds_id: formData.cloudbeds_id.trim() || null,
             };
             const response = isEdit
                 ? await dashboardService.updateRoom(selectedRoom.id, payload)
@@ -285,6 +288,14 @@ const Rooms = () => {
                         <NumberInput label="Price per Night (KES)" placeholder="e.g. 12000" required min={0}
                             prefix="KES " thousandSeparator="," value={formData.price}
                             onChange={(val) => setFormData({ ...formData, price: val })} />
+
+                        <TextInput
+                            label="Cloudbeds Room Type ID"
+                            placeholder="e.g. 123456"
+                            description="Used to sync bookings with Cloudbeds Engine"
+                            value={formData.cloudbeds_id}
+                            onChange={(e) => setFormData({ ...formData, cloudbeds_id: e.target.value })}
+                        />
                         <Textarea label="Description" placeholder="Describe the room..." minRows={3}
                             value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
 

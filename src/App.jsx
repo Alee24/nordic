@@ -27,6 +27,10 @@ import ScrollToTop from './utils/ScrollToTop';
 import BookingFlowModal from './components/booking/BookingFlowModal';
 import useBookingModalStore from './store/useBookingModalStore';
 
+// Comparison components
+import ComparisonTray from './components/ui/ComparisonTray';
+import ComparisonModal from './components/ui/ComparisonModal';
+
 // Store
 import useManagementStore from './store/useManagementStore';
 
@@ -73,6 +77,10 @@ function App() {
 
       <Footer />
       <SocialProof />
+
+      {/* Comparison components */}
+      <ComparisonTray />
+      <ComparisonModal />
 
       {/* Global Booking Modal — driven by useBookingModalStore */}
       <BookingFlowModal opened={isOpen} onClose={closeBooking} />

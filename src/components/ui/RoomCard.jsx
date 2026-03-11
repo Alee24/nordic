@@ -1,13 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Button from './Button';
-import { Users, Maximize, ArrowRight } from 'lucide-react';
+import { Users, Maximize, ArrowRight, ArrowRightLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import useBookingModalStore from '../../store/useBookingModalStore';
+import useComparisonStore from '../../store/useComparisonStore';
 
 const RoomCard = ({ room }) => {
     const navigate = useNavigate();
     const openBooking = useBookingModalStore(s => s.openBooking);
+    const { toggleRoom, selectedRooms } = useComparisonStore();
+    const isSelected = selectedRooms.some(r => r.id === room.id);
 
     return (
         <motion.div
@@ -31,11 +34,31 @@ const RoomCard = ({ room }) => {
                 {/* Badge */}
                 {room.badge && (
                     <div className="absolute top-4 left-4 z-10">
-                        <span className="inline-block px-3 py-1 bg-norden-gold-500 text-norden-dark-900 text-[10px] font-black uppercase tracking-widest rounded-sm shadow-md">
+                        <span className="inline-block px-3 py-1 bg-theme-accent text-white text-[10px] font-black uppercase tracking-widest rounded-sm shadow-md">
                             {room.badge}
                         </span>
                     </div>
                 )}
+
+                {/* Compare Button */}
+                <div className="absolute top-4 right-4 z-10">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleRoom(room);
+                        }}
+                        className={`p-2 rounded-full backdrop-blur-md border transition-all duration-300 flex items-center justify-center gap-2 group/btn ${isSelected
+                            ? 'bg-theme-accent border-theme-accent text-white shadow-lg scale-110'
+                            : 'bg-white/40 border-theme-border text-theme-text hover:bg-theme-accent hover:text-white'
+                            }`}
+                        title={isSelected ? "Remove from comparison" : "Add to comparison"}
+                    >
+                        <ArrowRightLeft size={16} className={`${isSelected ? 'rotate-180' : ''} transition-transform duration-500`} />
+                        <span className="max-w-0 overflow-hidden group-hover/btn:max-w-xs transition-all duration-300 text-[10px] font-black uppercase tracking-tighter whitespace-nowrap">
+                            {isSelected ? 'Selected' : 'Compare'}
+                        </span>
+                    </button>
+                </div>
             </div>
 
             {/* Bottom Content Area */}
@@ -66,7 +89,7 @@ const RoomCard = ({ room }) => {
                         Learn more
                     </Button>
                     <Button
-                        className="w-full bg-norden-gold-600 hover:bg-norden-gold-500 text-norden-dark-900 text-xs md:text-sm font-bold h-11 px-1 whitespace-nowrap tracking-wide"
+                        className="w-full bg-theme-accent hover:bg-theme-accent-hover text-white text-xs md:text-sm font-bold h-11 px-1 whitespace-nowrap tracking-wide"
                         onClick={(e) => {
                             e.stopPropagation();
                             openBooking(room.id);

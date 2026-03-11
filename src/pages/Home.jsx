@@ -81,7 +81,7 @@ const Home = () => {
                         </div>
 
                         <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-serif text-white mb-8 tracking-tighter drop-shadow-2xl leading-none">
-                            NORDEN <span className="italic text-norden-gold-500 font-light underline decoration-norden-gold-500/30 underline-offset-8">Suites</span>
+                            NORDEN <span className="italic text-theme-accent font-light underline decoration-theme-accent/30 underline-offset-8">Suites</span>
                         </h1>
 
                         <p className="max-w-2xl mx-auto text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md">
@@ -91,7 +91,7 @@ const Home = () => {
 
                         <div className="flex flex-col md:flex-row gap-4 justify-center">
                             <Link to="/suites" className="w-full md:w-52">
-                                <Button className="w-full h-14 bg-norden-gold-500 text-norden-dark-900 font-semibold text-lg flex items-center justify-center">
+                                <Button className="w-full h-14 bg-theme-accent text-white font-semibold text-lg flex items-center justify-center">
                                     View Residences
                                 </Button>
                             </Link>

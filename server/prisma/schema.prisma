@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -26,6 +26,7 @@ model Room {
   status      String   @default("available") // 'available', 'occupied', 'maintenance'
   description String?
   imageUrl    String?
+  cloudbeds_id String?
   bookings    Booking[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -33,7 +34,7 @@ model Room {
 
 model Booking {
   id            Int      @id @default(autoincrement())
-  reference     String?  @unique @default(cuid())
+  reference     String?  @unique @default(uuid())
   userId        Int
   roomId        Int
   checkIn       DateTime

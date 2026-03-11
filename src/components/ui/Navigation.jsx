@@ -51,7 +51,7 @@ const Navigation = () => {
                     <img
                         src="/images/mlogo.png"
                         alt="Norden Suites"
-                        className={`h-12 w-auto object-contain transition-all duration-500 drop-shadow-lg ${scrolled ? 'brightness-100' : 'brightness-0 invert'
+                        className={`h-12 w-auto object-contain transition-all duration-500 drop-shadow-lg ${scrolled ? '' : ''
                             }`}
                         onError={e => { e.target.style.display = 'none'; }}
                     />
@@ -114,7 +114,7 @@ const Navigation = () => {
                         >
                             {currency}
                         </Button>
-                        <ThemeToggle />
+                        {/* <ThemeToggle /> */}
                         <Button
                             className="bg-norden-gold-500 text-norden-dark-900 font-bold px-8 rounded-full hover:scale-105 transition-transform uppercase text-xs tracking-widest"
                             size="md"
@@ -134,7 +134,7 @@ const Navigation = () => {
                     >
                         {currency}
                     </Button>
-                    <ThemeToggle />
+                    {/* <ThemeToggle /> */}
                     <ActionIcon
                         variant="transparent"
                         className={`${scrolled ? 'text-theme-text' : 'text-white'} transition-colors duration-500`}
@@ -158,7 +158,6 @@ const Navigation = () => {
                                 <Stack gap="md">
                                     <Link to="/" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Home</Link>
                                     <Link to="/suites" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Home /> Residences</Link>
-
                                     <Link to="/experiences" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><Compass /> Experience</Link>
                                     <Link to="/contact" onClick={() => setIsOpen(false)} className="text-3xl font-serif text-theme-text flex items-center gap-4"><MessageSquare /> Contact</Link>
                                 </Stack>

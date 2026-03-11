@@ -207,7 +207,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                     <ThemeIcon size="lg" radius="xl" variant="light" color="gold">
                                         <IconCalendar size={20} />
                                     </ThemeIcon>
-                                    <Text fw={700} size="xl" c="dark.8">Select Your Dates</Text>
+                                    <Text fw={700} size="xl">Select Your Dates</Text>
                                 </Group>
                                 <Text size="sm" c="dimmed" mb="lg">
                                     Choose your check-in and check-out dates to see available suites
@@ -273,7 +273,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                     <ThemeIcon size="lg" radius="xl" variant="light" color="gold">
                                         <IconUsers size={20} />
                                     </ThemeIcon>
-                                    <Text fw={700} size="xl" c="dark.8">Number of Guests</Text>
+                                    <Text fw={700} size="xl">Number of Guests</Text>
                                 </Group>
 
                                 <NumberInput
@@ -306,7 +306,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                 <ThemeIcon size="lg" radius="xl" variant="light" color="gold">
                                     <IconBed size={20} />
                                 </ThemeIcon>
-                                <Text fw={700} size="xl" c="dark.8">Choose Your Suite</Text>
+                                <Text fw={700} size="xl">Choose Your Suite</Text>
                             </Group>
                             <Text size="sm" c="dimmed" mb="md">
                                 Select from our luxury accommodations for {numberOfNights} {numberOfNights === 1 ? 'night' : 'nights'}
@@ -361,7 +361,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                                         />
                                                         <Box style={{ flex: 1 }}>
                                                             <Group justify="space-between" mb="xs">
-                                                                <Text fw={700} size="lg" c="dark.8">{room.name}</Text>
+                                                                <Text fw={700} size="lg">{room.name}</Text>
                                                                 {selectedRoom?.id === room.id && (
                                                                     <ThemeIcon color="gold" radius="xl" size="lg" variant="light">
                                                                         <IconCheck size={18} />
@@ -424,7 +424,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                     <ThemeIcon size="lg" radius="xl" variant="light" color="gold">
                                         <IconUser size={20} />
                                     </ThemeIcon>
-                                    <Text fw={700} size="xl" c="dark.8">Guest Information</Text>
+                                    <Text fw={700} size="xl">Guest Information</Text>
                                 </Group>
                                 <Text size="sm" c="dimmed" mb="lg">
                                     Please provide your contact details for the reservation
@@ -514,7 +514,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                     <ThemeIcon size="lg" radius="xl" variant="light" color="gold">
                                         <IconCircleCheck size={20} />
                                     </ThemeIcon>
-                                    <Text fw={700} size="xl" c="dark.8">Review Your Booking</Text>
+                                    <Text fw={700} size="xl">Review Your Booking</Text>
                                 </Group>
                                 <Text size="sm" c="dimmed" mb="lg">
                                     Please review all details before confirming
@@ -627,7 +627,7 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                     <ThemeIcon size="lg" radius="xl" variant="light" color="gold">
                                         <IconCreditCard size={20} />
                                     </ThemeIcon>
-                                    <Text fw={700} size="xl" c="dark.8">Payment Method</Text>
+                                    <Text fw={700} size="xl">Payment Method</Text>
                                 </Group>
                                 <Text size="sm" c="dimmed" mb="lg">
                                     Choose how you'd like to complete your payment

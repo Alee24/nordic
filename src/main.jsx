@@ -22,7 +22,7 @@ if (!container) {
   const root = createRoot(container)
   root.render(
     <React.StrictMode>
-      <MantineProvider defaultColorScheme="dark">
+      <MantineProvider defaultColorScheme="light">
         <Notifications position="top-right" />
         <BrowserRouter>
           <App />

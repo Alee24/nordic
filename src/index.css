@@ -42,39 +42,30 @@
 
 @layer base {
   :root {
-    --color-bg: #0C0D0E;
-    /* Midnight Lounge */
-    --color-text: #F8F9FA;
-    /* Frost White */
-    --color-surface: #1A1B1E;
-    /* Slate Gray */
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-muted: #909296;
-    --color-accent: #D4AF37;
-    /* Brushed Champagne */
-    --color-accent-hover: #E6AF17;
+    --color-bg: #E3F2FD; /* Soft Sky Blue Light */
+    --color-text: #1A237E; /* Deep Navy Blue for contrast */
+    --color-surface: #FFFFFF; /* Clean White Surface */
+    --color-border: #BBDEFB; /* Light Blue Border */
+    --color-muted: #546E7A; /* Blue-Gray Muted */
+    --color-accent: #0288D1; /* Sky Blue Accent */
+    --color-accent-hover: #039BE5; /* Lighter Sky Blue */
 
-    --glass-bg: rgba(0, 0, 0, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(2, 136, 209, 0.2);
   }
 
-  /* Mantine's light theme selector - Coastal Morning */
-  [data-mantine-color-scheme="light"] {
-    --color-bg: #FBFBFB;
-    /* Soft Bone */
-    --color-text: #1A1B1E;
-    /* Midnight Slate */
+  /* Force light theme - Coastal Morning (Sky Blue version) */
+  [data-mantine-color-scheme] {
+    --color-bg: #E3F2FD;
+    --color-text: #1A237E;
     --color-surface: #FFFFFF;
-    /* High-end Surface */
-    --color-border: #E1E8ED;
-    /* Norden Frost border */
-    --color-muted: #5C5F66;
-    --color-accent: #C49B2D;
-    /* Optimized Gold for Light */
-    --color-accent-hover: #AA8C2C;
+    --color-border: #BBDEFB;
+    --color-muted: #546E7A;
+    --color-accent: #0288D1;
+    --color-accent-hover: #039BE5;
 
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(2, 136, 209, 0.2);
   }
 
   html {

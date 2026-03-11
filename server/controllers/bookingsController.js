@@ -64,6 +64,32 @@ const createBooking = async (req, res) => {
             }
         });
 
+        // INTEGRATION: Cloudbeds
+        try {
+            const cloudbedsService = require('../services/cloudbedsService');
+            // Mapping: In a real scenario, room.cloudbeds_id would be stored in DB
+            // For now, we use a placeholder or check if room has specific tag
+            if (booking.room.cloudbeds_id) {
+                console.log('Syncing booking to Cloudbeds...');
+                await cloudbedsService.postReservation({
+                    propertyID: process.env.CLOUDBEDS_PROPERTY_ID,
+                    startDate: booking.checkIn.toISOString().split('T')[0],
+                    endDate: booking.checkOut.toISOString().split('T')[0],
+                    guestFirstName: booking.user.name.split(' ')[0],
+                    guestLastName: booking.user.name.split(' ').slice(1).join(' ') || 'Guest',
+                    guestEmail: booking.user.email,
+                    guestPhone: guest_phone || '',
+                    rooms: [{
+                        roomTypeID: booking.room.cloudbeds_id,
+                        roomQuantity: 1
+                    }]
+                });
+                console.log('✓ Cloudbeds reservation created');
+            }
+        } catch (cbError) {
+            console.error('✗ Cloudbeds Sync Error (Non-blocking):', cbError.message);
+        }
+
         try {
             const { sendBookingConfirmation } = require('../services/emailService');
             sendBookingConfirmation(booking).catch(err => console.error('Delayed email error:', err));

@@ -64,7 +64,7 @@ const SuiteDetailsPage = () => {
 
                 {/* Badges */}
                 <div className="absolute top-8 right-6 md:right-12 z-20 flex gap-3">
-                    <span className="inline-block px-4 py-2 bg-norden-gold-500 text-norden-dark-900 text-xs font-black uppercase tracking-widest rounded-full shadow-lg">
+                    <span className="inline-block px-4 py-2 bg-theme-accent text-white text-xs font-black uppercase tracking-widest rounded-full shadow-lg">
                         {suite.badge}
                     </span>
                     <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-black/40 backdrop-blur-sm border border-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-full">
@@ -211,7 +211,7 @@ const SuiteDetailsPage = () => {
 
                             <button
                                 onClick={() => openBooking(suite)}
-                                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-norden-gold-500 hover:bg-norden-gold-400 text-norden-dark-900 font-bold text-sm transition-all duration-200 shadow-lg hover:shadow-norden-gold-500/25 hover:scale-[1.02] cursor-pointer"
+                                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-theme-accent hover:bg-theme-accent-hover text-white font-bold text-sm transition-all duration-200 shadow-lg hover:shadow-theme-accent/25 hover:scale-[1.02] cursor-pointer"
                             >
                                 <CalendarCheck size={16} /> Reserve This Suite
                             </button>

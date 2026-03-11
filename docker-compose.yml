@@ -6,18 +6,19 @@ services:
   #   image: mysql:8.0
   #   ...
 
-  postgres:
-    image: postgres:15-alpine
-    container_name: nordic_postgres
+  db:
+    image: mysql:8.0
+    container_name: nordic_mysql
     restart: always
     environment:
-      POSTGRES_USER: nordic_user
-      POSTGRES_PASSWORD: nordic_password
-      POSTGRES_DB: nordic_db
+      MYSQL_ROOT_PASSWORD: nordic_root_password
+      MYSQL_DATABASE: nordic_db
+      MYSQL_USER: nordic_user
+      MYSQL_PASSWORD: nordic_password
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
 
   backend:
     build:
@@ -30,11 +31,11 @@ services:
       - ./server:/app
       - /app/node_modules
     environment:
-      DATABASE_URL: "postgresql://nordic_user:nordic_password@postgres:5432/nordic_db?schema=public"
+      DATABASE_URL: "mysql://nordic_user:nordic_password@db:3306/nordic_db"
       PORT: 8123
       JWT_SECRET: "nordic_secret_key_change_me"
     depends_on:
-      - postgres
+      - db
 
   frontend:
     build:
@@ -53,4 +54,4 @@ services:
       - VITE_API_URL=http://localhost:8123/api
 
 volumes:
-  postgres_data:
+  mysql_data:

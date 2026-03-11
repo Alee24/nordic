@@ -101,7 +101,7 @@ const SuitesPage = () => {
                     <motion.div variants={fadeUp} className="max-w-3xl mx-auto">
                         <div className="rounded-2xl overflow-hidden border border-theme-border shadow-2xl">
                             {/* Table Head */}
-                            <div className="grid grid-cols-[100px_1fr_150px] md:grid-cols-[140px_1fr_200px] bg-norden-gold-500 text-norden-dark-900 items-center">
+                            <div className="grid grid-cols-[100px_1fr_150px] md:grid-cols-[140px_1fr_200px] bg-theme-accent text-white items-center">
                                 <div className="px-4 py-5 font-black uppercase tracking-widest text-[10px] md:text-xs">
                                     Preview
                                 </div>
@@ -314,7 +314,7 @@ const SuitesPage = () => {
                             <div className="mt-8 pt-6 border-t border-norden-gold-500/20 flex gap-3">
                                 <button
                                     onClick={() => openBooking()}
-                                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-norden-gold-500 hover:bg-norden-gold-400 text-norden-dark-900 text-sm font-bold transition-all duration-200 shadow-lg hover:shadow-norden-gold-500/25"
+                                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-theme-accent hover:bg-theme-accent-hover text-white text-sm font-bold transition-all duration-200 shadow-lg hover:shadow-theme-accent/25"
                                 >
                                     <CalendarCheck size={14} /> Book Now
                                 </button>
@@ -357,7 +357,7 @@ const SuitesPage = () => {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <button
                                 onClick={() => openBooking()}
-                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-norden-gold-500 hover:bg-norden-gold-400 text-norden-dark-900 font-bold rounded-full transition-all duration-200 shadow-xl hover:shadow-norden-gold-500/30 hover:scale-105"
+                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-theme-accent hover:bg-theme-accent-hover text-white font-bold rounded-full transition-all duration-200 shadow-xl hover:shadow-theme-accent/30 hover:scale-105"
                             >
                                 <CalendarCheck size={16} /> Reserve Your Suite
                             </button>

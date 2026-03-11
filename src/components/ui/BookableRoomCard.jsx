@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Button from './Button';
-import { ArrowRight, Wifi, Sparkles, Tv, Wind, Coffee, Users } from 'lucide-react';
+import { ArrowRight, Wifi, Sparkles, Tv, Wind, Coffee, Users, ArrowRightLeft } from 'lucide-react';
 import useCurrencyStore from '../../store/useCurrencyStore';
+import useComparisonStore from '../../store/useComparisonStore';
 
 const BookableRoomCard = ({ room, onBookNow }) => {
     // Normalize fields: support both DB fields (name/price/imageUrl) and legacy (title/price_per_night/image_url)
@@ -13,6 +14,11 @@ const BookableRoomCard = ({ room, onBookNow }) => {
     const description = room.description || '';
     const status = room.status || 'available';
     const { formatPrice } = useCurrencyStore();
+
+    // Comparison Store
+    const toggleRoom = useComparisonStore(s => s.toggleRoom);
+    const selectedRooms = useComparisonStore(s => s.selectedRooms);
+    const isSelected = selectedRooms.some(r => r.id === room.id);
 
     const isAvailable = status === 'available';
 
@@ -41,10 +47,21 @@ const BookableRoomCard = ({ room, onBookNow }) => {
             {/* Content */}
             <div className="absolute bottom-0 left-0 right-0 p-6 z-10 flex flex-col justify-end h-full">
                 {/* Type Badge */}
-                <div className="mb-auto pt-4">
-                    <span className="inline-block px-3 py-1 bg-nordic-gold-500/20 backdrop-blur-sm border border-nordic-gold-500/30 rounded-full text-nordic-gold-400 text-xs font-bold uppercase tracking-wider">
+                <div className="mb-auto pt-4 flex justify-between items-start">
+                    <span className="inline-block px-3 py-1 bg-theme-accent/20 backdrop-blur-sm border border-theme-accent/30 rounded-full text-theme-accent text-xs font-bold uppercase tracking-wider">
                         {type}
                     </span>
+
+                    <button
+                        onClick={(e) => { e.stopPropagation(); toggleRoom(room); }}
+                        className={`p-2 rounded-full transition-all ${isSelected
+                            ? 'bg-theme-accent text-white shadow-lg scale-110'
+                            : 'bg-white/40 text-theme-text/70 hover:bg-white/60 hover:text-theme-text'
+                            }`}
+                        title={isSelected ? "Remove from comparison" : "Add to comparison"}
+                    >
+                        <ArrowRightLeft size={16} />
+                    </button>
                 </div>
 
                 <h3 className="text-2xl font-serif text-theme-text mb-2">{name}</h3>

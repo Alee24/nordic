@@ -15,7 +15,7 @@ const Footer = () => {
     const { setView, isAdmin } = useManagementStore();
 
     return (
-        <footer className="bg-[#0A0B0D] text-white pt-24 pb-12 relative overflow-hidden">
+        <footer className="bg-theme-surface text-theme-text pt-24 pb-12 relative overflow-hidden border-t border-theme-border">
             {/* Background Texture with door.jpg */}
             <div
                 className="absolute inset-0 z-0 opacity-30 grayscale pointer-events-none"
@@ -23,13 +23,13 @@ const Footer = () => {
                     backgroundImage: 'url("/images/door.jpg")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    filter: 'blur(10px) brightness(0.3)'
+                    filter: 'blur(10px) brightness(1.2) opacity(0.1)'
                 }}
             />
 
             {/* Subtle Gradient Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-norden-gold-500/50 to-transparent z-10" />
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-norden-gold-500/5 blur-[120px] rounded-full z-10" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-theme-accent/50 to-transparent z-10" />
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-theme-accent/5 blur-[120px] rounded-full z-10" />
 
             <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 mb-20">
@@ -38,11 +38,11 @@ const Footer = () => {
                     <div className="col-span-1 md:col-span-4 flex flex-col items-start">
                         <Link to="/" className="block mb-10 group w-full -ml-2">
                             <div className="relative w-full">
-                                <div className="absolute -inset-10 bg-norden-gold-500/5 blur-3xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000" />
+                                <div className="absolute -inset-10 bg-theme-accent/5 blur-3xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000" />
                                 <img
                                     src="/images/mlogo.png"
                                     alt="Norden Suites"
-                                    className="w-[280px] md:w-full h-auto object-contain brightness-110 relative z-10 transition-transform duration-700 group-hover:scale-[1.02] origin-left"
+                                    className="w-[280px] md:w-full h-auto object-contain relative z-10 transition-transform duration-700 group-hover:scale-[1.02] origin-left"
                                     onError={e => {
                                         e.target.style.display = 'none';
                                         e.target.insertAdjacentHTML('afterend', '<span class="text-5xl font-serif font-bold text-white tracking-wider">NORDEN<span class="block text-sm text-norden-gold-500 uppercase tracking-[0.4em] mt-2 font-bold">Suites &amp; Apartments</span></span>');
@@ -57,7 +57,7 @@ const Footer = () => {
                         {/* Explore */}
                         <div>
                             <h4 className="text-white font-serif text-xl mb-8 flex items-center gap-3">
-                                <span className="w-8 h-[1px] bg-norden-gold-500" />
+                                <span className="w-8 h-[1px] bg-theme-accent" />
                                 Explore
                             </h4>
                             <ul className="space-y-4">
@@ -68,9 +68,9 @@ const Footer = () => {
                                     { name: 'Wellness', path: '/wellness' }
                                 ].map((link) => (
                                     <li key={link.name}>
-                                        <Link to={link.path} className="text-gray-400 hover:text-norden-gold-500 transition-colors text-sm font-medium inline-block group">
+                                        <Link to={link.path} className="text-theme-muted hover:text-theme-accent transition-colors text-sm font-medium inline-block group">
                                             {link.name}
-                                            <div className="h-[1px] w-0 bg-norden-gold-500 transition-all duration-300 group-hover:w-full" />
+                                            <div className="h-[1px] w-0 bg-theme-accent transition-all duration-300 group-hover:w-full" />
                                         </Link>
                                     </li>
                                 ))}
@@ -80,27 +80,27 @@ const Footer = () => {
                         {/* Contact */}
                         <div>
                             <h4 className="text-white font-serif text-xl mb-8 flex items-center gap-3">
-                                <span className="w-8 h-[1px] bg-norden-gold-500" />
+                                <span className="w-8 h-[1px] bg-theme-accent" />
                                 Contact Us
                             </h4>
                             <ul className="space-y-6">
                                 <li className="flex items-start gap-4 group">
-                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-norden-gold-500 group-hover:bg-norden-gold-500 group-hover:text-white transition-all duration-300">
+                                    <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
                                         <MapPin size={18} />
                                     </div>
-                                    <span className="text-sm text-gray-400 leading-snug pt-1 group-hover:text-white transition-colors">Nyali Beach Road,<br />Mombasa, Kenya</span>
+                                    <span className="text-sm text-theme-muted leading-snug pt-1 group-hover:text-theme-text transition-colors">Nyali Beach Road,<br />Mombasa, Kenya</span>
                                 </li>
                                 <li className="flex items-center gap-4 group">
-                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-norden-gold-500 group-hover:bg-norden-gold-500 group-hover:text-white transition-all duration-300">
+                                    <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
                                         <Phone size={18} />
                                     </div>
-                                    <span className="text-sm text-gray-400 group-hover:text-white transition-colors">+254 704 055 869</span>
+                                    <span className="text-sm text-theme-muted group-hover:text-theme-text transition-colors">+254 704 055 869</span>
                                 </li>
                                 <li className="flex items-center gap-4 group">
-                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-norden-gold-500 group-hover:bg-norden-gold-500 group-hover:text-white transition-all duration-300">
+                                    <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
                                         <Mail size={18} />
                                     </div>
-                                    <span className="text-sm text-gray-400 group-hover:text-white transition-colors">welcome@nordensuites.com</span>
+                                    <span className="text-sm text-theme-muted group-hover:text-theme-text transition-colors">welcome@nordensuites.com</span>
                                 </li>
                             </ul>
                         </div>
@@ -108,7 +108,7 @@ const Footer = () => {
                         {/* Newsletter */}
                         <div>
                             <h4 className="text-white font-serif text-xl mb-8 flex items-center gap-3">
-                                <span className="w-8 h-[1px] bg-norden-gold-500" />
+                                <span className="w-8 h-[1px] bg-theme-accent" />
                                 VIP Newsletter
                             </h4>
                             <p className="text-gray-400 text-sm mb-6 font-light italic">Enter your email to receive curated offers and community updates.</p>
@@ -116,9 +116,9 @@ const Footer = () => {
                                 <input
                                     type="email"
                                     placeholder="Your Email Address"
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-norden-gold-500 transition-all placeholder:text-gray-600"
+                                    className="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-theme-text text-sm outline-none focus:border-theme-accent transition-all placeholder:text-theme-muted/50"
                                 />
-                                <button className="absolute right-2 top-1.5 w-9 h-9 bg-norden-gold-500 text-norden-dark-900 rounded flex items-center justify-center hover:bg-white transition-all duration-300">
+                                <button className="absolute right-2 top-1.5 w-9 h-9 bg-theme-accent text-white rounded flex items-center justify-center hover:bg-theme-accent-hover transition-all duration-300">
                                     <ArrowRight size={18} />
                                 </button>
                             </div>
@@ -140,7 +140,7 @@ const Footer = () => {
                                 href={social.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-gray-500 hover:text-norden-gold-500 transition-all duration-500 transform hover:scale-125 hover:drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]"
+                                className="text-theme-muted hover:text-theme-accent transition-all duration-500 transform hover:scale-125 hover:drop-shadow-[0_0_10px_rgba(2,136,209,0.3)]"
                             >
                                 {social.icon}
                             </a>
@@ -162,10 +162,10 @@ const Footer = () => {
 
                     <div className="flex flex-wrap items-center justify-center gap-8">
                         <div className="flex gap-6">
-                            <Link to="/privacy" className="px-5 py-2 rounded-full border border-norden-gold-500/30 text-norden-gold-500 hover:bg-norden-gold-500 hover:text-norden-dark-900 transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transform hover:-translate-y-1">
+                            <Link to="/privacy" className="px-5 py-2 rounded-full border border-theme-border text-theme-muted hover:text-theme-accent hover:border-theme-accent transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-sm transform hover:-translate-y-1">
                                 Privacy Policy
                             </Link>
-                            <Link to="/terms" className="px-5 py-2 rounded-full border border-norden-gold-500/30 text-norden-gold-500 hover:bg-norden-gold-500 hover:text-norden-dark-900 transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transform hover:-translate-y-1">
+                            <Link to="/terms" className="px-5 py-2 rounded-full border border-theme-border text-theme-muted hover:text-theme-accent hover:border-theme-accent transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-sm transform hover:-translate-y-1">
                                 Terms of Service
                             </Link>
                         </div>
@@ -174,7 +174,7 @@ const Footer = () => {
 
                         <button
                             onClick={() => setView('staff')}
-                            className="flex items-center gap-2 px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-gray-400 hover:text-norden-gold-500 transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-bold shadow-lg"
+                            className="flex items-center gap-2 px-6 py-2 bg-theme-bg hover:bg-theme-surface border border-theme-border rounded-full text-theme-muted hover:text-theme-accent transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-bold shadow-sm"
                         >
                             <Shield size={12} />
                             {isAdmin ? 'Management Console' : 'Staff Login'}
