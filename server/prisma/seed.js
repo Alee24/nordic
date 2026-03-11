@@ -1,44 +1,12 @@
 // ─────────────────────────────────────────────
 // Norden Suites — Database Seed
-// Seeds the 5 suites from the 2026 Rate Card.
+// Seeds exactly 3 suites as per latest requirements.
 // Run with:  node server/prisma/seed.js
 // ─────────────────────────────────────────────
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const rooms = [
-    {
-        name: '1 Bedroom City View',
-        type: 'City View',
-        price: 12000,
-        status: 'available',
-        description: 'A sophisticated one-bedroom suite with stunning panoramic city views, a fully equipped kitchen, and premium finishes throughout.',
-        imageUrl: '/images/b13.jpg',
-    },
-    {
-        name: '2 Bedrooms City View',
-        type: 'City View',
-        price: 15000,
-        status: 'available',
-        description: 'Spacious two-bedroom suite with sweeping city views, ideal for families or colleagues traveling together.',
-        imageUrl: '/images/b17.jpg',
-    },
-    {
-        name: '1 Bedroom Sea View',
-        type: 'Sea View',
-        price: 13000,
-        status: 'available',
-        description: 'A breathtaking one-bedroom suite with unobstructed ocean views, waking up to the sound of waves every morning.',
-        imageUrl: '/images/b15.jpg',
-    },
-    {
-        name: '2 Bedrooms Sea View',
-        type: 'Sea View',
-        price: 16000,
-        status: 'available',
-        description: 'A grand two-bedroom sea-view suite with premium coastal finishes and expansive living space for an unmatched stay.',
-        imageUrl: '/images/b16.jpg',
-    },
     {
         name: 'Executive Suite',
         type: 'Executive',
@@ -47,30 +15,34 @@ const rooms = [
         description: 'Elite living for the modern professional. A beautifully designed executive suite with dedicated workspace and premium comfort.',
         imageUrl: '/images/b14.jpg',
     },
+    {
+        name: '2 Bedroom Suite City View',
+        type: 'City View',
+        price: 15000,
+        status: 'available',
+        description: 'Spacious two-bedroom suite with sweeping city views, ideal for families or colleagues traveling together.',
+        imageUrl: '/images/b17.jpg',
+    },
+    {
+        name: '2 Bedroom Suite Sea View',
+        type: 'Sea View',
+        price: 16000,
+        status: 'available',
+        description: 'A grand two-bedroom sea-view suite with premium coastal finishes and expansive living space for an unmatched stay.',
+        imageUrl: '/images/b16.jpg',
+    },
 ];
 
 async function main() {
-    console.log('🌱 Seeding Norden Suites rooms...');
+    console.log('🌱 Refreshing Norden Suites rooms...');
+
+    // Delete all existing rooms to ensure ONLY the 3 requested remain
+    await prisma.room.deleteMany({});
+    console.log('✔ Cleared existing rooms.');
 
     for (const room of rooms) {
-        const existing = await prisma.room.findFirst({ where: { name: room.name } });
-        if (existing) {
-            // Force update all fields to match latest code (especially images)
-            await prisma.room.update({
-                where: { id: existing.id },
-                data: {
-                    imageUrl: room.imageUrl,
-                    price: room.price,
-                    description: room.description,
-                    type: room.type,
-                    status: 'available'
-                }
-            });
-            console.log(`✔ Updated existing room: ${room.name}`);
-        } else {
-            await prisma.room.create({ data: room });
-            console.log(`✔ Created room: ${room.name}`);
-        }
+        await prisma.room.create({ data: room });
+        console.log(`✔ Created room: ${room.name}`);
     }
 
     // ── Create Admin User ────────────────────────────────────────────────
@@ -83,7 +55,7 @@ async function main() {
     const admin = await prisma.user.upsert({
         where: { email: adminEmail },
         update: {
-            password: hashedAdminPassword, // Overwrite to ensure login works
+            password: hashedAdminPassword,
             role: 'admin'
         },
         create: {
@@ -95,7 +67,7 @@ async function main() {
     });
     console.log(`✔ Admin user ready: ${admin.email}`);
 
-    // Also add the typo version as requested/seen in screenshots
+    // Also add the typo version for safety
     await prisma.user.upsert({
         where: { email: 'admin@nordensuits.com' },
         update: {
