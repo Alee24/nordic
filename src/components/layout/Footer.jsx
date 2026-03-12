@@ -150,11 +150,11 @@ const Footer = () => {
 
                 {/* Bottom Bar */}
                 <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col items-center md:items-start gap-1 opacity-60">
-                        <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-bold">© 2026 NORDEN SUITES. ALL RIGHTS RESERVED.</p>
-                        <div className="text-gray-500 text-[10px] uppercase tracking-widest font-medium flex items-center gap-1">
+                    <div className="flex flex-col items-center md:items-start gap-1">
+                        <p className="text-theme-muted text-[10px] uppercase tracking-[0.3em] font-bold">© 2026 NORDEN SUITES. ALL RIGHTS RESERVED.</p>
+                        <div className="text-theme-muted text-[10px] uppercase tracking-widest font-bold flex items-center gap-1">
                             <span>Developed by |</span>
-                            <a href="https://kkdes.co.ke/" target="_blank" rel="noopener noreferrer" className="hover:text-norden-gold-500 transition-colors">
+                            <a href="https://kkdes.co.ke/" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:text-norden-gold-500 transition-colors font-black">
                                 KKDES
                             </a>
                         </div>
