@@ -72,30 +72,9 @@ const ContactPage = () => {
                     <div className="absolute inset-0 bg-norden-dark-900/20" />
                     <div className="absolute inset-0 bg-gradient-to-t from-theme-bg/60 via-transparent to-transparent" />
                 </div>
-
-                <Container size="xl" className="relative z-10 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <Group justify="center" gap="sm" mb="md">
-                            <span className="h-[1px] w-12 bg-norden-gold-500" />
-                            <Text c="gold.4" tt="uppercase" fw={800} lts={3} size="sm">Concierge & Inquiries</Text>
-                            <span className="h-[1px] w-12 bg-norden-gold-500" />
-                        </Group>
-                        <Title order={1} className="text-5xl md:text-7xl font-serif text-white mb-6">
-                            Welcome <span className="italic text-norden-gold-500">Home</span>
-                        </Title>
-                        <Text c="gray.3" size="xl" className="max-w-2xl mx-auto font-light leading-relaxed">
-                            Experience the pinnacle of coastal hospitality. Our dedicated concierge team is available 24/7
-                            to ensure your stay at Norden Suits is nothing short of extraordinary.
-                        </Text>
-                    </motion.div>
-                </Container>
             </div>
 
-            <Section className="relative z-10 -mt-20 pt-0">
+            <Section className="relative z-10 pt-16">
                 <Grid gutter={40}>
                     {/* Contact Info Column */}
                     <Grid.Col span={{ base: 12, md: 5 }}>
