@@ -62,7 +62,7 @@ export const BOOKING_INFO = {
     groupNote: 'The above rates are valid for individual transient bookings only. Meeting & group rates (10 rooms or above) are negotiated & available on request.',
     contact: {
         department: 'Reservations Department',
-        telephone: '+254 704 055 869',
+        telephone: '+254 108 111 118',
         email: 'welcome@nordensuites.com',
     }
 };

@@ -1,5 +1,12 @@
-node_modules/
-dist/
+node_modules
+dist
 .env
 *.log
-.git/
+.git
+server/node_modules
+backend/node_modules
+*.tar.gz
+*.zip
+db_data
+mysql_data
+uploads

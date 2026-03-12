@@ -131,7 +131,7 @@ const ContactPage = () => {
                                         </ThemeIcon>
                                         <Box>
                                             <Text fw={700} className="text-theme-text">24/7 Concierge</Text>
-                                            <Text size="sm" c="dimmed">+254 704 055 869</Text>
+                                            <Text size="sm" c="dimmed">+254 108 111 118</Text>
                                         </Box>
                                     </Group>
 
