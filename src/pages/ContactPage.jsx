@@ -297,7 +297,7 @@ const ContactPage = () => {
             <div className="h-[500px] w-full relative overflow-hidden group">
                 <Box className="absolute inset-0 bg-theme-bg/40 z-10 pointer-events-none group-hover:bg-transparent transition-all duration-700" />
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15919.231238479532!2d39.71261!3d-4.043513!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1840129a00ce5577%3A0xe5493b827e8d641c!2sNyali%20Beach!5e0!3m2!1sen!2ske!4v1710500000000!5m2!1sen!2ske"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3979.827361842886!2d39.7098432!3d-4.0330651!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1840130006fac081%3A0x2e7584bec116d87!2sNorden%20Suites!5e0!3m2!1sen!2ske!4v1710500000000!5m2!1sen!2ske"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
