@@ -56,8 +56,8 @@ const Footer = () => {
                     <div className="col-span-1 md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8 pt-4">
                         {/* Explore */}
                         <div>
-                            <h4 className="text-white font-serif text-lg mb-6 flex items-center gap-3">
-                                <span className="w-8 h-[1px] bg-theme-accent" />
+                            <h4 className="text-theme-text font-serif text-lg mb-6 flex items-center gap-3">
+                                <span className="w-8 h-[1.5px] bg-norden-gold-500" />
                                 Explore
                             </h4>
                             <ul className="space-y-4">
@@ -79,8 +79,8 @@ const Footer = () => {
 
                         {/* Contact */}
                         <div>
-                            <h4 className="text-white font-serif text-lg mb-6 flex items-center gap-3">
-                                <span className="w-8 h-[1px] bg-theme-accent" />
+                            <h4 className="text-theme-text font-serif text-lg mb-6 flex items-center gap-3">
+                                <span className="w-8 h-[1.5px] bg-norden-gold-500" />
                                 Contact Us
                             </h4>
                             <ul className="space-y-4">
@@ -107,8 +107,8 @@ const Footer = () => {
 
                         {/* Newsletter */}
                         <div>
-                            <h4 className="text-white font-serif text-lg mb-6 flex items-center gap-3">
-                                <span className="w-8 h-[1px] bg-theme-accent" />
+                            <h4 className="text-theme-text font-serif text-lg mb-6 flex items-center gap-3">
+                                <span className="w-8 h-[1.5px] bg-norden-gold-500" />
                                 VIP Newsletter
                             </h4>
                             <p className="text-gray-400 text-sm mb-6 font-light italic">Enter your email to receive curated offers and community updates.</p>
