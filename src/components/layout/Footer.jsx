@@ -88,7 +88,7 @@ const Footer = () => {
                                     <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
                                         <MapPin size={18} />
                                     </div>
-                                    <span className="text-sm text-theme-muted leading-snug pt-1 group-hover:text-theme-text transition-colors">Nyali Beach Road,<br />Mombasa, Kenya</span>
+                                    <span className="text-sm text-theme-muted leading-snug pt-1 group-hover:text-theme-text transition-colors">Nyali,<br />Mombasa, Kenya</span>
                                 </li>
                                 <li className="flex items-center gap-4 group">
                                     <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
