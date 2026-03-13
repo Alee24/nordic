@@ -45,7 +45,7 @@ const Footer = () => {
                                     className="w-[240px] md:w-[320px] h-auto object-contain relative z-10 transition-transform duration-700 group-hover:scale-[1.02] origin-left"
                                     onError={e => {
                                         e.target.style.display = 'none';
-                                        e.target.insertAdjacentHTML('afterend', '<span class="text-5xl font-serif font-bold text-white tracking-wider">NORDEN<span class="block text-sm text-norden-gold-500 uppercase tracking-[0.4em] mt-2 font-bold">Suites &amp; Apartments</span></span>');
+                                        e.target.insertAdjacentHTML('afterend', '<span class="text-5xl font-serif font-bold text-theme-text tracking-wider">NORDEN<span class="block text-sm text-norden-gold-500 uppercase tracking-[0.4em] mt-2 font-bold">Suites &amp; Apartments</span></span>');
                                     }}
                                 />
                             </div>
@@ -68,9 +68,9 @@ const Footer = () => {
                                     { name: 'Wellness', path: '/wellness' }
                                 ].map((link) => (
                                     <li key={link.name}>
-                                        <Link to={link.path} className="text-theme-muted hover:text-theme-accent transition-colors text-sm font-medium inline-block group">
+                                        <Link to={link.path} className="text-theme-text hover:text-norden-gold-600 transition-colors text-sm font-semibold inline-block group">
                                             {link.name}
-                                            <div className="h-[1px] w-0 bg-theme-accent transition-all duration-300 group-hover:w-full" />
+                                            <div className="h-[1px] w-0 bg-norden-gold-500 transition-all duration-300 group-hover:w-full" />
                                         </Link>
                                     </li>
                                 ))}
@@ -88,19 +88,19 @@ const Footer = () => {
                                     <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
                                         <MapPin size={18} />
                                     </div>
-                                    <span className="text-sm text-theme-muted leading-snug pt-1 group-hover:text-theme-text transition-colors">Nyali, Links Road<br />Next to Basic Nyali Mall</span>
+                                    <span className="text-sm text-norden-dark-700 leading-snug pt-1 group-hover:text-theme-text transition-colors">Nyali, Links Road<br />Next to Basic Nyali Mall</span>
                                 </li>
                                 <li className="flex items-center gap-4 group">
                                     <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
                                         <Phone size={18} />
                                     </div>
-                                    <span className="text-sm text-theme-muted group-hover:text-theme-text transition-colors">+254 108 111 118</span>
+                                    <span className="text-sm text-norden-dark-700 group-hover:text-theme-text transition-colors font-semibold">+254 108 111 118</span>
                                 </li>
                                 <li className="flex items-center gap-4 group">
                                     <div className="w-10 h-10 rounded-lg bg-theme-bg flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-white transition-all duration-300">
                                         <Mail size={18} />
                                     </div>
-                                    <span className="text-sm text-theme-muted group-hover:text-theme-text transition-colors">welcome@nordensuites.com</span>
+                                    <span className="text-sm text-norden-dark-700 group-hover:text-theme-text transition-colors font-semibold">welcome@nordensuites.com</span>
                                 </li>
                             </ul>
                         </div>
@@ -111,7 +111,7 @@ const Footer = () => {
                                 <span className="w-8 h-[1.5px] bg-norden-gold-500" />
                                 VIP Newsletter
                             </h4>
-                            <p className="text-gray-400 text-sm mb-6 font-light italic">Enter your email to receive curated offers and community updates.</p>
+                            <p className="text-norden-dark-500 text-sm mb-6 font-medium italic">Enter your email to receive curated offers and community updates.</p>
                             <div className="relative group">
                                 <input
                                     type="email"
@@ -162,10 +162,10 @@ const Footer = () => {
 
                     <div className="flex flex-wrap items-center justify-center gap-8">
                         <div className="flex gap-6">
-                            <Link to="/privacy" className="px-5 py-2 rounded-full border border-theme-border text-theme-muted hover:text-theme-accent hover:border-theme-accent transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-sm transform hover:-translate-y-1">
+                            <Link to="/privacy" className="px-5 py-2 rounded-full border border-theme-border text-theme-text hover:text-norden-gold-600 hover:border-norden-gold-500 transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-sm transform hover:-translate-y-1">
                                 Privacy Policy
                             </Link>
-                            <Link to="/terms" className="px-5 py-2 rounded-full border border-theme-border text-theme-muted hover:text-theme-accent hover:border-theme-accent transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-sm transform hover:-translate-y-1">
+                            <Link to="/terms" className="px-5 py-2 rounded-full border border-theme-border text-theme-text hover:text-norden-gold-600 hover:border-norden-gold-500 transition-all duration-300 text-xs uppercase tracking-widest font-bold shadow-sm transform hover:-translate-y-1">
                                 Terms of Service
                             </Link>
                         </div>
@@ -174,7 +174,7 @@ const Footer = () => {
 
                         <button
                             onClick={() => setView('staff')}
-                            className="flex items-center gap-2 px-6 py-2 bg-theme-bg hover:bg-theme-surface border border-theme-border rounded-full text-theme-muted hover:text-theme-accent transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-bold shadow-sm"
+                            className="flex items-center gap-2 px-6 py-2 bg-theme-bg hover:bg-theme-surface border border-theme-border rounded-full text-theme-text hover:text-norden-gold-600 transition-all duration-500 text-[10px] uppercase tracking-[0.2em] font-bold shadow-sm"
                         >
                             <Shield size={12} />
                             {isAdmin ? 'Management Console' : 'Staff Login'}

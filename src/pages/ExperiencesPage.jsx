@@ -63,11 +63,11 @@ const ExperiencesPage = () => {
                             <span className="h-[1px] w-12 bg-norden-gold-500" />
                         </div>
 
-                        <h1 className="text-6xl md:text-8xl font-serif text-white mb-8 tracking-tight drop-shadow-2xl">
+                        <h1 className="text-6xl md:text-8xl font-serif text-theme-text mb-8 tracking-tight drop-shadow-2xl">
                             The Spirit of <span className="italic text-norden-gold-500">Nyali</span>
                         </h1>
 
-                        <p className="text-gray-200 text-lg md:text-xl font-light mb-12 leading-relaxed drop-shadow-md max-w-2xl mx-auto">
+                        <p className="text-norden-dark-700 text-lg md:text-xl font-medium mb-12 leading-relaxed max-w-2xl mx-auto shadow-sm">
                             Beyond the comfort of your residence lies the magic of the Swahili coast.
                             From ancient history to wild safaris, allow us to curate your perfect African journey.
                         </p>

@@ -77,7 +77,7 @@ const SuiteDetailsPage = () => {
                     <span className="text-norden-gold-400 text-xs font-black uppercase tracking-[0.3em] block mb-2">
                         Norden Suites · {suite.subtitle}
                     </span>
-                    <h1 className="text-4xl md:text-6xl font-serif text-white leading-tight italic">
+                    <h1 className="text-4xl md:text-6xl font-serif text-theme-text leading-tight italic">
                         {suite.name}
                     </h1>
                 </div>

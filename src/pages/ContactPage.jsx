@@ -82,7 +82,7 @@ const ContactPage = () => {
                         <Text c="norden-gold.4" tt="uppercase" fw={900} lts={5} size="xs" mb="xs">
                             Personalized Service
                         </Text>
-                        <Title className="text-5xl md:text-7xl font-serif text-white tracking-tight leading-[1.1]">
+                        <Title className="text-5xl md:text-7xl font-serif text-theme-text tracking-tight leading-[1.1]">
                             The <span className="italic text-norden-gold-500">Concierge</span>
                         </Title>
                     </motion.div>
