@@ -144,7 +144,7 @@ INSERT INTO properties (id, name, description, address, city, country, amenities
 ('nordic-main', 
  'Norden Suits Nyali', 
  'Experience the perfect blend of 5-star service and private apartment living on the pristine shores of Nyali Beach, Mombasa. Our luxury serviced apartments offer breathtaking ocean views, modern amenities, and personalized concierge services.',
- 'Nyali, Mombasa',
+ 'Nyali, Links Road Next to Basic Nyali Mall',
  'Mombasa',
  'Kenya',
  JSON_ARRAY('24/7 Concierge', 'Ocean View', 'Swimming Pool', 'Gym', 'Restaurant', 'Spa', 'Free WiFi', 'Airport Transfer', 'Laundry Service', 'Room Service'),

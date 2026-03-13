@@ -118,8 +118,8 @@ const ContactPage = () => {
                                             </ThemeIcon>
                                             <Box>
                                                 <Text fw={800} tt="uppercase" lts={1} size="xs" c="norden-gold.5" mb={4}>Location</Text>
-                                                <Text size="lg" fw={600} className="text-theme-text">Nyali</Text>
-                                                <Text size="sm" c="dimmed">Mombasa, Kenya</Text>
+                                                <Text size="lg" fw={600} className="text-theme-text">Nyali, Links Road</Text>
+                                                <Text size="sm" c="dimmed">Next to Basic Nyali Mall</Text>
                                             </Box>
                                         </Group>
                                     </div>

@@ -290,7 +290,7 @@ INSERT INTO amenities (name, category, icon, description) VALUES
 
 -- Insert Sample Property
 INSERT INTO properties (id, name, property_type, description, address, city, country, latitude, longitude, star_rating, cancellation_policy) VALUES
-('nordic-main', 'NORDIC Residences Nyali', 'hotel', 'Luxury beachfront residences with stunning ocean views and world-class amenities.', 'Nyali', 'Mombasa', 'Kenya', -4.0435, 39.7216, 4.5, 'moderate');
+('nordic-main', 'NORDIC Residences Nyali', 'hotel', 'Luxury beachfront residences with stunning ocean views and world-class amenities.', 'Nyali, Links Road Next to Basic Nyali Mall', 'Mombasa', 'Kenya', -4.0435, 39.7216, 4.5, 'moderate');
 
 -- Insert Sample Rooms
 INSERT INTO rooms (id, property_id, room_number, room_type, name, description, max_occupancy, num_beds, bed_type, size_sqm, base_price, total_units) VALUES
