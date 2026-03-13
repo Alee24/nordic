@@ -1,0 +1,7 @@
+-- Create Subscribers table
+CREATE TABLE IF NOT EXISTS Subscribers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    status VARCHAR(50) DEFAULT 'active',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);

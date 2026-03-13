@@ -1,7 +1,9 @@
-import React from 'react';
-import { ArrowRight, Instagram, Youtube, Facebook, Mail, Phone, MapPin, Shield } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Instagram, Youtube, Facebook, Mail, Phone, MapPin, Shield, Loader2, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import useManagementStore from '../../store/useManagementStore';
+import { notifications } from '@mantine/notifications';
+import api from '../../services/api';
 
 // TikTok icon (not in lucide-react)
 const TikTokIcon = ({ size = 20 }) => (
@@ -13,6 +15,37 @@ const TikTokIcon = ({ size = 20 }) => (
 
 const Footer = () => {
     const { setView, isAdmin } = useManagementStore();
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [subscribed, setSubscribed] = useState(false);
+
+    const handleSubscribe = async (e) => {
+        e.preventDefault();
+        if (!email) return;
+
+        setLoading(true);
+        try {
+            const { data } = await api.post('/subscribers', { email });
+            if (data.success) {
+                setSubscribed(true);
+                notifications.show({
+                    title: 'Subscribed!',
+                    message: data.message,
+                    color: 'green',
+                    icon: <Check size={16} />
+                });
+                setEmail('');
+            }
+        } catch (error) {
+            notifications.show({
+                title: 'Subscription Failed',
+                message: error.response?.data?.message || 'Something went wrong. Please try again.',
+                color: 'red'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <footer className="bg-theme-surface text-theme-text pt-16 pb-10 relative overflow-hidden border-t border-theme-border">
@@ -112,16 +145,24 @@ const Footer = () => {
                                 VIP Newsletter
                             </h4>
                             <p className="text-norden-dark-500 text-sm mb-6 font-medium italic">Enter your email to receive curated offers and community updates.</p>
-                            <div className="relative group">
+                            <form onSubmit={handleSubscribe} className="relative group">
                                 <input
                                     type="email"
-                                    placeholder="Your Email Address"
-                                    className="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-theme-text text-sm outline-none focus:border-theme-accent transition-all placeholder:text-theme-muted/50"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder={subscribed ? "You're on the list!" : "Your Email Address"}
+                                    disabled={loading || subscribed}
+                                    className="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-theme-text text-sm outline-none focus:border-theme-accent transition-all placeholder:text-theme-muted/50 disabled:opacity-70"
                                 />
-                                <button className="absolute right-2 top-1.5 w-9 h-9 bg-theme-accent text-white rounded flex items-center justify-center hover:bg-theme-accent-hover transition-all duration-300">
-                                    <ArrowRight size={18} />
+                                <button
+                                    type="submit"
+                                    disabled={loading || subscribed || !email}
+                                    className="absolute right-2 top-1.5 w-9 h-9 bg-theme-accent text-white rounded flex items-center justify-center hover:bg-theme-accent-hover transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
                                 </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>

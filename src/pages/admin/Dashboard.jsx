@@ -6,7 +6,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import {
     IconCalendarEvent, IconBed, IconSettings, IconLogout,
-    IconBell, IconCurrencyDollar, IconMessage, IconPhoto
+    IconBell, IconCurrencyDollar, IconMessage, IconPhoto, IconUsers
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import Bookings from './Bookings';
@@ -15,6 +15,7 @@ import Settings from './Settings';
 import PaymentSettingsPage from './PaymentSettingsPage';
 import Messages from './Messages';
 import WebsiteMedia from './WebsiteMedia';
+import Subscribers from './Subscribers';
 import useManagementStore from '../../store/useManagementStore';
 import api from '../../services/api';
 
@@ -75,6 +76,7 @@ const Dashboard = ({ onExit }) => {
         },
         { icon: IconCurrencyDollar, label: 'Payments' },
         { icon: IconPhoto, label: 'Website Images' },
+        { icon: IconUsers, label: 'Subscribers' },
         { icon: IconSettings, label: 'Settings' },
     ];
 
@@ -85,6 +87,7 @@ const Dashboard = ({ onExit }) => {
             case 'Messages': return <Messages onUnreadChange={setUnreadMessages} />;
             case 'Payments': return <PaymentSettingsPage />;
             case 'Website Images': return <WebsiteMedia />;
+            case 'Subscribers': return <Subscribers />;
             case 'Settings': return <Settings />;
             default: return <Bookings />;
         }

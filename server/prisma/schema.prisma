@@ -72,3 +72,10 @@ model Log {
   context   Json?
   createdAt DateTime @default(now())
 }
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  status    String   @default("active") // 'active', 'unsubscribed'
+  createdAt DateTime @default(now())
+}
