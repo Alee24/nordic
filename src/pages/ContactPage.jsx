@@ -82,7 +82,7 @@ const ContactPage = () => {
                         <Text c="norden-gold.4" tt="uppercase" fw={900} lts={5} size="xs" mb="xs">
                             Personalized Service
                         </Text>
-                        <Title className="text-5xl md:text-7xl font-serif text-theme-text tracking-tight leading-[1.1]">
+                        <Title className="text-5xl md:text-7xl font-serif text-norden-dark-900 tracking-tight leading-[1.1]">
                             The <span className="italic text-norden-gold-500">Concierge</span>
                         </Title>
                     </motion.div>
@@ -101,7 +101,7 @@ const ContactPage = () => {
                         >
                             <Stack gap={50}>
                                 <Box>
-                                    <Title order={2} className="font-serif !text-4xl mb-6 text-theme-text leading-tight">
+                                    <Title order={2} className="font-serif !text-4xl mb-6 text-norden-dark-900 leading-tight">
                                         Elegance in Every <span className="italic text-norden-gold-500">Inquiry</span>
                                     </Title>
                                     <Text c="dimmed" size="lg" className="font-light leading-relaxed">

@@ -68,7 +68,7 @@ const DiningPage = () => {
                         viewport={{ once: true }}
                     >
                         <div className="flex items-center gap-4 mb-6">
-                            < sunrise className="text-norden-gold-500" size={32} />
+                            <Sunrise className="text-norden-gold-500" size={32} />
                             <h2 className="text-4xl md:text-5xl font-serif text-theme-text">Create, Gather, Savor.</h2>
                         </div>
                         <p className="text-theme-muted text-xl mb-10 leading-relaxed font-light">

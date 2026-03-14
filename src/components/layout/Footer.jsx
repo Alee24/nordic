@@ -48,7 +48,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-theme-surface text-theme-text pt-16 pb-10 relative overflow-hidden border-t border-theme-border">
+        <footer className="bg-theme-surface text-theme-text pt-10 pb-6 relative overflow-hidden border-t border-theme-border">
             {/* Background Texture with door.jpg */}
             <div
                 className="absolute inset-0 z-0 opacity-30 grayscale pointer-events-none"
@@ -65,7 +65,7 @@ const Footer = () => {
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-theme-accent/5 blur-[120px] rounded-full z-10" />
 
             <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-8">
 
                     {/* Brand Section - Prominent Logo at the far left */}
                     <div className="col-span-1 md:col-span-4 flex flex-col items-start">
@@ -168,7 +168,7 @@ const Footer = () => {
                 </div>
 
                 {/* Social Media Row - Centered below main content */}
-                <div className="flex flex-col items-center justify-center mb-10 pt-4 border-t border-white/5">
+                <div className="flex flex-col items-center justify-center mb-6 pt-4 border-t border-white/5">
                     <div className="flex gap-10">
                         {[
                             { icon: <Instagram size={28} />, url: "https://www.instagram.com/nordensuites/" },

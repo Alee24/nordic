@@ -32,7 +32,7 @@ const SocialProof = () => {
         const initialTimer = setTimeout(() => {
             setCurrentData(generateRandomData());
             setVisible(true);
-        }, 30000);
+        }, 60000);
 
         return () => clearTimeout(initialTimer);
     }, []);
@@ -45,8 +45,8 @@ const SocialProof = () => {
                 setVisible(false);
             }, 6000);
         } else {
-            // Show new one after 45-75 seconds (tripled from 15-25s)
-            const nextDelay = Math.floor(Math.random() * 30000) + 45000;
+            // Show new one after 90-150 seconds
+            const nextDelay = Math.floor(Math.random() * 60000) + 90000;
             interval = setTimeout(() => {
                 setCurrentData(generateRandomData());
                 setVisible(true);
