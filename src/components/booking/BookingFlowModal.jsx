@@ -19,6 +19,7 @@ import useBookingSystemStore from '../../store/useBookingSystemStore';
 import CustomDateInput from './CustomDateInput';
 import useCurrencyStore from '../../store/useCurrencyStore';
 import useBookingModalStore from '../../store/useBookingModalStore';
+import api from '../../services/api';
 
 const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initialGuests = 1 }) => {
     const {
@@ -176,19 +177,48 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
     };
 
     const handlePaymentSubmit = async () => {
-        notifications.show({
-            title: 'Success!',
-            message: `Your booking ${bookingResult?.booking_reference} has been confirmed!`,
-            color: 'green',
-            icon: <IconCircleCheck size={18} />,
-            autoClose: 5000
-        });
+        if (paymentMethod === 'mpesa' || paymentMethod === 'card') {
+            setIsSubmitting(true);
+            try {
+                const response = await api.post('/payment/pesapal', {
+                    booking_id: bookingResult.id,
+                    amount: totalPrice,
+                    guest_name: guestInfo.name,
+                    guest_email: guestInfo.email,
+                    guest_phone: guestInfo.phone
+                });
 
-        setTimeout(() => {
-            onClose();
-            setActive(0);
-            setBookingResult(null);
-        }, 1500);
+                if (response.data?.success && response.data?.redirect_url) {
+                    // Redirect to PesaPal payment page
+                    window.location.href = response.data.redirect_url;
+                } else {
+                    throw new Error(response.data?.message || 'Payment initiation failed');
+                }
+            } catch (error) {
+                notifications.show({
+                    title: 'Payment Error',
+                    message: error.response?.data?.message || error.message || 'Unable to initiate payment.',
+                    color: 'red',
+                    icon: <IconAlertCircle size={18} />
+                });
+                setIsSubmitting(false);
+            }
+        } else {
+            // Pay Later flow (original success flow)
+            notifications.show({
+                title: 'Success!',
+                message: `Your booking ${bookingResult?.booking_reference} has been confirmed!`,
+                color: 'green',
+                icon: <IconCircleCheck size={18} />,
+                autoClose: 5000
+            });
+
+            setTimeout(() => {
+                onClose();
+                setActive(0);
+                setBookingResult(null);
+            }, 1500);
+        }
     };
 
     const renderStepContent = () => {
@@ -697,8 +727,10 @@ const BookingFlowModal = ({ opened, onClose, initialDates = [null, null], initia
                                         <Button
                                             size="lg"
                                             color="gold"
-                                            leftSection={<IconCircleCheck size={20} />}
+                                            leftSection={isSubmitting ? <Loader size="xs" color="white" /> : <IconCircleCheck size={20} />}
                                             onClick={handlePaymentSubmit}
+                                            loading={isSubmitting}
+                                            disabled={isSubmitting}
                                             className="bg-gradient-to-r from-norden-gold-500 to-norden-gold-600 hover:from-norden-gold-600 hover:to-norden-gold-700"
                                         >
                                             Complete Booking
